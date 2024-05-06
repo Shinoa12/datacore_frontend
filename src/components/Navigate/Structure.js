@@ -15,6 +15,14 @@ const sidebarStructure = [
         icon: "dasbor",
         link: "/Recursos"
       },
+      {
+        id: "Historial",
+        title: "Historial",
+        name: "Historial",
+        parent: true,
+        icon: "dasbor",
+        link: "/Historial"
+      },
     {
       id: "transaksi",
       title: "Transaksi",

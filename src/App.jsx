@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Sidebar from './components/Navigate/SideBar';
 import Navbar from './components/Navigate/NavBar';
 import Recursos from './pages/Recursos'
+import Historial from './pages/Historial'
 import Home from './pages/Home'
 import './App.css'
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="/" element={<Navigate to="/Home" />} />
             <Route path="/Home" element={<Home />} />
             <Route path="/Recursos" element={<Recursos />} />
+            <Route path="/Historial" element={<Historial />} />
           </Routes>
         </div>
       </BrowserRouter>
