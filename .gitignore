@@ -1,7 +1,7 @@
 # Compiled class file
 *.class
 /node_modules
-node_modules/
+/build
 # Log file
 *.log
 
