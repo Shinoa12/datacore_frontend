@@ -1,9 +1,8 @@
-import {FaHome} from 'react-icons/fa'
+import { FaHome } from "react-icons/fa";
 import { BsCpuFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
-const Sidebar = ({sidebarToggle}) => {
-
+const Sidebar = ({ sidebarToggle }) => {
   return (
     <div
       className={`${
@@ -12,7 +11,7 @@ const Sidebar = ({sidebarToggle}) => {
       style={{ backgroundColor: "rgba(4, 35, 84, 1)" }}
     >
       <div className="my-2 mb-4">
-        <h1 className="text-2x text-white fond-bold">Admin Dashboad</h1>
+        <h1 className="text-2x text-white fond-bold">Admin Dashboard</h1>
       </div>
       <hr></hr>
       <ul className="mt-3 text-white font-bold">
@@ -28,7 +27,7 @@ const Sidebar = ({sidebarToggle}) => {
           <li className="mb-2 rounded hover:shadow hover:bg-blue-500 py-2">
             <button className="px-3 text-sm">
               <BsCpuFill className="inline-block w-6 h-5 mr-2 -mt-2"></BsCpuFill>
-              Usuarios Autorizados
+              Usuarios autorizados
             </button>
           </li>
         </Link>
@@ -36,7 +35,7 @@ const Sidebar = ({sidebarToggle}) => {
           <li className="mb-2 rounded hover:shadow hover:bg-blue-500 py-2">
             <button className="px-3 text-sm">
               <BsCpuFill className="inline-block w-6 h-5 mr-2 -mt-2"></BsCpuFill>
-              Usuarios No Autorizados
+              Usuarios no autorizados
             </button>
           </li>
         </Link>
@@ -68,6 +67,6 @@ const Sidebar = ({sidebarToggle}) => {
       </ul>
     </div>
   );
-}
+};
 
-export default Sidebar
+export default Sidebar;
