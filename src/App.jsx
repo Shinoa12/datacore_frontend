@@ -7,6 +7,8 @@ import Historial from './pages/Historial'
 import Home from './pages/Home'
 import UsuariosAutorizados from './pages/UsuariosAutorizados'
 import './App.css'
+import UsuariosAutorizados from './pages/UsuariosAutorizados';
+import UsuariosNoAutorizados from './pages/UsuariosNoAuthorizados';
 
 
 function App() {
@@ -16,17 +18,25 @@ function App() {
     <div>
       <BrowserRouter>
         <div className="flex">
-          
           <Sidebar sidebarToggle={sidebarToggle} />
-          <Navbar sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} />
-          
+          <Navbar
+            sidebarToggle={sidebarToggle}
+            setSidebarToggle={setSidebarToggle}
+          />
         </div>
 
         <div className={`${sidebarToggle ? "" : "ml-64"}`}>
           <Routes>
             <Route path="/" element={<Navigate to="/Home" />} />
             <Route path="/Home" element={<Home />} />
-            <Route path="/UsuariosAutorizados" element={<UsuariosAutorizados />} />
+            <Route
+              path="/usuarios-autorizados"
+              element={<UsuariosAutorizados />}
+            />
+            <Route
+              path="/usuarios-no-autorizados"
+              element={<UsuariosNoAutorizados />}
+            />
             <Route path="/Recursos" element={<Recursos />} />
             <Route path="/Historial" element={<Historial />} />
           </Routes>
