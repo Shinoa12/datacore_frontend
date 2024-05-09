@@ -8,6 +8,9 @@ import Home from './pages/Home'
 import UsuariosAutorizados from './pages/UsuariosAutorizados'
 import './App.css'
 import UsuariosNoAutorizados from './pages/UsuariosNoAuthorizados';
+import RecursosOfrecidos from './pages/RecursosOfrecidos';
+import CPUSolicitud from './pages/CPUSolicitud';
+import GPUSolicitud from './pages/GPUSolicitud';
 
 
 function App() {
@@ -35,6 +38,18 @@ function App() {
             <Route
               path="/usuarios-no-autorizados"
               element={<UsuariosNoAutorizados />}
+            />
+            <Route
+              path="/recursos-ofrecidos"
+              element={<RecursosOfrecidos />}
+            />
+            <Route
+              path="/cpu-solicitud"
+              element={<CPUSolicitud />}
+            />
+            <Route
+              path="/gpu-solicitud"
+              element={<GPUSolicitud />}
             />
             <Route path="/Recursos" element={<Recursos />} />
             <Route path="/Historial" element={<Historial />} />
