@@ -2,8 +2,7 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
+import MuiDialog from "../components/MuiDialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,15 +11,6 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(2),
-  },
-}));
 
 const columns = [
   { field: "fecha_creacion", headerName: "Fecha de creación", width: 150 },
@@ -147,7 +137,7 @@ function Recursos() {
         </Button>
       </Box>
 
-      <BootstrapDialog
+      <MuiDialog
         onClose={handleClose}
         aria-labelledby="dialog-title"
         open={open}
@@ -237,7 +227,7 @@ function Recursos() {
             CONFIRMAR
           </Button>
         </DialogActions>
-      </BootstrapDialog>
+      </MuiDialog>
     </div>
   );
 }
