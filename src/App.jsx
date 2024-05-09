@@ -1,17 +1,17 @@
-import {BrowserRouter , Routes, Route, Navigate} from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import React, { useState } from "react";
-import Sidebar from './components/Navigate/SideBar';
-import Navbar from './components/Navigate/NavBar';
-import Recursos from './pages/Recursos'
-import Historial from './pages/Historial'
-import Home from './pages/Home'
-import UsuariosAutorizados from './pages/UsuariosAutorizados'
-import './App.css'
-import UsuariosNoAutorizados from './pages/UsuariosNoAuthorizados';
-import RecursosOfrecidos from './pages/RecursosOfrecidos';
-import CPUSolicitud from './pages/CPUSolicitud';
-import GPUSolicitud from './pages/GPUSolicitud';
-
+import Sidebar from "./components/navigate/SideBar";
+import Navbar from "./components/navigate/NavBar";
+import Recursos from "./pages/Recursos";
+import Historial from "./pages/Historial";
+import Solicitudes from "./pages/Solicitudes";
+import Home from "./pages/Home";
+import UsuariosAutorizados from "./pages/UsuariosAutorizados";
+import "./App.css";
+import UsuariosNoAutorizados from "./pages/UsuariosNoAuthorizados";
+import RecursosOfrecidos from "./pages/RecursosOfrecidos";
+import CPUSolicitud from "./pages/CPUSolicitud";
+import GPUSolicitud from "./pages/GPUSolicitud";
 
 function App() {
   const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -39,20 +39,12 @@ function App() {
               path="/usuarios-no-autorizados"
               element={<UsuariosNoAutorizados />}
             />
-            <Route
-              path="/recursos-ofrecidos"
-              element={<RecursosOfrecidos />}
-            />
-            <Route
-              path="/cpu-solicitud"
-              element={<CPUSolicitud />}
-            />
-            <Route
-              path="/gpu-solicitud"
-              element={<GPUSolicitud />}
-            />
+            <Route path="/recursos-ofrecidos" element={<RecursosOfrecidos />} />
+            <Route path="/cpu-solicitud" element={<CPUSolicitud />} />
+            <Route path="/gpu-solicitud" element={<GPUSolicitud />} />
             <Route path="/Recursos" element={<Recursos />} />
             <Route path="/Historial" element={<Historial />} />
+            <Route path="/Solicitudes" element={<Solicitudes />} />
           </Routes>
         </div>
       </BrowserRouter>
