@@ -5,6 +5,7 @@ import Navbar from './components/Navigate/NavBar';
 import Recursos from './pages/Recursos'
 import Historial from './pages/Historial'
 import Home from './pages/Home'
+import UsuariosAutorizados from './pages/UsuariosAutorizados'
 import './App.css'
 import UsuariosAutorizados from './pages/UsuariosAutorizados';
 import UsuariosNoAutorizados from './pages/UsuariosNoAuthorizados';
