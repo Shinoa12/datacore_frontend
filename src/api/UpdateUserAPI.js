@@ -8,6 +8,10 @@ export const getAllEspecialidadPorFacultad = (idFacultad) => {
     return axios.get(`http://127.0.0.1:8000/datacore/api/v1/especialidades/porFacultad/${idFacultad}`)
 }
 
+export const getAllEspecialidades = () => {
+    return axios.get(`http://127.0.0.1:8000/datacore/api/v1/especialidades/`)
+}
+
 export const getAllEstadoPersona = () => {
     return axios.get('http://127.0.0.1:8000/datacore/api/v1/estadosPersonas/')
 }

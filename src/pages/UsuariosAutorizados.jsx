@@ -4,14 +4,8 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
 import { Autocomplete, TextField } from "@mui/material";
-import { getAllUsers, getUserById } from "../api/UpdateUserAPI";
+import { getAllEspecialidades, getAllUsers, getUserById } from "../api/UpdateUserAPI";
 import { FaPencil  } from "react-icons/fa6";
 import UpdateUserModal from "../components/UpdateUserModal";
 
@@ -28,6 +22,7 @@ function UsuariosAutorizados() {
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
   const [data, setData] = React.useState([]);
+  const [especialidades, setEspecialidades] = React.useState([]);
   const [user, setUser] = React.useState({});
   const [selectedState, setSelectedState] = React.useState(null);
 
@@ -54,19 +49,19 @@ function UsuariosAutorizados() {
     },
 
     {
-      field: "age",
+      field: "especialidad",
       headerName: "Especialidad",
       type: "number",
       width: 110,
       editable: true,
     },
     {
-      field: "fullName",
+      field: "recursos_maximos",
       headerName: "Recursos Máximos",
       description: "This column has a value getter and is not sortable.",
       sortable: false,
       width: 160,
-      valueGetter: (value, row) => `${row.facultad || ""} ${row.nombres || ""}`,
+      
     },
     {
       field: "options",
@@ -94,6 +89,20 @@ function UsuariosAutorizados() {
   ];
 
   React.useEffect(() => {
+
+    const fetchEspecialidades = async () => {
+      try {
+        const res = await getAllEspecialidades();
+        setEspecialidades(res.data);
+        // const filteredData = transformData(res.data); // Filter data initially
+        // setRows(filteredData);
+      } catch (error) {
+        // console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchEspecialidades();
+
     const fetchData = async () => {
       try {
         const res = await getAllUsers();
@@ -106,6 +115,10 @@ function UsuariosAutorizados() {
     };
 
     fetchData();
+
+    
+
+
   }, []);
 
   const handleClickOpen = () => {
@@ -131,7 +144,8 @@ function UsuariosAutorizados() {
             user.last_name?.toUpperCase() || ""
           }`, // Combine and uppercase names (use empty strings if missing)
           facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
-          age: 1, // Replace with your logic for age
+          especialidad: "ingeniería Informática",
+          recursos_maximos: 1,
         });
       }
     }
