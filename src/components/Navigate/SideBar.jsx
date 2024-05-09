@@ -1,4 +1,3 @@
-import { useRef, useState } from "react"
 import {FaHome} from 'react-icons/fa'
 import { BsCpuFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -20,7 +19,14 @@ const Sidebar = ({sidebarToggle}) => {
             </button>
           </li>
         </Link>
-
+        <Link to="UsuariosAutorizados">
+          <li className="mb-2 rounded hover:shadow hover:bg-blue-500 py-2">
+            <button className="px-3">
+              <BsCpuFill className="inline-block w-6 h-6 mr-2 -mt-2"></BsCpuFill>
+              Usuarios Autorizados
+            </button>
+          </li>
+        </Link>
         <Link to="Recursos">
           <li className="mb-2 rounded hover:shadow hover:bg-blue-500 py-2">
             <button className="px-3">

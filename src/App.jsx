@@ -5,6 +5,7 @@ import Navbar from './components/Navigate/NavBar';
 import Recursos from './pages/Recursos'
 import Historial from './pages/Historial'
 import Home from './pages/Home'
+import UsuariosAutorizados from './pages/UsuariosAutorizados'
 import './App.css'
 
 
@@ -25,6 +26,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/Home" />} />
             <Route path="/Home" element={<Home />} />
+            <Route path="/UsuariosAutorizados" element={<UsuariosAutorizados />} />
             <Route path="/Recursos" element={<Recursos />} />
             <Route path="/Historial" element={<Historial />} />
           </Routes>
