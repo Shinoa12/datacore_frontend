@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getAllFacultad , getAllEspecialidadPorFacultad, getAllEstadoPersona} from '../api/UpdateUserAPI';
+import { getAllFacultad , getAllEspecialidadPorFacultad, getAllEstadoPersona , updateUser} from '../api/UpdateUserAPI';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -24,9 +24,15 @@ const style = {
 };
 
 function UpdateUserModal ({open , setOpen , user}) {
+  
+  //Hook manejadores de cambios en campos editables
   const [facultad, setFacultad] = React.useState("");
   const [especialidad, setEspecialidad] = React.useState("");
   const [estadoUsuario, setEstadoUsuario] = React.useState("");
+  const [nombres, setNombres] = React.useState("");
+  const [apellidos, setApellidos] = React.useState("");
+
+  //Hook manejadores de estado de las lista de los combo box
   const [facultadList , setFacultadList] = React.useState([]);
   const [especialidadList , setEspecialidadList] = React.useState([]);
   const [estadoPersonaList , setEstadoPersonaList] = React.useState([]);
@@ -38,13 +44,18 @@ function UpdateUserModal ({open , setOpen , user}) {
       CargarEspecialidadesPorFacultad(user.id_facultad);
       CargarEstadosPersonas();
 
-      setFacultad(user.id_facultad || ""); 
+      setFacultad(user.id_facultad || ""); // Si user.id_facultad no está definido, se establece como una cadena vacía
       setEspecialidad(user.id_especialidad || "");
       setEstadoUsuario(user.id_estado_persona || "");
+      setNombres(user.first_name || "");
+      setApellidos(user.last_name || "");
+
     }
 
   }, [open]);
 
+
+  //FUNCIONES PARA ACCEDER A LOS METODOS API
   async function CargarFacultades(){
     const res = await getAllFacultad();
     setFacultadList(res.data);
@@ -59,6 +70,27 @@ function UpdateUserModal ({open , setOpen , user}) {
     const res = await getAllEspecialidadPorFacultad(idFacultad);
     setEspecialidadList(res.data);
   }
+
+  async function updateUserClick () {
+    //setear todos los hooks de estados de los campos editables
+    user.first_name = nombres;
+    user.last_name = apellidos;
+    user.id_facultad = facultad;
+    user.id_especialidad = especialidad;
+    user.id_estado_persona = estadoUsuario;
+
+    const res = await updateUser(user.id , user);
+    console.log(res);
+  }
+
+  //VARIABLES QUE MANEJAN LOS CAMBIOS DE LOS INPUTS
+  const handleNombresChange = (event) => {
+    setNombres(event.target.value);
+  };
+  
+  const handleApellidosChange = (event) => {
+    setApellidos(event.target.value);
+  };
 
   const handleFacultadChange = (event) => {
     CargarEspecialidadesPorFacultad(event.target.value);
@@ -75,9 +107,6 @@ function UpdateUserModal ({open , setOpen , user}) {
 
     setEstadoUsuario(event.target.value)
   };
-
-  
-
   
   return (
     <div>
@@ -103,9 +132,9 @@ function UpdateUserModal ({open , setOpen , user}) {
           >
             <TextField id="outlined-basic" label="Correo" variant="outlined" value= {user.username} aria-readonly/>
             <hr></hr>
-            <TextField id="outlined-basic" label="Nombres" variant="outlined" value = {user.first_name} />
+            <TextField id="outlined-basic" label="Nombres" variant="outlined" value = {nombres} onChange={handleNombresChange}/>
             <hr></hr>
-            <TextField id="outlined-basic" label="Apellidos" variant="outlined" value = {user.last_name} />
+            <TextField id="outlined-basic" label="Apellidos" variant="outlined" value = {apellidos} onChange={handleApellidosChange} />
             <hr></hr>
             <FormControl required sx={{ minWidth: 120 }}>
               <InputLabel id="demo-simple-select-required-label">Facultad</InputLabel>
@@ -162,7 +191,7 @@ function UpdateUserModal ({open , setOpen , user}) {
               justifyContent="center" // Para centrar horizontalmente
               alignItems="center" // Para centrar verticalmente
             >
-              <Button variant="contained">Confirmar cambios</Button>
+              <Button onClick={updateUserClick} variant="contained">Confirmar cambios</Button>
             </Stack>
           </Box>
           </Typography>
