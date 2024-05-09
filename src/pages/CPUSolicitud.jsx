@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import ModalSolicitudExito from '../components/ModalSolicitudExito';
+import CPUDropdown from '../components/CPUDropdown';
+
 
 function CPUSolicitud() {
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -43,6 +45,12 @@ function CPUSolicitud() {
         setShowModal(true);
     };
 
+    const [selectedCPU, setSelectedCPU] = useState("");
+
+    const handleCPUChange = (cpu) => { 
+        setSelectedCPU(cpu);
+    };
+
     return (
         <div className="ml-4 mt-4" style={{ display: 'flex', flexDirection: 'column' }}>
             <h1 style={{ fontSize: '30px', marginBottom: '20px', color: "rgb(4, 35, 84)" }}>
@@ -57,16 +65,19 @@ function CPUSolicitud() {
                             Recurso computacional
                         </strong>
                     </h2>
+                    <CPUDropdown value={selectedCPU} onChange={handleCPUChange} />
+                    <br></br>
+                    <br></br>
                     <h2 style={{ fontSize: '20px', marginBottom: '10px', color: "rgb(4, 35, 84)" }}>
                         <strong>
                             Detalle del recurso
                         </strong>
                     </h2>
                     <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.08)', padding: '20px', borderRadius: '5px', marginTop: '20px'}}>
-                        <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos:</strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>Frecuencia del procesador:</strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>Tamaño de memoria RAM:</strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>Sistema Operativo:</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos: {selectedCPU.numero_nucleos_cpu}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Frecuencia del procesador: {selectedCPU.frecuencia_cpu}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Tamaño de memoria RAM: {selectedCPU.tamaño_ram}</strong></p>
+                        {/* <p style={{ marginBottom: '10px' }}><strong>Sistema Operativo:</strong></p> */}
                         <div style={{ textAlign: 'center' }}>
                             <Link to="/">
                                 <button style={{ padding: '10px 20px', fontSize: '16px', borderRadius: '5px', backgroundColor: '#162447', color: '#fff', border: 'none', cursor: 'pointer' }}>
@@ -81,6 +92,16 @@ function CPUSolicitud() {
                             Posición en cola del recurso
                         </strong>
                     </h2>
+                    <div style={{
+                        position: 'relative',
+                        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        textAlign: 'left',
+                        minWidth: '30px',
+                    }}>
+                        <span style={{ color: "rgb(4, 35, 84)" }}>3</span>
+                    </div>
                 </div>
                 <div style={{ flex: 1, marginLeft: '20px', marginRight: '30px', height: '400px' }}>
                     <h2 style={{ fontSize: '20px', marginBottom: '10px', color: "rgb(4, 35, 84)" }}>
