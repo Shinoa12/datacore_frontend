@@ -10,105 +10,10 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import { TextField } from "@mui/material";
-
-
-const columns = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "correo", headerName: "Correo", width: 200 },
-  {
-    field: "nombres",
-    headerName: "Nombres",
-    width: 150,
-    editable: true,
-  },
-  {
-    field: "facultad",
-    headerName: "Facultad",
-    width: 150,
-    editable: true,
-  },
-
-  {
-    field: "age",
-    headerName: "Especialidad",
-    type: "number",
-    width: 110,
-    editable: true,
-  },
-  {
-    field: "fullName",
-    headerName: "Recursos Máximos",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    valueGetter: (value, row) => `${row.facultad || ""} ${row.nombres || ""}`,
-  },
-];
-
-const rows = [
-  {id: 1,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 2,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 3,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 4,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 5,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 6,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 7,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 8,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 9,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  {id: 10,
-    correo: "christia@pupc.edu.pe",
-    nombres: "CHRISTIAN OCHOA PATIÑO",
-    facultad: "Ciencias e Ingeniería",
-    age: 1,
-  },
-  //
-];
+import { Autocomplete, TextField } from "@mui/material";
+import { getAllUsers, getUserById } from "../api/UpdateUserAPI";
+import { FaPencil  } from "react-icons/fa6";
+import UpdateUserModal from "../components/UpdateUserModal";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -120,8 +25,88 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 function UsuariosAutorizados() {
-
   const [open, setOpen] = React.useState(false);
+  const [rows, setRows] = React.useState([]);
+  const [data, setData] = React.useState([]);
+  const [user, setUser] = React.useState({});
+  const [selectedState, setSelectedState] = React.useState(null);
+
+  async function CargarUsuario(idUser) {
+    const res = await getUserById(idUser);
+    console.log(res);
+    setUser(res.data);
+  }
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 90 },
+    { field: "correo", headerName: "Correo", width: 200 },
+    {
+      field: "nombres",
+      headerName: "Nombres",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "facultad",
+      headerName: "Facultad",
+      width: 150,
+      editable: true,
+    },
+
+    {
+      field: "age",
+      headerName: "Especialidad",
+      type: "number",
+      width: 110,
+      editable: true,
+    },
+    {
+      field: "fullName",
+      headerName: "Recursos Máximos",
+      description: "This column has a value getter and is not sortable.",
+      sortable: false,
+      width: 160,
+      valueGetter: (value, row) => `${row.facultad || ""} ${row.nombres || ""}`,
+    },
+    {
+      field: "options",
+      headerName: "Opciones",
+      description: "",
+      sortable: false,
+      width: 160,
+      renderCell: (params) => {
+        const onClick = async (e) => {
+          e.stopPropagation(); // don't select this row after clicking
+
+          await CargarUsuario(params.row.id);
+          setOpen(true);
+          console.log(params, "hola mundo");
+        };
+
+        return (
+          <FaPencil 
+            className="inline-block w-6 h-5 mr-2 -mt-2"
+            onClick={onClick}
+          ></FaPencil >
+        );
+      },
+    },
+  ];
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getAllUsers();
+        setData(res.data);
+        const filteredData = transformData(res.data); // Filter data initially
+        setRows(filteredData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -130,15 +115,74 @@ function UsuariosAutorizados() {
     setOpen(false);
   };
 
+  const transformData = (originalData) => {
+    const newData = [];
+
+    console.log(newData, "newData");
+    for (const index in originalData) {
+      const user = originalData[index];
+
+      if (user.id_estado_persona === 2 || user.id_estado_persona === 3) {
+        console.log(user);
+        newData.push({
+          id: parseInt(index) + 1, // Start IDs from 1 (adjust as needed)
+          correo: user.email || "", // Get email or use empty string if missing
+          nombres: `${user.first_name?.toUpperCase() || ""} ${
+            user.last_name?.toUpperCase() || ""
+          }`, // Combine and uppercase names (use empty strings if missing)
+          facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
+          age: 1, // Replace with your logic for age
+        });
+      }
+    }
+    return newData;
+  };
+
+  const options = [
+    { label: "Por Autorizar", value: 2 },
+    { label: "Autorizado", value: 3 },
+  ];
+
+  const handleStateChange = (event, newValue) => {
+    setSelectedState(newValue);
+    console.log(newValue)
+    if (newValue) {
+
+      console.log(data, "los datos")
+      const filteredRows = data.filter(
+        (row) => row.id_estado_persona === newValue.value
+      ); // Filter based on selected state
+      setRows(transformData(filteredRows));
+    } else {
+      console.log("entra aqui?")
+      // Reset to all data if no state is selected
+      setRows(transformData(rows)); // Fetch and filter all data again
+    }
+  };
+
   return (
-    <div className="ml-4 mt-4">
-      <h2
-        style={{ color: "rgb(4, 35, 84)" }}
-        className=" font-bold text-3xl mb-4"
-      >
+    <div className="ml-4 mt-5">
+      <h2 style={{ color: "rgb(4, 35, 84)" }} className=" text-3xl mb-4">
         Lista de usuarios autorizados
       </h2>
-      <Box sx={{ height: 400, width: "100%" }}>
+
+      <div className="flex justify-content-center items-center">
+        <span style={{ color: "rgb(4, 35, 84)" }} className=" text-lg mr-4">
+          Estado:
+        </span>
+
+        <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={options}
+          sx={{ width: 300 }}
+          value={selectedState}
+          onChange={handleStateChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+      </div>
+
+      <Box sx={{ height: 400, width: "100%" }} className="mt-4">
         <DataGrid
           rows={rows}
           columns={columns}
@@ -163,7 +207,13 @@ function UsuariosAutorizados() {
         </Button>
       </div>
 
-      <BootstrapDialog
+      <UpdateUserModal
+        open={open}
+        setOpen={setOpen}
+        user={user}
+      ></UpdateUserModal>
+
+      {/* <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -325,7 +375,7 @@ function UsuariosAutorizados() {
             Confirmar
           </Button>
         </DialogActions>
-      </BootstrapDialog>
+      </BootstrapDialog> */}
     </div>
   );
 }

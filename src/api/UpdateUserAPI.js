@@ -16,6 +16,10 @@ export const getUserById = (idUser) => {
     return axios.get(`http://127.0.0.1:8000/datacore/api/v1/users/${idUser}`)
 }
 
+export const getAllUsers = () => {
+    return axios.get(`http://127.0.0.1:8000/datacore/api/v1/users/`)
+}
+
 export const updateUser = (idUser,user) => {
     return axios.put(`http://127.0.0.1:8000/datacore/api/v1/users/${idUser}/` , user)
 }
