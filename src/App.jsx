@@ -4,6 +4,7 @@ import Sidebar from './components/Navigate/SideBar';
 import Navbar from './components/Navigate/NavBar';
 import Recursos from './pages/Recursos'
 import Historial from './pages/Historial'
+import Solicitudes from './pages/Solicitudes'
 import Home from './pages/Home'
 import UsuariosAutorizados from './pages/UsuariosAutorizados'
 import './App.css'
@@ -53,6 +54,7 @@ function App() {
             />
             <Route path="/Recursos" element={<Recursos />} />
             <Route path="/Historial" element={<Historial />} />
+            <Route path="/Solicitudes" element={<Solicitudes />} />
           </Routes>
         </div>
       </BrowserRouter>
