@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import ModalSolicitudExito from '../components/ModalSolicitudExito';
+import GPUDropdown from '../components/GPUDropdown';
+
 
 function GPUSolicitud() {
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -43,6 +45,12 @@ function GPUSolicitud() {
         setShowModal(true);
     };
 
+    const [selectedGPU, setSelectedGPU] = useState("");
+
+    const handleGPUChange = (event) => {
+        setSelectedGPU(event.target.value);
+    };
+
     return (
         <div className="ml-4 mt-4" style={{ display: 'flex', flexDirection: 'column' }}>
             <h1 style={{ fontSize: '30px', marginBottom: '20px', color: "rgb(4, 35, 84)" }}>
@@ -57,15 +65,18 @@ function GPUSolicitud() {
                             Recurso computacional
                         </strong>
                     </h2>
+                    <GPUDropdown value={selectedGPU} onChange={handleGPUChange} />
+                    <br></br>
+                    <br></br>
                     <h2 style={{ fontSize: '20px', marginBottom: '10px', color: "rgb(4, 35, 84)" }}>
                         <strong>
                             Detalle del recurso
                         </strong>
                     </h2>
                     <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.08)', padding: '20px', borderRadius: '5px', marginTop: '20px'}}>
-                        <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos NVIDIA CUDA: </strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>Frecuencia básica: </strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>VRAM: </strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos NVIDIA CUDA: {selectedGPU.numero_nucleo_gpu}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Frecuencia básica: {selectedGPU.frecuencia_gpu}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>VRAM: {selectedGPU.tamaño_vram}</strong></p>
                         <div style={{ textAlign: 'center' }}>
                             <Link to="/">
                                 <button style={{ padding: '10px 20px', fontSize: '16px', borderRadius: '5px', backgroundColor: '#162447', color: '#fff', border: 'none', cursor: 'pointer' }}>
@@ -80,6 +91,16 @@ function GPUSolicitud() {
                             Posición en cola del recurso
                         </strong>
                     </h2>
+                    <div style={{
+                        position: 'relative',
+                        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        textAlign: 'left',
+                        minWidth: '30px',
+                    }}>
+                        <span style={{ color: "rgb(4, 35, 84)" }}>3</span>
+                    </div>
                 </div>
                 <div style={{ flex: 1, marginLeft: '20px', marginRight: '30px', height: '400px' }}>
                     <h2 style={{ fontSize: '20px', marginBottom: '10px', color: "rgb(4, 35, 84)" }}>
