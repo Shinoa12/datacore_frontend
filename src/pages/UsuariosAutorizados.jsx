@@ -6,7 +6,7 @@ import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import { Autocomplete, TextField } from "@mui/material";
 import { getAllEspecialidades, getAllUsers, getUserById } from "../api/UpdateUserAPI";
-import { FaPencil  } from "react-icons/fa6";
+import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -39,21 +39,20 @@ function UsuariosAutorizados() {
       field: "nombres",
       headerName: "Nombres",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "facultad",
       headerName: "Facultad",
       width: 150,
-      editable: true,
+      editable: false,
     },
 
     {
       field: "especialidad",
       headerName: "Especialidad",
-      type: "number",
-      width: 110,
-      editable: true,
+      width: 150,
+      editable: false,
     },
     {
       field: "recursos_maximos",
@@ -79,10 +78,11 @@ function UsuariosAutorizados() {
         };
 
         return (
-          <FaPencil 
+          <MdModeEdit  
             className="inline-block w-6 h-5 mr-2 -mt-2"
             onClick={onClick}
-          ></FaPencil >
+            style={{ cursor: 'pointer' }}
+          ></MdModeEdit  >
         );
       },
     },
@@ -175,7 +175,7 @@ function UsuariosAutorizados() {
   };
 
   return (
-    <div className="ml-4 mt-5">
+    <div className="ml-4 mt-5 mb-5 mr-4">
       <h2 style={{ color: "rgb(4, 35, 84)" }} className=" text-3xl mb-4">
         Lista de usuarios autorizados
       </h2>
@@ -208,8 +208,8 @@ function UsuariosAutorizados() {
             },
           }}
           pageSizeOptions={[5]}
-          //   checkboxSelection
           disableRowSelectionOnClick
+          disableSelectionOnClick 
         />
       </Box>
 
