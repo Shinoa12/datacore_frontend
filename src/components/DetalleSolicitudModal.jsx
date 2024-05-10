@@ -14,9 +14,7 @@ import Button from '@mui/material/Button';
 
 function DetalleSolicitudModal () {
     return(
-        <Modal> 
-            
-        </Modal></></Modal></modal>
-
+        <div>
+    </div>  
     )
 }
