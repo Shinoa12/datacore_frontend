@@ -1,5 +1,5 @@
-import MuiDialog from "./common/MuiDialog";
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -16,7 +16,7 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
 
   return (
     <div>
-      <MuiDialog
+      <Dialog
         open={showModal}
         onClose={handleClose}
         aria-labelledby="dialog-title"
@@ -41,7 +41,7 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ p: 2 }}>
           <TextField
             autoFocus
             margin="dense"
@@ -93,6 +93,7 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
             margin="dense"
             id="estado"
             label="Estado"
+            defaultValue={""}
             // value={estado}
             // onChange={manejarCambioEstado}
             fullWidth
@@ -101,12 +102,12 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
             <MenuItem value="disabled">Deshabilitado</MenuItem>
           </TextField>
         </DialogContent>
-        <DialogActions sx={{ display: "flex", justifyContent: "end" }}>
+        <DialogActions sx={{ display: "flex", justifyContent: "end", p: 2 }}>
           <Button variant="contained" onClick={handleClose}>
             CONFIRMAR
           </Button>
         </DialogActions>
-      </MuiDialog>
+      </Dialog>
     </div>
   );
 }
