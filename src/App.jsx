@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import React, { useState } from "react";
-import Sidebar from "./components/Navigate/SideBar";
-import Navbar from "./components/Navigate/NavBar";
+import Sidebar from "./components/navigate/SideBar";
+import Navbar from "./components/navigate/NavBar";
 import Recursos from "./pages/Recursos";
 import Historial from "./pages/Historial";
 import Solicitudes from "./pages/Solicitudes";
