@@ -7,24 +7,14 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
 import { TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
-import PropTypes from "prop-types";
-import Avatar from "@mui/material/Avatar";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import PersonIcon from "@mui/icons-material/Person";
-import { blue } from "@mui/material/colors";
+import DialogContentText from '@mui/material/DialogContentText';
 
 const style = {
   position: "absolute",
@@ -134,6 +124,25 @@ function Solicitudes() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const [openC, setOpenC] = React.useState(false);
+
+  const handleClickOpenC = () => {
+    setOpenC(true);
+  };
+
+  const handleCloseC = () => {
+    setOpenC(false);
+  };
+
+  const descargarDoc = () =>{
+    var link = document.createElement("a");
+    link.href = "https://media.tenor.com/-bf6dnXT4nsAAAAe/cat-cat-butt.png";
+    link.download = "cat-cat-butt.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "duracion", headerName: "Duracion", width: 100 },
@@ -146,7 +155,7 @@ function Solicitudes() {
       headerName: "Cancelar",
       sortable: false,
       renderCell: (params) => {
-        return <Button startIcon={<CloseIcon />}></Button>;
+        return <Button startIcon={<CloseIcon />}   onClick={handleClickOpenC}></Button>;
       },
     },
     {
@@ -169,7 +178,7 @@ function Solicitudes() {
       width: 130,
       sortable: false,
       renderCell: (params) => {
-        return <Button startIcon={<DownloadIcon />}>Descargar</Button>;
+        return <Button startIcon={<DownloadIcon />} onClick={descargarDoc}>Descargar</Button>;
       },
     },
     /*
@@ -303,6 +312,28 @@ function Solicitudes() {
           </div>
         </Box>
       </Modal>
+
+      <Dialog
+        open={openC}
+        onClose={handleCloseC}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"¿Cancelar la solicitud seleccionada?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+          Esta acción es irreversible.  
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseC} autoFocus >No</Button>
+          <Button onClick={handleCloseC} >
+            Sí
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
