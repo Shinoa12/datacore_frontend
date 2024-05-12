@@ -9,7 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
 
-function ModalAgregarCPU({ showModal, toggleModal }) {
+function ModalAgregarGPU({ showModal, toggleModal }) {
   const handleClose = () => {
     toggleModal();
   };
@@ -27,7 +27,7 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
           id="dialog-title"
           style={{ color: "rgb(4, 35, 84)" }}
         >
-          Agregar CPU
+          Agregar GPU
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -77,8 +77,8 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
           />
           <TextField
             margin="dense"
-            id="ram"
-            label="RAM"
+            id="vram"
+            label="VRAM"
             type="number"
             fullWidth
             inputProps={{ min: 0 }}
@@ -121,4 +121,4 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
   );
 }
 
-export default ModalAgregarCPU;
+export default ModalAgregarGPU;
