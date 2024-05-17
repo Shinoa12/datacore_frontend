@@ -29,6 +29,12 @@ const gpuHeaders = [
   { field: "ubicacion", headerName: "Ubicación", width: 120 },
 ];
 
+const commonDataGridStyles = {
+  "& .MuiDataGrid-overlayWrapper": {
+    minHeight: "260px",
+  },
+};
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -58,48 +64,56 @@ function Recursos() {
       : setShowModalGPU(!showModalGPU);
   };
 
+  const fetchCPU = async () => {
+    try {
+      const response = await getAllCPU();
+      const cpus = response.data.map((item) => ({
+        id: item.id_recurso.id_recurso,
+        nombre: item.nombre,
+        solicitudes: item.id_recurso.solicitudes_encoladas,
+        estado: true ? "Habilitado" : "Deshabilitado",
+        numero_nucleos_cpu: item.numero_nucleos_cpu,
+        frecuencia_cpu: parseFloat(item.frecuencia_cpu).toFixed(2) + " GHz",
+        tamano_ram: item.id_recurso.tamano_ram + " GB",
+        ubicacion: item.id_recurso.ubicacion,
+      }));
+      setCpuList(cpus);
+    } catch (error) {
+      console.error("Error al cargar CPUs:", error);
+    }
+  };
+
+  const fetchGPU = async () => {
+    try {
+      const response = await getAllGPU();
+      const gpus = response.data.map((item) => ({
+        id: item.id_recurso.id_recurso,
+        nombre: item.nombre,
+        solicitudes: item.id_recurso.solicitudes_encoladas,
+        estado: true ? "Habilitado" : "Deshabilitado",
+        numero_nucleos_gpu: item.numero_nucleos_gpu,
+        frecuencia_gpu: parseFloat(item.frecuencia_gpu).toFixed(2) + " GHz",
+        tamano_vram: item.tamano_vram + " GB",
+        ubicacion: item.id_recurso.ubicacion,
+      }));
+      setGpuList(gpus);
+    } catch (error) {
+      console.error("Error al cargar GPUs:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCPU = async () => {
-      try {
-        const response = await getAllCPU();
-        const cpus = response.data.map((item) => ({
-          id: item.id_recurso.id_recurso,
-          nombre: item.nombre,
-          solicitudes: item.id_recurso.solicitudes_encoladas,
-          estado: true ? "Habilitado" : "Deshabilitado",
-          numero_nucleos_cpu: item.numero_nucleos_cpu,
-          frecuencia_cpu: parseFloat(item.frecuencia_cpu).toFixed(2) + " GHz",
-          tamano_ram: item.id_recurso.tamano_ram + " GB",
-          ubicacion: item.id_recurso.ubicacion,
-        }));
-        setCpuList(cpus);
-      } catch (error) {
-        console.error("Error al cargar CPUs:", error);
-      }
-    };
-
-    const fetchGPU = async () => {
-      try {
-        const response = await getAllGPU();
-        const gpus = response.data.map((item) => ({
-          id: item.id_recurso.id_recurso,
-          nombre: item.nombre,
-          solicitudes: item.id_recurso.solicitudes_encoladas,
-          estado: true ? "Habilitado" : "Deshabilitado",
-          numero_nucleos_gpu: item.numero_nucleos_gpu,
-          frecuencia_gpu: parseFloat(item.frecuencia_gpu).toFixed(2) + " GHz",
-          tamano_vram: item.tamano_vram + " GB",
-          ubicacion: item.id_recurso.ubicacion,
-        }));
-        setGpuList(gpus);
-      } catch (error) {
-        console.error("Error al cargar GPUs:", error);
-      }
-    };
-
     fetchCPU();
     fetchGPU();
   }, []);
+
+  const handleAddCpuSuccess = async () => {
+    try {
+      await fetchCPU();
+    } catch (error) {
+      console.error("Error al actualizar CPUs luego de agregar:", error);
+    }
+  };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -140,6 +154,7 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
+            sx={commonDataGridStyles}
           />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
@@ -155,11 +170,16 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
+            sx={commonDataGridStyles}
           />
         </TabPanel>
       </Box>
 
-      <ModalAgregarCPU showModal={showModalCPU} toggleModal={toggleModal} />
+      <ModalAgregarCPU
+        showModal={showModalCPU}
+        toggleModal={toggleModal}
+        onSuccess={handleAddCpuSuccess}
+      />
       <ModalAgregarGPU showModal={showModalGPU} toggleModal={toggleModal} />
     </div>
   );

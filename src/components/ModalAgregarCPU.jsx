@@ -1,17 +1,84 @@
+import { useEffect, useState } from "react";
+import { createCPU } from "../api/RecursoDropdown";
+import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
+import InputLabel from "@mui/material/InputLabel";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
-import CloseIcon from "@mui/icons-material/Close";
+import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 
-function ModalAgregarCPU({ showModal, toggleModal }) {
+function ModalAgregarCPU({ showModal, toggleModal, onSuccess }) {
+  const initialFormData = {
+    nombre: "",
+    numNucleos: "",
+    frecuencia: "",
+    ram: "",
+    ubicacion: "",
+    estado: "",
+  };
+
+  const initialFormErrors = {
+    nombre: false,
+    numNucleos: false,
+    frecuencia: false,
+    ram: false,
+    ubicacion: false,
+    estado: false,
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    const valid = Object.values(formData).every((value) => value.trim() !== "");
+    setIsFormValid(valid);
+  }, [formData]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setFormErrors({
+      ...formErrors,
+      [name]: value.trim() === "",
+    });
+  };
+
+  const resetForms = () => {
+    setFormData(initialFormData);
+    setFormErrors(initialFormErrors);
+  };
+
   const handleClose = () => {
     toggleModal();
+    resetForms();
+  };
+
+  const handleSubmit = async () => {
+    if (isFormValid) {
+      const cpuData = {
+        id_recurso: {
+          solicitudes_encoladas: 0,
+          tamano_ram: parseInt(formData.ram),
+          estado: formData.estado === "enabled" ? true : false,
+          ubicacion: formData.ubicacion,
+        },
+        nombre: formData.nombre,
+        numero_nucleos_cpu: parseInt(formData.numNucleos),
+        frecuencia_cpu: parseFloat(formData.frecuencia),
+      };
+
+      await createCPU(cpuData);
+      onSuccess();
+      handleClose();
+    }
   };
 
   return (
@@ -21,6 +88,7 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
         onClose={handleClose}
         aria-labelledby="dialog-title"
         fullWidth={true}
+        disableRestoreFocus
       >
         <DialogTitle
           sx={{ m: 0, p: 2 }}
@@ -42,29 +110,39 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers sx={{ p: 2 }}>
+          {/* Nombre */}
           <TextField
             autoFocus
             margin="dense"
             id="nombre"
+            name="nombre"
             label="Nombre"
             type="text"
             fullWidth
-            // value={nombre}
-            // onChange={manejarCambioNombre}
+            value={formData.nombre}
+            error={formErrors.nombre}
+            onChange={handleChange}
           />
+
+          {/* Núcleos */}
           <TextField
             margin="dense"
-            id="num_nucleos"
+            id="num-nucleos"
+            name="numNucleos"
             label="Número de núcleos"
             type="number"
             fullWidth
             inputProps={{ min: 0 }}
-            // value={num_nucleos}
-            // onChange={manejarCambioNucleos}
+            value={formData.numNucleos}
+            error={formErrors.numNucleos}
+            onChange={handleChange}
           />
+
+          {/* Frecuencia */}
           <TextField
             margin="dense"
             id="frecuencia"
+            name="frecuencia"
             label="Frecuencia de reloj"
             type="number"
             fullWidth
@@ -72,12 +150,16 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
             InputProps={{
               endAdornment: <InputAdornment position="end">GHz</InputAdornment>,
             }}
-            // value={frecuencia}
-            // onChange={manejarCambioFrecuencia}
+            value={formData.frecuencia}
+            error={formErrors.frecuencia}
+            onChange={handleChange}
           />
+
+          {/* RAM */}
           <TextField
             margin="dense"
             id="ram"
+            name="ram"
             label="RAM"
             type="number"
             fullWidth
@@ -85,34 +167,47 @@ function ModalAgregarCPU({ showModal, toggleModal }) {
             InputProps={{
               endAdornment: <InputAdornment position="end">GB</InputAdornment>,
             }}
-            // value={ram}
-            // onChange={manejarCambioRam}
+            value={formData.ram}
+            error={formErrors.ram}
+            onChange={handleChange}
           />
+
+          {/* Ubicación */}
           <TextField
             margin="dense"
             id="ubicacion"
+            name="ubicacion"
             label="Ubicación"
             type="text"
             fullWidth
-            // value={ubicacion}
-            // onChange={manejarCambioUbicacion}
+            value={formData.ubicacion}
+            error={formErrors.ubicacion}
+            onChange={handleChange}
           />
-          <TextField
-            select
-            margin="dense"
-            id="estado"
-            label="Estado"
-            defaultValue={""}
-            // value={estado}
-            // onChange={manejarCambioEstado}
-            fullWidth
-          >
-            <MenuItem value="enabled">Habilitado</MenuItem>
-            <MenuItem value="disabled">Deshabilitado</MenuItem>
-          </TextField>
+
+          {/* Estado */}
+          <FormControl margin="dense" fullWidth>
+            <InputLabel id="estado-label">Estado</InputLabel>
+            <Select
+              labelId="estado-label"
+              id="estado"
+              name="estado"
+              label="Estado"
+              value={formData.estado}
+              error={formErrors.estado}
+              onChange={handleChange}
+            >
+              <MenuItem value="enabled">Habilitado</MenuItem>
+              <MenuItem value="disabled">Deshabilitado</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions sx={{ display: "flex", justifyContent: "end", p: 2 }}>
-          <Button variant="contained" onClick={handleClose}>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={!isFormValid}
+          >
             CONFIRMAR
           </Button>
         </DialogActions>
