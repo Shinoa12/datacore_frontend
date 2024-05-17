@@ -9,7 +9,7 @@ import MenuItem from "@mui/material/MenuItem";
 import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
 
-function ModalAgregarGPU({ showModal, toggleModal }) {
+function AddGPUModal({ showModal, toggleModal }) {
   const handleClose = () => {
     toggleModal();
   };
@@ -121,4 +121,4 @@ function ModalAgregarGPU({ showModal, toggleModal }) {
   );
 }
 
-export default ModalAgregarGPU;
+export default AddGPUModal;

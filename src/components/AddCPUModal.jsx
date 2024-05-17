@@ -14,7 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 
-function ModalAgregarCPU({ showModal, toggleModal, onSuccess }) {
+function AddCPUModal({ showModal, toggleModal, onSuccess }) {
   const initialFormData = {
     nombre: "",
     numNucleos: "",
@@ -216,4 +216,4 @@ function ModalAgregarCPU({ showModal, toggleModal, onSuccess }) {
   );
 }
 
-export default ModalAgregarCPU;
+export default AddCPUModal;

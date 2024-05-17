@@ -5,8 +5,8 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import ModalAgregarCPU from "../components/ModalAgregarCPU";
-import ModalAgregarGPU from "../components/ModalAgregarGPU";
+import AddCPUModal from "../components/AddCPUModal";
+import AddGPUModal from "../components/AddGPUModal";
 import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
 
 const cpuHeaders = [
@@ -175,12 +175,12 @@ function Recursos() {
         </TabPanel>
       </Box>
 
-      <ModalAgregarCPU
+      <AddCPUModal
         showModal={showModalCPU}
         toggleModal={toggleModal}
         onSuccess={handleAddCpuSuccess}
       />
-      <ModalAgregarGPU showModal={showModalGPU} toggleModal={toggleModal} />
+      <AddGPUModal showModal={showModalGPU} toggleModal={toggleModal} />
     </div>
   );
 }
