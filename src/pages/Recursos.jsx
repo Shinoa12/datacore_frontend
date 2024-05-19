@@ -30,7 +30,7 @@ const gpuHeaders = [
 ];
 
 const commonDataGridStyles = {
-  "& .MuiDataGrid-overlayWrapper": {
+  ".MuiDataGrid-overlayWrapper": {
     minHeight: "260px",
   },
 };
@@ -58,7 +58,7 @@ function Recursos() {
   const [gpuList, setGpuList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
-  const toggleModal = () => {
+  const toggleAddModal = () => {
     tabValue === 0
       ? setShowModalCPU(!showModalCPU)
       : setShowModalGPU(!showModalGPU);
@@ -130,7 +130,7 @@ function Recursos() {
       <Box sx={{ my: 3 }}>
         <Button
           variant="contained"
-          onClick={toggleModal}
+          onClick={toggleAddModal}
           startIcon={<AddIcon />}
         >
           Agregar
@@ -176,11 +176,11 @@ function Recursos() {
       </Box>
 
       <AddCPUModal
-        showModal={showModalCPU}
-        toggleModal={toggleModal}
+        open={showModalCPU}
+        onClose={toggleAddModal}
         onSuccess={handleAddCpuSuccess}
       />
-      <AddGPUModal showModal={showModalGPU} toggleModal={toggleModal} />
+      <AddGPUModal showModal={showModalGPU} toggleModal={toggleAddModal} />
     </div>
   );
 }
