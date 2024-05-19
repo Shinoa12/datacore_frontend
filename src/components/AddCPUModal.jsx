@@ -13,8 +13,9 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
+import DiscardChangesModal from "./DiscardChangesModal";
 
-function AddCPUModal({ showModal, toggleModal, onSuccess }) {
+function AddCPUModal({ open, onClose, onSuccess }) {
   const initialFormData = {
     nombre: "",
     numNucleos: "",
@@ -36,14 +37,16 @@ function AddCPUModal({ showModal, toggleModal, onSuccess }) {
   const [formData, setFormData] = useState(initialFormData);
   const [formErrors, setFormErrors] = useState(initialFormErrors);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
 
+  // Establece el formulario como válido si todos los campos están llenos
   useEffect(() => {
     const valid = Object.values(formData).every((value) => value.trim() !== "");
     setIsFormValid(valid);
   }, [formData]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
     setFormErrors({
       ...formErrors,
@@ -56,9 +59,35 @@ function AddCPUModal({ showModal, toggleModal, onSuccess }) {
     setFormErrors(initialFormErrors);
   };
 
-  const handleClose = () => {
-    toggleModal();
+  const returnToTable = () => {
+    onClose();
     resetForms();
+  };
+
+  const toggleDiscardModal = () => {
+    setShowDiscardModal(!showDiscardModal);
+  };
+
+  // Abre el modal de confirmación de descarte si hay datos en el formulario
+  const handleClose = () => {
+    if (Object.values(formData).some((value) => value.trim() !== "")) {
+      toggleDiscardModal();
+    } else {
+      returnToTable();
+    }
+  };
+
+  const handleCancelClose = (event, reason) => {
+    // Omite clics fuera del modal de confirmación de descarte
+    if (reason && reason === "backdropClick") {
+      return;
+    }
+    toggleDiscardModal();
+  };
+
+  const handleConfirmClose = () => {
+    toggleDiscardModal();
+    returnToTable();
   };
 
   const handleSubmit = async () => {
@@ -77,14 +106,14 @@ function AddCPUModal({ showModal, toggleModal, onSuccess }) {
 
       await createCPU(cpuData);
       onSuccess();
-      handleClose();
+      returnToTable();
     }
   };
 
   return (
     <div>
       <Dialog
-        open={showModal}
+        open={open}
         onClose={handleClose}
         aria-labelledby="dialog-title"
         fullWidth={true}
@@ -212,6 +241,12 @@ function AddCPUModal({ showModal, toggleModal, onSuccess }) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <DiscardChangesModal
+        open={showDiscardModal}
+        onClose={handleCancelClose}
+        onConfirm={handleConfirmClose}
+      ></DiscardChangesModal>
     </div>
   );
 }
