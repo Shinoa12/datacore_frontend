@@ -1,20 +1,31 @@
 import * as React from "react";
+import useNavigate from 'react-router-dom';
+
+//MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { styled } from "@mui/material/styles";
+import DataGrid from "@mui/x-data-grid";
+import styled from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-import { TextField } from "@mui/material";
+import TextField from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
 import DialogContentText from '@mui/material/DialogContentText';
+import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
+
+//APIs
+import getAllSolicitudes from '../api/Solicitudes';
+import getSolicitudDetalle from '../api/Solicitudes';
+import getSolicitudResultado from '../api/Solicitudes';
+import deleteSolicitud from '../api/Solicitudes';
+
 
 const style = {
   position: "absolute",
@@ -192,6 +203,13 @@ function Solicitudes() {
           },*/
   ];
 
+
+  const navigate = useNavigate();
+
+  const nuevaSolicitud = () => {
+    navigate('/recursos-ofrecidos');
+  };
+
   return (
     <div className="row m-4">
       <h2
@@ -201,7 +219,7 @@ function Solicitudes() {
         Solicitudes
       </h2>
 
-      <Button variant="contained" startIcon={<AddIcon />}>
+      <Button variant="contained" startIcon={<AddIcon />} onClick={nuevaSolicitud}>
         Nueva Solicitud
       </Button>
 
@@ -216,8 +234,8 @@ function Solicitudes() {
         pageSizeOptions={[5, 10]}
       />
 
-      <Button variant="contained" startIcon={<ExitToAppIcon />}>
-        Regresar
+      <Button variant="contained" startIcon={<SimCardDownloadIcon />}>
+        Exportar Solicitudes
       </Button>
 
       <Modal
