@@ -5,13 +5,12 @@ import { Link } from 'react-router-dom';
 function RecursosOfrecidos() {
     return (
       <div className="ml-4 mt-4">
-        <h1 style={{ fontSize: '30px', marginBottom: '20px' , color: "rgb(4, 35, 84)"}}>
-            <strong> 
-                Nueva Solicitud
-            </strong>
+        <h1 style={{ color: "rgb(4, 35, 84)" }}
+        className="font-bold text-3xl mb-4">
+            Nueva Solicitud
         </h1>
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1 style={{ fontSize: '25px', marginBottom: '20px' , color: "rgb(4, 35, 84)"}}>
+            <h1 style={{ color: "rgb(4, 35, 84)" }} className="font-bold text-3xl mb-4">
                 ¿Qué servicio deseas solicitar?
             </h1>
         </div>  
