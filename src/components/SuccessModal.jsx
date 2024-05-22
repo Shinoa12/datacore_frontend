@@ -2,6 +2,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
@@ -28,7 +29,7 @@ function SuccessModal({ open, onClose, content }) {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            color: "#042354",
+            color: "primary.main",
           }}
           id="dialog-title"
         >
@@ -39,8 +40,12 @@ function SuccessModal({ open, onClose, content }) {
           />
           <p style={{ fontSize: "24px", textAlign: "center" }}>¡Todo listo!</p>
         </DialogTitle>
-        <DialogContent sx={{ textAlign: "center", color: "#042354", mb: 1 }}>
-          <p>{content}</p>
+        <DialogContent sx={{ mb: 1 }}>
+          <DialogContentText
+            sx={{ textAlign: "center", color: "primary.main" }}
+          >
+            <p>{content}</p>
+          </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ mb: 2 }}>
           <Button onClick={onClose} variant="contained" sx={{ mx: "auto" }}>

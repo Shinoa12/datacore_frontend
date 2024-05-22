@@ -2,6 +2,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +29,7 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            color: "primary.main",
           }}
           id="dialog-title"
         >
@@ -36,14 +38,16 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
             icon={faTriangleExclamation}
             style={{ marginBottom: "20px", color: "#B9333A" }}
           />
-          <p
-            style={{ fontSize: "24px", textAlign: "center", color: "#042354" }}
-          >
+          <p style={{ fontSize: "24px", textAlign: "center" }}>
             ¿Estás seguro de que quieres salir?
           </p>
         </DialogTitle>
-        <DialogContent sx={{ textAlign: "center", color: "#042354", mb: 1 }}>
-          <p>Se perderán todos los datos.</p>
+        <DialogContent sx={{ mb: 1 }}>
+          <DialogContentText
+            sx={{ textAlign: "center", color: "primary.main" }}
+          >
+            <p>Se perderán todos los datos.</p>
+          </DialogContentText>
         </DialogContent>
         <DialogActions
           sx={{

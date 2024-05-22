@@ -128,12 +128,9 @@ function Recursos() {
 
   return (
     <div className="mx-4 my-4">
-      <h1
-        style={{ color: "rgb(4, 35, 84)" }}
-        className="font-bold text-3xl mb-4"
-      >
-        Recursos computacionales
-      </h1>
+      <Box sx={{ color: "primary.main" }}>
+        <h1 className="font-bold text-3xl mb-4">Recursos computacionales</h1>
+      </Box>
       <Box sx={{ my: 3 }}>
         <Button
           variant="contained"
