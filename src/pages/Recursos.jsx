@@ -5,8 +5,8 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import ModalAgregarCPU from "../components/ModalAgregarCPU";
-import ModalAgregarGPU from "../components/ModalAgregarGPU";
+import AddCPUModal from "../components/AddCPUModal";
+import AddGPUModal from "../components/AddGPUModal";
 import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
 
 const cpuHeaders = [
@@ -28,6 +28,12 @@ const gpuHeaders = [
   { field: "tamano_vram", headerName: "VRAM", width: 120 },
   { field: "ubicacion", headerName: "Ubicación", width: 120 },
 ];
+
+const commonDataGridStyles = {
+  ".MuiDataGrid-overlayWrapper": {
+    minHeight: "260px",
+  },
+};
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -52,54 +58,62 @@ function Recursos() {
   const [gpuList, setGpuList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
-  const toggleModal = () => {
+  const toggleAddModal = () => {
     tabValue === 0
       ? setShowModalCPU(!showModalCPU)
       : setShowModalGPU(!showModalGPU);
   };
 
+  const fetchCPU = async () => {
+    try {
+      const response = await getAllCPU();
+      const cpus = response.data.map((item) => ({
+        id: item.id_recurso.id_recurso,
+        nombre: item.nombre,
+        solicitudes: item.id_recurso.solicitudes_encoladas,
+        estado: true ? "Habilitado" : "Deshabilitado",
+        numero_nucleos_cpu: item.numero_nucleos_cpu,
+        frecuencia_cpu: parseFloat(item.frecuencia_cpu).toFixed(2) + " GHz",
+        tamano_ram: item.id_recurso.tamano_ram + " GB",
+        ubicacion: item.id_recurso.ubicacion,
+      }));
+      setCpuList(cpus);
+    } catch (error) {
+      console.error("Error al cargar CPUs:", error);
+    }
+  };
+
+  const fetchGPU = async () => {
+    try {
+      const response = await getAllGPU();
+      const gpus = response.data.map((item) => ({
+        id: item.id_recurso.id_recurso,
+        nombre: item.nombre,
+        solicitudes: item.id_recurso.solicitudes_encoladas,
+        estado: true ? "Habilitado" : "Deshabilitado",
+        numero_nucleos_gpu: item.numero_nucleos_gpu,
+        frecuencia_gpu: parseFloat(item.frecuencia_gpu).toFixed(2) + " GHz",
+        tamano_vram: item.tamano_vram + " GB",
+        ubicacion: item.id_recurso.ubicacion,
+      }));
+      setGpuList(gpus);
+    } catch (error) {
+      console.error("Error al cargar GPUs:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCPU = async () => {
-      try {
-        const response = await getAllCPU();
-        const cpus = response.data.map((item) => ({
-          id: item.id_recurso.id_recurso,
-          nombre: item.nombre,
-          solicitudes: item.id_recurso.solicitudes_encoladas,
-          estado: true ? "Habilitado" : "Deshabilitado",
-          numero_nucleos_cpu: item.numero_nucleos_cpu,
-          frecuencia_cpu: parseFloat(item.frecuencia_cpu).toFixed(2) + " GHz",
-          tamano_ram: item.id_recurso.tamano_ram + " GB",
-          ubicacion: item.id_recurso.ubicacion,
-        }));
-        setCpuList(cpus);
-      } catch (error) {
-        console.error("Error al cargar CPUs:", error);
-      }
-    };
-
-    const fetchGPU = async () => {
-      try {
-        const response = await getAllGPU();
-        const gpus = response.data.map((item) => ({
-          id: item.id_recurso.id_recurso,
-          nombre: item.nombre,
-          solicitudes: item.id_recurso.solicitudes_encoladas,
-          estado: true ? "Habilitado" : "Deshabilitado",
-          numero_nucleos_gpu: item.numero_nucleos_gpu,
-          frecuencia_gpu: parseFloat(item.frecuencia_gpu).toFixed(2) + " GHz",
-          tamano_vram: item.tamano_vram + " GB",
-          ubicacion: item.id_recurso.ubicacion,
-        }));
-        setGpuList(gpus);
-      } catch (error) {
-        console.error("Error al cargar GPUs:", error);
-      }
-    };
-
     fetchCPU();
     fetchGPU();
   }, []);
+
+  const handleAddCpuSuccess = async () => {
+    try {
+      await fetchCPU();
+    } catch (error) {
+      console.error("Error al actualizar CPUs luego de agregar:", error);
+    }
+  };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -116,7 +130,7 @@ function Recursos() {
       <Box sx={{ my: 3 }}>
         <Button
           variant="contained"
-          onClick={toggleModal}
+          onClick={toggleAddModal}
           startIcon={<AddIcon />}
         >
           Agregar
@@ -140,6 +154,7 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
+            sx={commonDataGridStyles}
           />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
@@ -155,12 +170,17 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
+            sx={commonDataGridStyles}
           />
         </TabPanel>
       </Box>
 
-      <ModalAgregarCPU showModal={showModalCPU} toggleModal={toggleModal} />
-      <ModalAgregarGPU showModal={showModalGPU} toggleModal={toggleModal} />
+      <AddCPUModal
+        open={showModalCPU}
+        onClose={toggleAddModal}
+        onSuccess={handleAddCpuSuccess}
+      />
+      <AddGPUModal showModal={showModalGPU} toggleModal={toggleAddModal} />
     </div>
   );
 }
