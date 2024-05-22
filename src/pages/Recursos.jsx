@@ -115,11 +115,7 @@ function Recursos() {
 
   const handleAddCpuSuccess = async () => {
     toggleSuccessModal();
-    try {
-      await fetchCPU();
-    } catch (error) {
-      console.error("Error al actualizar CPUs luego de agregar:", error);
-    }
+    await fetchCPU();
   };
 
   const handleTabChange = (event, newValue) => {

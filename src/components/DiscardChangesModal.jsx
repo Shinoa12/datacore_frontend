@@ -7,6 +7,15 @@ import DialogActions from "@mui/material/DialogActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
+/**
+ * Modal para confirmar descarte de cambios.
+ *
+ * @param {object} props
+ * @param {boolean} props.open Indica la visibilidad del modal
+ * @param {() => void} props.onClose Se ejecuta al salir o al elegir "continuar"
+ * @param {() => void} props.onConfirm Se ejecuta al elegir "descartar"
+ * @returns {JSX.Element}
+ */
 function DiscardChangesModal({ open, onClose, onConfirm }) {
   return (
     <div>
