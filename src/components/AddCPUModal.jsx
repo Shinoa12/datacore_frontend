@@ -120,9 +120,8 @@ function AddCPUModal({ open, onClose, onSuccess }) {
         disableRestoreFocus
       >
         <DialogTitle
-          sx={{ m: 0, p: 2 }}
+          sx={{ m: 0, p: 2, color: "primary.main" }}
           id="dialog-title"
-          style={{ color: "rgb(4, 35, 84)" }}
         >
           Agregar CPU
         </DialogTitle>

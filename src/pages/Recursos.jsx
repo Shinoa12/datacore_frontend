@@ -7,6 +7,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import AddCPUModal from "../components/AddCPUModal";
 import AddGPUModal from "../components/AddGPUModal";
+import SuccessModal from "../components/SuccessModal";
 import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
 
 const cpuHeaders = [
@@ -52,16 +53,21 @@ function TabPanel(props) {
 }
 
 function Recursos() {
-  const [showModalCPU, setShowModalCPU] = useState(false);
-  const [showModalGPU, setShowModalGPU] = useState(false);
+  const [showCPUModal, setShowCPUModal] = useState(false);
+  const [showGPUModal, setShowGPUModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [cpuList, setCpuList] = useState([]);
   const [gpuList, setGpuList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
   const toggleAddModal = () => {
     tabValue === 0
-      ? setShowModalCPU(!showModalCPU)
-      : setShowModalGPU(!showModalGPU);
+      ? setShowCPUModal(!showCPUModal)
+      : setShowGPUModal(!showGPUModal);
+  };
+
+  const toggleSuccessModal = () => {
+    setShowSuccessModal(!showSuccessModal);
   };
 
   const fetchCPU = async () => {
@@ -108,6 +114,7 @@ function Recursos() {
   }, []);
 
   const handleAddCpuSuccess = async () => {
+    toggleSuccessModal();
     try {
       await fetchCPU();
     } catch (error) {
@@ -120,13 +127,10 @@ function Recursos() {
   };
 
   return (
-    <div className="mx-4 mt-4">
-      <h1
-        style={{ color: "rgb(4, 35, 84)" }}
-        className="font-bold text-3xl mb-4"
-      >
-        Recursos computacionales
-      </h1>
+    <div className="mx-4 my-4">
+      <Box sx={{ color: "primary.main" }}>
+        <h1 className="font-bold text-3xl mb-4">Recursos computacionales</h1>
+      </Box>
       <Box sx={{ my: 3 }}>
         <Button
           variant="contained"
@@ -176,11 +180,16 @@ function Recursos() {
       </Box>
 
       <AddCPUModal
-        open={showModalCPU}
+        open={showCPUModal}
         onClose={toggleAddModal}
         onSuccess={handleAddCpuSuccess}
       />
-      <AddGPUModal showModal={showModalGPU} toggleModal={toggleAddModal} />
+      <AddGPUModal showModal={showGPUModal} toggleModal={toggleAddModal} />
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={toggleSuccessModal}
+        content="El recurso ha sido creado satisfactoriamente."
+      />
     </div>
   );
 }

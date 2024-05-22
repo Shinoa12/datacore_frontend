@@ -23,9 +23,8 @@ function AddGPUModal({ showModal, toggleModal }) {
         fullWidth={true}
       >
         <DialogTitle
-          sx={{ m: 0, p: 2 }}
+          sx={{ m: 0, p: 2, color: "primary.main" }}
           id="dialog-title"
-          style={{ color: "rgb(4, 35, 84)" }}
         >
           Agregar GPU
         </DialogTitle>
