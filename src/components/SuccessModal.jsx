@@ -7,6 +7,15 @@ import DialogActions from "@mui/material/DialogActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 
+/**
+ * Modal para operaciones finalizadas con éxito
+ *
+ * @param {object} props
+ * @param {boolean} props.open Indica la visibilidad del modal
+ * @param {() => void} props.onClose Se ejecuta al salir del modal
+ * @param {string} props.content Contenido del mensaje mostrado
+ * @returns {JSX.Element}
+ */
 function SuccessModal({ open, onClose, content }) {
   return (
     <div>

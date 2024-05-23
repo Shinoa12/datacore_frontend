@@ -115,11 +115,12 @@ function Recursos() {
 
   const handleAddCpuSuccess = async () => {
     toggleSuccessModal();
-    try {
-      await fetchCPU();
-    } catch (error) {
-      console.error("Error al actualizar CPUs luego de agregar:", error);
-    }
+    await fetchCPU();
+  };
+
+  const handleAddGpuSuccess = async () => {
+    toggleSuccessModal();
+    await fetchGPU();
   };
 
   const handleTabChange = (event, newValue) => {
@@ -184,7 +185,11 @@ function Recursos() {
         onClose={toggleAddModal}
         onSuccess={handleAddCpuSuccess}
       />
-      <AddGPUModal showModal={showGPUModal} toggleModal={toggleAddModal} />
+      <AddGPUModal
+        open={showGPUModal}
+        onClose={toggleAddModal}
+        onSuccess={handleAddGpuSuccess}
+      />
       <SuccessModal
         open={showSuccessModal}
         onClose={toggleSuccessModal}
