@@ -1,20 +1,31 @@
 import * as React from "react";
+import {useNavigate} from 'react-router-dom';
+
+//MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-import { styled } from "@mui/material/styles";
+import {DataGrid} from "@mui/x-data-grid";
+import {styled} from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-import { TextField } from "@mui/material";
+import {TextField} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
 import DialogContentText from '@mui/material/DialogContentText';
+import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
+
+//APIs
+import {getAllSolicitudes} from '../api/Solicitudes';
+import {getSolicitudDetalle} from '../api/Solicitudes';
+import {getSolicitudResultado} from '../api/Solicitudes';
+import {deleteSolicitud} from '../api/Solicitudes';
+
 
 const style = {
   position: "absolute",
@@ -120,10 +131,12 @@ const rows = [
 ];
 
 function Solicitudes() {
+  //Detalle
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  //Cancelar
   const [openC, setOpenC] = React.useState(false);
 
   const handleClickOpenC = () => {
@@ -134,6 +147,27 @@ function Solicitudes() {
     setOpenC(false);
   };
 
+  //Acciones
+
+  //Redirigir a nueva solicitud
+  const nuevaSolicitud = () => {
+    useNavigate('/recursos-ofrecidos');
+  };
+
+  //Exportar Solicitudes
+  const exportarSolicitudes = () => {
+    const csvData = rows.map((row) => Object.values(row).join(",")).join("\n");
+    const csvBlob = new Blob([csvData], { type: "text/csv" });
+    const csvUrl = URL.createObjectURL(csvBlob);
+    const link = document.createElement("a");
+    link.href = csvUrl;
+    link.download = "solicitudes.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  //Descargar documento *
   const descargarDoc = () =>{
     var link = document.createElement("a");
     link.href = "https://media.tenor.com/-bf6dnXT4nsAAAAe/cat-cat-butt.png";
@@ -143,6 +177,13 @@ function Solicitudes() {
     document.body.removeChild(link);
   }
 
+  //Cargar datos *
+
+  const loadPage = () =>{
+
+  }
+
+  
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "duracion", headerName: "Duracion", width: 100 },
@@ -181,17 +222,11 @@ function Solicitudes() {
         return <Button startIcon={<DownloadIcon />} onClick={descargarDoc}>Descargar</Button>;
       },
     },
-    /*
-          {
-            field: 'fullName',
-            headerName: 'Full name',
-            description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            width: 160,
-            valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-          },*/
   ];
 
+
+
+  // Cuerpo de la pagina
   return (
     <div className="row m-4">
       <h2
@@ -201,7 +236,7 @@ function Solicitudes() {
         Solicitudes
       </h2>
 
-      <Button variant="contained" startIcon={<AddIcon />}>
+      <Button variant="contained" startIcon={<AddIcon />} onClick={nuevaSolicitud}>
         Nueva Solicitud
       </Button>
 
@@ -216,10 +251,11 @@ function Solicitudes() {
         pageSizeOptions={[5, 10]}
       />
 
-      <Button variant="contained" startIcon={<ExitToAppIcon />}>
-        Regresar
+      <Button variant="contained" startIcon={<SimCardDownloadIcon />} onClick={exportarSolicitudes}>
+        Exportar Solicitudes
       </Button>
 
+      {/* Detalle de la solicitud */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -313,6 +349,7 @@ function Solicitudes() {
         </Box>
       </Modal>
 
+      {/* Confirmar la cancelacion */}
       <Dialog
         open={openC}
         onClose={handleCloseC}
@@ -336,6 +373,6 @@ function Solicitudes() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default Solicitudes;
