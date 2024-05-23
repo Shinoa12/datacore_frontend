@@ -3,32 +3,15 @@ import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import AddCPUModal from "../components/AddCPUModal";
 import AddGPUModal from "../components/AddGPUModal";
+import EditCPUModal from "../components/EditCPUModal";
 import SuccessModal from "../components/SuccessModal";
 import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
-
-const cpuHeaders = [
-  { field: "nombre", headerName: "Nombre", width: 220 },
-  { field: "solicitudes", headerName: "# solicitudes", width: 140 },
-  { field: "estado", headerName: "Estado", width: 130 },
-  { field: "numero_nucleos_cpu", headerName: "# núcleos", width: 120 },
-  { field: "frecuencia_cpu", headerName: "Frecuencia", width: 120 },
-  { field: "tamano_ram", headerName: "RAM", width: 120 },
-  { field: "ubicacion", headerName: "Ubicación", width: 120 },
-];
-
-const gpuHeaders = [
-  { field: "nombre", headerName: "Nombre", width: 220 },
-  { field: "solicitudes", headerName: "# solicitudes", width: 140 },
-  { field: "estado", headerName: "Estado", width: 130 },
-  { field: "numero_nucleos_gpu", headerName: "# núcleos", width: 120 },
-  { field: "frecuencia_gpu", headerName: "Frecuencia", width: 120 },
-  { field: "tamano_vram", headerName: "VRAM", width: 120 },
-  { field: "ubicacion", headerName: "Ubicación", width: 120 },
-];
 
 const commonDataGridStyles = {
   ".MuiDataGrid-overlayWrapper": {
@@ -53,17 +36,67 @@ function TabPanel(props) {
 }
 
 function Recursos() {
-  const [showCPUModal, setShowCPUModal] = useState(false);
-  const [showGPUModal, setShowGPUModal] = useState(false);
+  const cpuHeaders = [
+    { field: "nombre", headerName: "Nombre", width: 220 },
+    { field: "solicitudes", headerName: "# solicitudes", width: 140 },
+    { field: "estado", headerName: "Estado", width: 130 },
+    { field: "numero_nucleos_cpu", headerName: "# núcleos", width: 120 },
+    { field: "frecuencia_cpu", headerName: "Frecuencia", width: 120 },
+    { field: "tamano_ram", headerName: "RAM", width: 120 },
+    { field: "ubicacion", headerName: "Ubicación", width: 120 },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      width: 100,
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => openEditModal(params.row.id)}>
+          <EditIcon sx={{ color: "primary.main" }} />
+        </IconButton>
+      ),
+    },
+  ];
+
+  const gpuHeaders = [
+    { field: "nombre", headerName: "Nombre", width: 220 },
+    { field: "solicitudes", headerName: "# solicitudes", width: 140 },
+    { field: "estado", headerName: "Estado", width: 130 },
+    { field: "numero_nucleos_gpu", headerName: "# núcleos", width: 120 },
+    { field: "frecuencia_gpu", headerName: "Frecuencia", width: 120 },
+    { field: "tamano_vram", headerName: "VRAM", width: 120 },
+    { field: "ubicacion", headerName: "Ubicación", width: 120 },
+  ];
+
+  const [showAddCPUModal, setShowAddCPUModal] = useState(false);
+  const [showAddGPUModal, setShowAddGPUModal] = useState(false);
+  const [showEditCPUModal, setShowEditCPUModal] = useState(false);
+  const [showEditGPUModal, setShowEditGPUModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedCPU, setSelectedCPU] = useState(0);
   const [cpuList, setCpuList] = useState([]);
   const [gpuList, setGpuList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
   const toggleAddModal = () => {
     tabValue === 0
-      ? setShowCPUModal(!showCPUModal)
-      : setShowGPUModal(!showGPUModal);
+      ? setShowAddCPUModal(!showAddCPUModal)
+      : setShowAddGPUModal(!showAddGPUModal);
+  };
+
+  const openEditModal = (id) => {
+    if (tabValue === 0) {
+      setSelectedCPU(id);
+      setShowEditCPUModal(!showEditCPUModal);
+    } else {
+      // setSelectedGPU(id);
+      setShowEditGPUModal(!showEditGPUModal);
+    }
+  };
+
+  const closeEditModal = () => {
+    tabValue === 0
+      ? setShowEditCPUModal(!showEditCPUModal)
+      : setShowEditGPUModal(!showEditGPUModal);
   };
 
   const toggleSuccessModal = () => {
@@ -77,7 +110,7 @@ function Recursos() {
         id: item.id_recurso.id_recurso,
         nombre: item.nombre,
         solicitudes: item.id_recurso.solicitudes_encoladas,
-        estado: true ? "Habilitado" : "Deshabilitado",
+        estado: item.id_recurso.estado ? "Habilitado" : "Deshabilitado",
         numero_nucleos_cpu: item.numero_nucleos_cpu,
         frecuencia_cpu: parseFloat(item.frecuencia_cpu).toFixed(2) + " GHz",
         tamano_ram: item.id_recurso.tamano_ram + " GB",
@@ -96,7 +129,7 @@ function Recursos() {
         id: item.id_recurso.id_recurso,
         nombre: item.nombre,
         solicitudes: item.id_recurso.solicitudes_encoladas,
-        estado: true ? "Habilitado" : "Deshabilitado",
+        estado: item.id_recurso.estado ? "Habilitado" : "Deshabilitado",
         numero_nucleos_gpu: item.numero_nucleos_gpu,
         frecuencia_gpu: parseFloat(item.frecuencia_gpu).toFixed(2) + " GHz",
         tamano_vram: item.tamano_vram + " GB",
@@ -181,15 +214,23 @@ function Recursos() {
       </Box>
 
       <AddCPUModal
-        open={showCPUModal}
+        open={showAddCPUModal}
         onClose={toggleAddModal}
         onSuccess={handleAddCpuSuccess}
       />
+
       <AddGPUModal
-        open={showGPUModal}
+        open={showAddGPUModal}
         onClose={toggleAddModal}
         onSuccess={handleAddGpuSuccess}
       />
+
+      <EditCPUModal
+        open={showEditCPUModal}
+        onClose={closeEditModal}
+        id={selectedCPU}
+      />
+
       <SuccessModal
         open={showSuccessModal}
         onClose={toggleSuccessModal}
