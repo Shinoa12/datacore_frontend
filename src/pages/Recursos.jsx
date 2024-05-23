@@ -118,6 +118,11 @@ function Recursos() {
     await fetchCPU();
   };
 
+  const handleAddGpuSuccess = async () => {
+    toggleSuccessModal();
+    await fetchGPU();
+  };
+
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -180,7 +185,11 @@ function Recursos() {
         onClose={toggleAddModal}
         onSuccess={handleAddCpuSuccess}
       />
-      <AddGPUModal showModal={showGPUModal} toggleModal={toggleAddModal} />
+      <AddGPUModal
+        open={showGPUModal}
+        onClose={toggleAddModal}
+        onSuccess={handleAddGpuSuccess}
+      />
       <SuccessModal
         open={showSuccessModal}
         onClose={toggleSuccessModal}

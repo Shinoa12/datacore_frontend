@@ -248,7 +248,7 @@ function AddCPUModal({ open, onClose, onSuccess }) {
             onClick={handleSubmit}
             disabled={!isFormValid}
           >
-            CONFIRMAR
+            Confirmar
           </Button>
         </DialogActions>
       </Dialog>
