@@ -81,7 +81,7 @@ function Solicitudes() {
     document.body.removeChild(link);
   };
 
-  //Descargar documento *
+  //Cargar resultado de solicitud *
   const descargarDoc = () => {
     var link = document.createElement("a");
     link.href = "https://media.tenor.com/-bf6dnXT4nsAAAAe/cat-cat-butt.png";
@@ -89,6 +89,14 @@ function Solicitudes() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    getSolicitudResultado()
+    .then((response) => {
+
+    })
+    .catch((error) => {
+      console.error("Error fetching solicitudes:", error);
+    });
   };
 
   //Cargar datos *
@@ -117,10 +125,26 @@ function Solicitudes() {
   const [rows, setRows] = useState([]);
 
   //Cargar detalles
+  const cargarDetalles =()=>{
+    getSolicitudDetalle()
+      .then((response) => {
+
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
+  }
 
   //Cancelar solicitud
+  const cancelarSolicitudes =()=>{
+    deleteSolicitud()
+    .then((response) => {
 
-  //Cargar resultado de solicitud
+    })
+    .catch((error) => {
+      console.error("Error fetching solicitudes:", error);
+    });
+  }
 
 
   const columns = [
