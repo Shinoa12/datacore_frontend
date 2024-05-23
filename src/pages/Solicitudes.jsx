@@ -1,31 +1,29 @@
 import * as React from "react";
-import {useNavigate} from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { useState } from 'react';
 //MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import {DataGrid} from "@mui/x-data-grid";
-import {styled} from "@mui/material/styles";
+import { DataGrid } from "@mui/x-data-grid";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-import {TextField} from "@mui/material";
+import { TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
-import DialogContentText from '@mui/material/DialogContentText';
-import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
+import DialogContentText from "@mui/material/DialogContentText";
+import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
 //APIs
-import {getAllSolicitudes} from '../api/Solicitudes';
-import {getSolicitudDetalle} from '../api/Solicitudes';
-import {getSolicitudResultado} from '../api/Solicitudes';
-import {deleteSolicitud} from '../api/Solicitudes';
-
+import { getAllSolicitudes } from "../api/Solicitudes";
+import { getSolicitudDetalle } from "../api/Solicitudes";
+import { getSolicitudResultado } from "../api/Solicitudes";
+import { deleteSolicitud } from "../api/Solicitudes";
 
 const style = {
   position: "absolute",
@@ -39,98 +37,10 @@ const style = {
   p: 4,
 };
 
-const rows = [
-  {
-    id: 1,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 2,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 3,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 4,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 5,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 6,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 7,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 8,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-];
+
 
 function Solicitudes() {
+  
   //Detalle
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -149,9 +59,13 @@ function Solicitudes() {
 
   //Acciones
 
+  useEffect(() => {
+    loadPage();
+}, []);
+
   //Redirigir a nueva solicitud
   const nuevaSolicitud = () => {
-    useNavigate('/recursos-ofrecidos');
+    useNavigate("/recursos-ofrecidos");
   };
 
   //Exportar Solicitudes
@@ -168,22 +82,47 @@ function Solicitudes() {
   };
 
   //Descargar documento *
-  const descargarDoc = () =>{
+  const descargarDoc = () => {
     var link = document.createElement("a");
     link.href = "https://media.tenor.com/-bf6dnXT4nsAAAAe/cat-cat-butt.png";
     link.download = "cat-cat-butt.png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
+  };
 
   //Cargar datos *
+  const loadPage = () => {
+    getAllSolicitudes()
+      .then((response) => {
+        const data = response.data;
+        rows = data.map((item) => ({
+          id: item.id,
+          duracion: item.duracion,
+          fechaRegistro: item.fechaRegistro,
+          fechaInicio: item.fechaInicio,
+          fechaFin: item.fechaFin,
+          estado: item.estado,
+          cancelar: "",
+          detalle: "",
+          resultados: "",
+        }));
+        setRows(rows);
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
+  };
 
-  const loadPage = () =>{
+  const [rows, setRows] = useState([]);
 
-  }
+  //Cargar detalles
 
-  
+  //Cancelar solicitud
+
+  //Cargar resultado de solicitud
+
+
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "duracion", headerName: "Duracion", width: 100 },
@@ -196,7 +135,9 @@ function Solicitudes() {
       headerName: "Cancelar",
       sortable: false,
       renderCell: (params) => {
-        return <Button startIcon={<CloseIcon />}   onClick={handleClickOpenC}></Button>;
+        return (
+          <Button startIcon={<CloseIcon />} onClick={handleClickOpenC}></Button>
+        );
       },
     },
     {
@@ -219,12 +160,14 @@ function Solicitudes() {
       width: 130,
       sortable: false,
       renderCell: (params) => {
-        return <Button startIcon={<DownloadIcon />} onClick={descargarDoc}>Descargar</Button>;
+        return (
+          <Button startIcon={<DownloadIcon />} onClick={descargarDoc}>
+            Descargar
+          </Button>
+        );
       },
     },
   ];
-
-
 
   // Cuerpo de la pagina
   return (
@@ -236,11 +179,16 @@ function Solicitudes() {
         Solicitudes
       </h2>
 
-      <Button variant="contained" startIcon={<AddIcon />} onClick={nuevaSolicitud}>
+      <Button
+        variant="contained"
+        startIcon={<AddIcon />}
+        onClick={nuevaSolicitud}
+      >
         Nueva Solicitud
       </Button>
 
       <DataGrid
+      id = "dgSolicitudes"
         rows={rows}
         columns={columns}
         initialState={{
@@ -251,7 +199,11 @@ function Solicitudes() {
         pageSizeOptions={[5, 10]}
       />
 
-      <Button variant="contained" startIcon={<SimCardDownloadIcon />} onClick={exportarSolicitudes}>
+      <Button
+        variant="contained"
+        startIcon={<SimCardDownloadIcon />}
+        onClick={exportarSolicitudes}
+      >
         Exportar Solicitudes
       </Button>
 
@@ -361,18 +313,18 @@ function Solicitudes() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          Esta acción es irreversible.  
+            Esta acción es irreversible.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseC} autoFocus >No</Button>
-          <Button onClick={handleCloseC} >
-            Sí
+          <Button onClick={handleCloseC} autoFocus>
+            No
           </Button>
+          <Button onClick={handleCloseC}>Sí</Button>
         </DialogActions>
       </Dialog>
     </div>
   );
-};
+}
 
 export default Solicitudes;
