@@ -22,7 +22,6 @@ export const AppRoutes = () => {
     return (
         <ThemeProvider theme={theme}>
         <div>
-          <BrowserRouter>
             <div className="flex">
               <Sidebar sidebarToggle={sidebarToggle} />
               <Navbar
@@ -54,7 +53,6 @@ export const AppRoutes = () => {
                 <Route path="/Solicitudes" element={<Solicitudes />} />
               </Routes>
             </div>
-          </BrowserRouter>
         </div>
       </ThemeProvider>
     )
