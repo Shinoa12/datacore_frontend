@@ -1,7 +1,6 @@
 import logo from "../assets/PUCP-alta_resolucion-1.png";
 import logoDataCore from "../assets/Imagen DataCore.png";
 import Header from "./Header";
-import "./AuthStyles.css";
 
 export const LoginPage = () => {
   return (

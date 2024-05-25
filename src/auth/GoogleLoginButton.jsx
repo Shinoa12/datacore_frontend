@@ -3,7 +3,6 @@ import React, { useContext } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
-import "./AuthStyles.css";
 
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
