@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import { readCPU } from "../api/RecursoDropdown";
+import { readCPU, updateCPU } from "../api/RecursoDropdown";
 
 /**
  * Modal para editar CPU.
@@ -20,10 +20,11 @@ import { readCPU } from "../api/RecursoDropdown";
  * @param {object} props
  * @param {boolean} props.open Indica la visibilidad del modal
  * @param {() => void} props.onClose Se ejecuta al salir del modal
+ * @param {() => void} props.onSuccess Se ejecuta cuando la edición es exitosa
  * @param {number} props.id Identificador del registro a editar
  * @returns {JSX.Element}
  */
-function EditCPUModal({ open, onClose, id }) {
+function EditCPUModal({ open, onClose, onSuccess, id }) {
   const initialFormData = {
     nombre: "",
     numNucleos: "",
@@ -54,8 +55,24 @@ function EditCPUModal({ open, onClose, id }) {
     // });
   };
 
-  const handleClose = () => {
-    onClose();
+  const handleSubmit = async () => {
+    const cpuData = {
+      id_recurso: {
+        tamano_ram: parseInt(formData.ram),
+        estado: formData.estado === "enabled" ? true : false,
+        ubicacion: formData.ubicacion,
+      },
+      nombre: formData.nombre,
+      numero_nucleos_cpu: parseInt(formData.numNucleos),
+      frecuencia_cpu: parseFloat(formData.frecuencia),
+    };
+    try {
+      await updateCPU(id, cpuData);
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Error al editar CPU:", error);
+    }
   };
 
   useEffect(() => {
@@ -86,7 +103,7 @@ function EditCPUModal({ open, onClose, id }) {
     <div>
       <Dialog
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         aria-labelledby="dialog-title"
         fullWidth={true}
         disableRestoreFocus
@@ -99,7 +116,7 @@ function EditCPUModal({ open, onClose, id }) {
         </DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={handleClose}
+          onClick={onClose}
           sx={{
             position: "absolute",
             right: 8,
@@ -205,7 +222,7 @@ function EditCPUModal({ open, onClose, id }) {
         <DialogActions sx={{ display: "flex", justifyContent: "end", p: 2 }}>
           <Button
             variant="contained"
-            onClick={handleClose}
+            onClick={handleSubmit}
             // disabled={!isFormValid}
           >
             Confirmar
