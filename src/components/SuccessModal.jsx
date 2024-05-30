@@ -53,7 +53,7 @@ function SuccessModal({ open, onClose, content }) {
           <DialogContentText
             sx={{ textAlign: "center", color: "primary.main" }}
           >
-            <p>{content}</p>
+            {content}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ mb: 2 }}>

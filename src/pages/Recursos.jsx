@@ -71,7 +71,8 @@ function Recursos() {
   const [showAddGPUModal, setShowAddGPUModal] = useState(false);
   const [showEditCPUModal, setShowEditCPUModal] = useState(false);
   const [showEditGPUModal, setShowEditGPUModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showAddSuccessModal, setShowAddSuccessModal] = useState(false);
+  const [showEditSuccessModal, setShowEditSuccessModal] = useState(false);
   const [selectedCPU, setSelectedCPU] = useState(0);
   const [cpuList, setCpuList] = useState([]);
   const [gpuList, setGpuList] = useState([]);
@@ -99,8 +100,12 @@ function Recursos() {
       : setShowEditGPUModal(!showEditGPUModal);
   };
 
-  const toggleSuccessModal = () => {
-    setShowSuccessModal(!showSuccessModal);
+  const toggleAddSuccessModal = () => {
+    setShowAddSuccessModal(!showAddSuccessModal);
+  };
+
+  const toggleEditSuccessModal = () => {
+    setShowEditSuccessModal(!showEditSuccessModal);
   };
 
   const fetchCPU = async () => {
@@ -147,13 +152,18 @@ function Recursos() {
   }, []);
 
   const handleAddCpuSuccess = async () => {
-    toggleSuccessModal();
+    toggleAddSuccessModal();
     await fetchCPU();
   };
 
   const handleAddGpuSuccess = async () => {
-    toggleSuccessModal();
+    toggleAddSuccessModal();
     await fetchGPU();
+  };
+
+  const handleEditCpuSuccess = async () => {
+    toggleEditSuccessModal();
+    await fetchCPU();
   };
 
   const handleTabChange = (event, newValue) => {
@@ -228,13 +238,20 @@ function Recursos() {
       <EditCPUModal
         open={showEditCPUModal}
         onClose={closeEditModal}
+        onSuccess={handleEditCpuSuccess}
         id={selectedCPU}
       />
 
       <SuccessModal
-        open={showSuccessModal}
-        onClose={toggleSuccessModal}
+        open={showAddSuccessModal}
+        onClose={toggleAddSuccessModal}
         content="El recurso ha sido creado satisfactoriamente."
+      />
+
+      <SuccessModal
+        open={showEditSuccessModal}
+        onClose={toggleEditSuccessModal}
+        content="El recurso ha sido editado satisfactoriamente."
       />
     </div>
   );
