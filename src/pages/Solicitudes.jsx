@@ -1,31 +1,29 @@
 import * as React from "react";
-import {useNavigate} from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { useState } from 'react';
 //MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import {DataGrid} from "@mui/x-data-grid";
-import {styled} from "@mui/material/styles";
+import { DataGrid } from "@mui/x-data-grid";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
-import {TextField} from "@mui/material";
+import { TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
-import DialogContentText from '@mui/material/DialogContentText';
-import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
+import DialogContentText from "@mui/material/DialogContentText";
+import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
 //APIs
-import {getAllSolicitudes} from '../api/Solicitudes';
-import {getSolicitudDetalle} from '../api/Solicitudes';
-import {getSolicitudResultado} from '../api/Solicitudes';
-import {deleteSolicitud} from '../api/Solicitudes';
-
+import { getAllSolicitudes } from "../api/Solicitudes";
+import { getSolicitudDetalle } from "../api/Solicitudes";
+import { getSolicitudResultado } from "../api/Solicitudes";
+import { deleteSolicitud } from "../api/Solicitudes";
 
 const style = {
   position: "absolute",
@@ -39,107 +37,34 @@ const style = {
   p: 4,
 };
 
-const rows = [
-  {
-    id: 1,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 2,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 3,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 4,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 5,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 6,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 7,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-  {
-    id: 8,
-    duracion: "24h",
-    fechaRegistro: "24/09/24 20:00",
-    fechaInicio: "24/09/24 20:00",
-    fechaFin: "24/09/24 20:00",
-    estado: "Pendiente",
-    cancelar: "",
-    detalle: "",
-    resultados: "",
-  },
-];
+
 
 function Solicitudes() {
+  
+  var selectedID ;
+  const [lid, setTextId] = useState();
+  const [lfecharegistro, setTextFechaRegistro] = useState();
+  const [lestado, setTextEstado] = useState();
+  const [lcpu, setTextCPU] = useState();
+  const [lnucleo, setTextCantidadNucleo] = useState();
+  const [lfrecuencia, setTextFrecuenciaProcesador] = useState();
+  const [ltamano, setTextTamanoRAM] = useState();
+
   //Detalle
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
+  const abrirdetalle = (id) => {
+    console.log("Detalle: "+id)
+    cargarDetalles(id)
+    
+    setOpen(true);
+  };
   //Cancelar
   const [openC, setOpenC] = React.useState(false);
 
-  const handleClickOpenC = () => {
+  const abrirCancelar = (id) => {
+    selectedID = id
     setOpenC(true);
   };
 
@@ -147,11 +72,20 @@ function Solicitudes() {
     setOpenC(false);
   };
 
+  const confirmarCancelar = () => {
+    cancelarSolicitudes(selectedID)
+    setOpenC(false);
+  };
+
   //Acciones
+
+  useEffect(() => {
+    loadPage();
+}, []);
 
   //Redirigir a nueva solicitud
   const nuevaSolicitud = () => {
-    useNavigate('/recursos-ofrecidos');
+    useNavigate("/recursos-ofrecidos");
   };
 
   //Exportar Solicitudes
@@ -167,23 +101,67 @@ function Solicitudes() {
     document.body.removeChild(link);
   };
 
-  //Descargar documento *
-  const descargarDoc = () =>{
-    var link = document.createElement("a");
-    link.href = "https://media.tenor.com/-bf6dnXT4nsAAAAe/cat-cat-butt.png";
-    link.download = "cat-cat-butt.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  //Cargar resultado de solicitud *
+const descargarDoc = (id) => {
+    getSolicitudResultado(id)
+    .then((response) => {
+        // Assuming the response is a Blob
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'file.txt'); // or any other filename
+        document.body.appendChild(link);
+        link.click();
+    })
+    .catch((error) => {
+      console.error("Error fetching solicitudes:", error);
+    });
+};
+
+  const [rows, setRows] = useState([]);
 
   //Cargar datos *
+  const loadPage = () => {
+    getAllSolicitudes()
+      .then((response) => {
+        setRows(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
+  };
 
-  const loadPage = () =>{
-
+  const [modalData, setModalData] = useState({});
+  //Cargar detalles
+  const cargarDetalles =(id)=>{
+    getSolicitudDetalle(id)
+      .then((response) => {
+        setTextId(response.data.id);
+        setTextFechaRegistro(response.data.fechaRegistro);
+        setTextEstado(response.data.estado);
+        setTextCPU(response.data.cup);
+        setTextCantidadNucleo(response.data.cantidadNucleo);
+        setTextFrecuenciaProcesador(response.data.frecuenciaDelProcesador);
+        setTextTamanoRAM(response.data.ram);
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
   }
 
-  
+  //Cancelar solicitud
+  const cancelarSolicitudes =(id)=>{
+    deleteSolicitud()
+    .then((response) => {
+      loadPage()
+        console.log(id+": Eliminado")
+    })
+    .catch((error) => {
+      console.error("Error fetching solicitudes:", error);
+    });
+  }
+
+
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "duracion", headerName: "Duracion", width: 100 },
@@ -192,12 +170,18 @@ function Solicitudes() {
     { field: "fechaFin", headerName: "Fecha de Fin", width: 150 },
     { field: "estado", headerName: "Estado", width: 100 },
     {
-      field: "cancelar",
-      headerName: "Cancelar",
-      sortable: false,
-      renderCell: (params) => {
-        return <Button startIcon={<CloseIcon />}   onClick={handleClickOpenC}></Button>;
-      },
+field: "cancelar",
+headerName: "Cancelar",
+sortable: false,
+renderCell: (params) => {
+    return (
+        <Button 
+            startIcon={<CloseIcon />} 
+            onClick={() => abrirCancelar(params.row.id)}
+        >
+        </Button>
+    );
+},
     },
     {
       field: "detalle",
@@ -208,7 +192,7 @@ function Solicitudes() {
         return (
           <Button
             startIcon={<RemoveRedEyeIcon />}
-            onClick={handleOpen}
+            onClick={() => abrirdetalle(params.row.id)}
           ></Button>
         );
       },
@@ -219,12 +203,14 @@ function Solicitudes() {
       width: 130,
       sortable: false,
       renderCell: (params) => {
-        return <Button startIcon={<DownloadIcon />} onClick={descargarDoc}>Descargar</Button>;
+        return (
+          <Button startIcon={<DownloadIcon />} onClick={() => descargarDoc(params.row.id)}>
+            Descargar
+          </Button>
+        );
       },
     },
   ];
-
-
 
   // Cuerpo de la pagina
   return (
@@ -236,11 +222,16 @@ function Solicitudes() {
         Solicitudes
       </h2>
 
-      <Button variant="contained" startIcon={<AddIcon />} onClick={nuevaSolicitud}>
+      <Button
+        variant="contained"
+        startIcon={<AddIcon />}
+        onClick={nuevaSolicitud}
+      >
         Nueva Solicitud
       </Button>
 
       <DataGrid
+      id = "dgSolicitudes"
         rows={rows}
         columns={columns}
         initialState={{
@@ -251,7 +242,11 @@ function Solicitudes() {
         pageSizeOptions={[5, 10]}
       />
 
-      <Button variant="contained" startIcon={<SimCardDownloadIcon />} onClick={exportarSolicitudes}>
+      <Button
+        variant="contained"
+        startIcon={<SimCardDownloadIcon />}
+        onClick={exportarSolicitudes}
+      >
         Exportar Solicitudes
       </Button>
 
@@ -270,11 +265,11 @@ function Solicitudes() {
             Detalle de Solicitud
           </h2>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>Nombre</div>
+            <div style={{ marginRight: "auto" }}>ID</div>
             <div>
               <TextField
-                id="outlined-size-small"
-                defaultValue="Solicitud 3"
+                id="outlined-size-small "
+                value={lid}
                 size="small"
                 variant="standard"
               />
@@ -284,8 +279,8 @@ function Solicitudes() {
             <div style={{ marginRight: "auto" }}>Fecha de registro</div>
             <div>
               <TextField
-                id="outlined-size-small"
-                defaultValue="28/09/2024 20:00"
+                id="outlined-size-small "
+                value={lfecharegistro}
                 size="small"
                 variant="standard"
               />
@@ -296,8 +291,8 @@ function Solicitudes() {
             <div>
               <TextField
                 variant="standard"
-                id="outlined-size-small"
-                defaultValue="En proceso"
+                id="outlined-size-small "
+                value={lestado}
                 size="small"
               />
             </div>
@@ -307,8 +302,8 @@ function Solicitudes() {
             <div>
               <TextField
                 variant="standard"
-                id="outlined-size-small"
-                defaultValue="Intel® Core™ i9 processor 14900T"
+                id="outlined-size-small "
+                value={lcpu}
                 size="small"
               />
             </div>
@@ -319,7 +314,7 @@ function Solicitudes() {
               <TextField
                 variant="standard"
                 id="outlined-size-small"
-                defaultValue="24"
+                value={lnucleo}
                 size="small"
               />
             </div>
@@ -330,7 +325,7 @@ function Solicitudes() {
               <TextField
                 variant="standard"
                 id="outlined-size-small"
-                defaultValue="5.50 GHz"
+                value={ lfrecuencia}
                 size="small"
               />
             </div>
@@ -340,8 +335,8 @@ function Solicitudes() {
             <div>
               <TextField
                 variant="standard"
-                id="outlined-size-small"
-                defaultValue="192 GB"
+                id="outlined-size-small "
+                value={ltamano}
                 size="small"
               />
             </div>
@@ -361,18 +356,18 @@ function Solicitudes() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          Esta acción es irreversible.  
+            Esta acción es irreversible.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseC} autoFocus >No</Button>
-          <Button onClick={handleCloseC} >
-            Sí
+          <Button onClick={handleCloseC} autoFocus>
+            No
           </Button>
+          <Button onClick={confirmarCancelar}>Sí</Button>
         </DialogActions>
       </Dialog>
     </div>
   );
-};
+}
 
 export default Solicitudes;
