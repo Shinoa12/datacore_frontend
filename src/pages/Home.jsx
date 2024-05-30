@@ -1,5 +1,4 @@
-import servicioSolicitudImagen from '../assets/iconoSolicitud.png';
-
+import servicioSolicitudImagen from '../img/servicioSolicitud.png';
 import { Link } from 'react-router-dom';
 
 function Home() {
@@ -38,3 +37,4 @@ function Home() {
   }
   
   export default Home;
+

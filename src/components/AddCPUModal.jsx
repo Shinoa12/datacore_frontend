@@ -15,15 +15,6 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import DiscardChangesModal from "./DiscardChangesModal";
 
-/**
- * Modal para agregar CPU.
- *
- * @param {object} props
- * @param {boolean} props.open Indica la visibilidad del modal
- * @param {() => void} props.onClose Se ejecuta al salir del modal
- * @param {() => void} props.onSuccess Se ejecuta cuando la creación es exitosa
- * @returns {JSX.Element}
- */
 function AddCPUModal({ open, onClose, onSuccess }) {
   const initialFormData = {
     nombre: "",
@@ -112,13 +103,10 @@ function AddCPUModal({ open, onClose, onSuccess }) {
         numero_nucleos_cpu: parseInt(formData.numNucleos),
         frecuencia_cpu: parseFloat(formData.frecuencia),
       };
-      try {
-        await createCPU(cpuData);
-        onSuccess();
-        returnToTable();
-      } catch (error) {
-        console.error("Error al crear CPU:", error);
-      }
+
+      await createCPU(cpuData);
+      onSuccess();
+      returnToTable();
     }
   };
 
@@ -132,8 +120,9 @@ function AddCPUModal({ open, onClose, onSuccess }) {
         disableRestoreFocus
       >
         <DialogTitle
-          sx={{ m: 0, p: 2, color: "primary.main" }}
+          sx={{ m: 0, p: 2 }}
           id="dialog-title"
+          style={{ color: "rgb(4, 35, 84)" }}
         >
           Agregar CPU
         </DialogTitle>
@@ -248,7 +237,7 @@ function AddCPUModal({ open, onClose, onSuccess }) {
             onClick={handleSubmit}
             disabled={!isFormValid}
           >
-            Confirmar
+            CONFIRMAR
           </Button>
         </DialogActions>
       </Dialog>

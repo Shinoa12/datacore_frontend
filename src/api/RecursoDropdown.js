@@ -12,6 +12,3 @@ const apiPost = (endpoint, data) => {
 export const getAllCPU = () => apiGet("cpus/");
 export const getAllGPU = () => apiGet("gpus/");
 export const createCPU = (cpu) => apiPost("cpus/", cpu);
-export const createGPU = (gpu) => apiPost("gpus/", gpu);
-export const readCPU = (id) => apiGet(`cpus/${id}/`);
-export const readGPU = (id) => apiGet(`gpus/${id}/`);

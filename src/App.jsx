@@ -1,69 +1,63 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState } from "react";
+
 import "./App.css";
-import "./normalize.css";
-import { LoginPage } from "./auth/LoginPage";
-import { AuthContext } from "./auth/context/AuthContext";
-import { AppRoutes } from "./routes/AppRoutes";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import UserContext from "./context/UserContext";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
+
+import Sidebar from "./components/navigation/SideBar";
+import Navbar from "./components/navigation/NavBar";
+import Recursos from "./pages/Recursos";
+import Historial from "./pages/Historial";
+import Solicitudes from "./pages/Solicitudes";
+import Home from "./pages/Home";
+import UsuariosAutorizados from "./pages/UsuariosAutorizados";
+import UsuariosNoAutorizados from "./pages/UsuariosNoAuthorizados";
+import RecursosOfrecidos from "./pages/RecursosOfrecidos";
+import CPUSolicitud from "./pages/CPUSolicitud";
+import GPUSolicitud from "./pages/GPUSolicitud";
 
 function App() {
-  const { login } = useContext(AuthContext);
-  const clientId =
-    "722348533329-fcvbgk9bl8qerclkpoav4quk9gcsfbnl.apps.googleusercontent.com";
-  const [userInfo, setUserInfo] = useState([]);
-
-  const verifyToken = () => {
-    const access_key = localStorage.getItem("access_token");
-    const username = localStorage.getItem("username");
-
-    fetch("http://localhost:8000/datacore/api/v1/token/verify/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: access_key }),
-    }).then((response) => {
-      if (response.ok) {
-        setUserInfo({
-          ...userInfo,
-          access_token: access_key,
-          username: username,
-        });
-      } else {
-        setUserInfo({ ...userInfo, access_token: null, username: null });
-      }
-    });
-  };
-
-  useEffect(() => {
-    verifyToken();
-  }, []);
-
-  const updateUserInfo = (value) => {
-    setUserInfo(value);
-  };
+  const [sidebarToggle, setSidebarToggle] = useState(false);
 
   return (
-    <UserContext.Provider value={{ userInfo, updateUserInfo }}>
-      <GoogleOAuthProvider clientId={clientId}>
-        <div>
-          <Routes>
-            {login.isAuth ? (
-              <>
-                <Route path="/*" element={<AppRoutes />} />
-              </>
-            ) : (
-              <>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/*" element={<Navigate to="/login" />} />
-              </>
-            )}
-          </Routes>
-        </div>
-      </GoogleOAuthProvider>
-    </UserContext.Provider>
+    <ThemeProvider theme={theme}>
+      <div>
+        <BrowserRouter>
+          <div className="flex">
+            <Sidebar sidebarToggle={sidebarToggle} />
+            <Navbar
+              sidebarToggle={sidebarToggle}
+              setSidebarToggle={setSidebarToggle}
+            />
+          </div>
+
+          <div className={`${sidebarToggle ? "" : "ml-64"}`}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/Home" />} />
+              <Route path="/Home" element={<Home />} />
+              <Route
+                path="/usuarios-autorizados"
+                element={<UsuariosAutorizados />}
+              />
+              <Route
+                path="/usuarios-no-autorizados"
+                element={<UsuariosNoAutorizados />}
+              />
+              <Route
+                path="/recursos-ofrecidos"
+                element={<RecursosOfrecidos />}
+              />
+              <Route path="/cpu-solicitud" element={<CPUSolicitud />} />
+              <Route path="/gpu-solicitud" element={<GPUSolicitud />} />
+              <Route path="/Recursos" element={<Recursos />} />
+              <Route path="/Historial" element={<Historial />} />
+              <Route path="/Solicitudes" element={<Solicitudes />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 }
 
