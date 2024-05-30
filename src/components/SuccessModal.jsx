@@ -5,18 +5,18 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 
 /**
- * Modal para confirmar descarte de cambios.
+ * Modal para operaciones finalizadas con éxito
  *
  * @param {object} props
  * @param {boolean} props.open Indica la visibilidad del modal
- * @param {() => void} props.onClose Se ejecuta al salir o al elegir "continuar"
- * @param {() => void} props.onConfirm Se ejecuta al elegir "descartar"
+ * @param {() => void} props.onClose Se ejecuta al salir del modal
+ * @param {string} props.content Contenido del mensaje mostrado
  * @returns {JSX.Element}
  */
-function DiscardChangesModal({ open, onClose, onConfirm }) {
+function SuccessModal({ open, onClose, content }) {
   return (
     <div>
       <Dialog
@@ -44,39 +44,25 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
         >
           <FontAwesomeIcon
             size="3x"
-            icon={faTriangleExclamation}
-            style={{ marginBottom: "20px", color: "#B9333A" }}
+            icon={faCircleCheck}
+            style={{ marginBottom: "20px" }}
           />
-          <p style={{ fontSize: "24px", textAlign: "center" }}>
-            ¿Estás seguro de que quieres salir?
-          </p>
+          <p style={{ fontSize: "24px", textAlign: "center" }}>¡Todo listo!</p>
         </DialogTitle>
         <DialogContent sx={{ mb: 1 }}>
           <DialogContentText
             sx={{ textAlign: "center", color: "primary.main" }}
           >
-            <p>Se perderán todos los datos.</p>
+            <p>{content}</p>
           </DialogContentText>
         </DialogContent>
-        <DialogActions
-          sx={{
-            mb: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "20px",
-          }}
-        >
-          <Button onClick={onClose} variant="contained">
-            No, continuar editando
-          </Button>
-          <Button onClick={onConfirm} variant="outlined">
-            Sí, salir y descartar
+        <DialogActions sx={{ mb: 2 }}>
+          <Button onClick={onClose} variant="contained" sx={{ mx: "auto" }}>
+            Aceptar
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 }
-
-export default DiscardChangesModal;
+export default SuccessModal;
