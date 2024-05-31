@@ -98,6 +98,7 @@ function Recursos() {
     tabValue === 0
       ? setShowEditCPUModal(!showEditCPUModal)
       : setShowEditGPUModal(!showEditGPUModal);
+    setSelectedCPU(0);
   };
 
   const toggleAddSuccessModal = () => {

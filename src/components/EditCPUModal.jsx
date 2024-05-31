@@ -45,14 +45,26 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
 
   const [formData, setFormData] = useState(initialFormData);
   const [formErrors, setFormErrors] = useState(initialFormErrors);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // Establece el formulario como válido si todos los campos están llenos
+  useEffect(() => {
+    const valid = Object.values(formData).every((value) => value.trim() !== "");
+    setIsFormValid(valid);
+  }, [formData]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
-    // setFormErrors({
-    //   ...formErrors,
-    //   [name]: value.trim() === "",
-    // });
+    setFormErrors({
+      ...formErrors,
+      [name]: value.trim() === "",
+    });
+  };
+
+  const handleClose = () => {
+    onClose();
+    setFormErrors(initialFormErrors);
   };
 
   const handleSubmit = async () => {
@@ -69,7 +81,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
     try {
       await updateCPU(id, cpuData);
       onSuccess();
-      onClose();
+      handleClose();
     } catch (error) {
       console.error("Error al editar CPU:", error);
     }
@@ -103,7 +115,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
     <div>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         aria-labelledby="dialog-title"
         fullWidth={true}
         disableRestoreFocus
@@ -116,7 +128,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
         </DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={onClose}
+          onClick={handleClose}
           sx={{
             position: "absolute",
             right: 8,
@@ -223,7 +235,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            // disabled={!isFormValid}
+            disabled={!isFormValid}
           >
             Confirmar
           </Button>
