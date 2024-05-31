@@ -1,7 +1,8 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from 'react';
 import { useState } from 'react';
+
 //MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -222,13 +223,15 @@ renderCell: (params) => {
         Solicitudes
       </h2>
 
-      <Button
-        variant="contained"
-        startIcon={<AddIcon />}
-        onClick={nuevaSolicitud}
-      >
-        Nueva Solicitud
-      </Button>
+      <Link to="/recursos-ofrecidos">
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={nuevaSolicitud}
+        >
+          Nueva Solicitud
+        </Button>
+      </Link>
 
       <DataGrid
       id = "dgSolicitudes"
