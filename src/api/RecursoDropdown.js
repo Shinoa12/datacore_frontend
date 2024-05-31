@@ -20,3 +20,4 @@ export const createGPU = (gpu) => apiPost("gpus/", gpu);
 export const readCPU = (id) => apiGet(`cpus/${id}/`);
 export const readGPU = (id) => apiGet(`gpus/${id}/`);
 export const updateCPU = (id, cpu) => apiPatch(`cpus/${id}/`, cpu);
+export const updateGPU = (id, gpu) => apiPatch(`gpus/${id}/`, gpu);

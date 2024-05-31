@@ -10,6 +10,7 @@ import Tab from "@mui/material/Tab";
 import AddCPUModal from "../components/AddCPUModal";
 import AddGPUModal from "../components/AddGPUModal";
 import EditCPUModal from "../components/EditCPUModal";
+import EditGPUModal from "../components/EditGPUModal";
 import SuccessModal from "../components/SuccessModal";
 import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
 
@@ -65,6 +66,17 @@ function Recursos() {
     { field: "frecuencia_gpu", headerName: "Frecuencia", width: 120 },
     { field: "tamano_vram", headerName: "VRAM", width: 120 },
     { field: "ubicacion", headerName: "Ubicación", width: 120 },
+    {
+      field: "acciones",
+      headerName: "Acciones",
+      width: 100,
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => openEditModal(params.row.id)}>
+          <EditIcon sx={{ color: "primary.main" }} />
+        </IconButton>
+      ),
+    },
   ];
 
   const [showAddCPUModal, setShowAddCPUModal] = useState(false);
@@ -74,6 +86,7 @@ function Recursos() {
   const [showAddSuccessModal, setShowAddSuccessModal] = useState(false);
   const [showEditSuccessModal, setShowEditSuccessModal] = useState(false);
   const [selectedCPU, setSelectedCPU] = useState(0);
+  const [selectedGPU, setSelectedGPU] = useState(0);
   const [cpuList, setCpuList] = useState([]);
   const [gpuList, setGpuList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
@@ -89,16 +102,19 @@ function Recursos() {
       setSelectedCPU(id);
       setShowEditCPUModal(!showEditCPUModal);
     } else {
-      // setSelectedGPU(id);
+      setSelectedGPU(id);
       setShowEditGPUModal(!showEditGPUModal);
     }
   };
 
   const closeEditModal = () => {
-    tabValue === 0
-      ? setShowEditCPUModal(!showEditCPUModal)
-      : setShowEditGPUModal(!showEditGPUModal);
-    setSelectedCPU(0);
+    if (tabValue === 0) {
+      setShowEditCPUModal(!showEditCPUModal);
+      setSelectedCPU(0);
+    } else {
+      setShowEditGPUModal(!showEditGPUModal);
+      setSelectedGPU(0);
+    }
   };
 
   const toggleAddSuccessModal = () => {
@@ -165,6 +181,11 @@ function Recursos() {
   const handleEditCpuSuccess = async () => {
     toggleEditSuccessModal();
     await fetchCPU();
+  };
+
+  const handleEditGpuSuccess = async () => {
+    toggleEditSuccessModal();
+    await fetchGPU();
   };
 
   const handleTabChange = (event, newValue) => {
@@ -241,6 +262,13 @@ function Recursos() {
         onClose={closeEditModal}
         onSuccess={handleEditCpuSuccess}
         id={selectedCPU}
+      />
+
+      <EditGPUModal
+        open={showEditGPUModal}
+        onClose={closeEditModal}
+        onSuccess={handleEditGpuSuccess}
+        id={selectedGPU}
       />
 
       <SuccessModal
