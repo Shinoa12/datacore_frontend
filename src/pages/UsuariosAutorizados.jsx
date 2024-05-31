@@ -5,7 +5,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import { Autocomplete, TextField } from "@mui/material";
-import { getAllEspecialidades, getAllUsers, getUserById } from "../api/UpdateUserAPI";
+import {
+  getAllEspecialidades,
+  getAllUsers,
+  getUserById,
+} from "../api/UpdateUserAPI";
 import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
 
@@ -60,7 +64,6 @@ function UsuariosAutorizados() {
       description: "This column has a value getter and is not sortable.",
       sortable: false,
       width: 160,
-      
     },
     {
       field: "options",
@@ -78,18 +81,17 @@ function UsuariosAutorizados() {
         };
 
         return (
-          <MdModeEdit  
+          <MdModeEdit
             className="inline-block w-6 h-5 mr-2 -mt-2"
             onClick={onClick}
-            style={{ cursor: 'pointer' }}
-          ></MdModeEdit  >
+            style={{ cursor: "pointer" }}
+          ></MdModeEdit>
         );
       },
     },
   ];
 
   React.useEffect(() => {
-
     const fetchEspecialidades = async () => {
       try {
         const res = await getAllEspecialidades();
@@ -115,10 +117,6 @@ function UsuariosAutorizados() {
     };
 
     fetchData();
-
-    
-
-
   }, []);
 
   const handleClickOpen = () => {
@@ -159,16 +157,15 @@ function UsuariosAutorizados() {
 
   const handleStateChange = (event, newValue) => {
     setSelectedState(newValue);
-    console.log(newValue)
+    console.log(newValue);
     if (newValue) {
-
-      console.log(data, "los datos")
+      console.log(data, "los datos");
       const filteredRows = data.filter(
         (row) => row.id_estado_persona === newValue.value
       ); // Filter based on selected state
       setRows(transformData(filteredRows));
     } else {
-      console.log("entra aqui?")
+      console.log("entra aqui?");
       // Reset to all data if no state is selected
       setRows(transformData(rows)); // Fetch and filter all data again
     }
@@ -209,17 +206,9 @@ function UsuariosAutorizados() {
           }}
           pageSizeOptions={[5]}
           disableRowSelectionOnClick
-          disableSelectionOnClick 
+          disableSelectionOnClick
         />
       </Box>
-
-      <div className="flex justify-end">
-        {" "}
-        {/* Added a new div with justify-end class */}
-        <Button variant="contained" onClick={handleClickOpen}>
-          NUEVO USUARIO
-        </Button>
-      </div>
 
       <UpdateUserModal
         open={open}
