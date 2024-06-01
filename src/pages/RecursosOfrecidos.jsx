@@ -38,7 +38,7 @@ function RecursosOfrecidos() {
             </Link>
         </div>
         <div style={{ textAlign: 'right', marginTop: '60px' ,  marginRight: '30px'}}>
-            <Link to="/Home">
+            <Link to="/home">
             <button style={{ padding: '10px 20px', fontSize: '16px', borderRadius: '5px', backgroundColor: '#162447', color: '#fff', border: 'none', cursor: 'pointer' }}>Regresar</button>
             </Link>
         </div>
