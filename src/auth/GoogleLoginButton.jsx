@@ -26,6 +26,7 @@ const GoogleLoginButton = () => {
           localStorage.setItem("username", data["username"]);
           localStorage.setItem("first_name", data["first_name"]);
           localStorage.setItem("last_name", data["last_name"]);
+          localStorage.setItem("is_admin", data["is_admin"]);
           console.log(data["username"]);
           console.log(data["first_name"]);
           console.log(data["last_name"]);
