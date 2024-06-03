@@ -12,10 +12,10 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import { readCPU, updateCPU } from "../api/RecursoDropdown";
+import { readGPU, updateGPU } from "../api/RecursoDropdown";
 
 /**
- * Modal para editar CPU.
+ * Modal para editar GPU.
  *
  * @param {object} props
  * @param {boolean} props.open Indica la visibilidad del modal
@@ -24,12 +24,12 @@ import { readCPU, updateCPU } from "../api/RecursoDropdown";
  * @param {number} props.id Identificador del registro a editar
  * @returns {JSX.Element}
  */
-function EditCPUModal({ open, onClose, onSuccess, id }) {
+function EditGPUModal({ open, onClose, onSuccess, id }) {
   const initialFormData = {
     nombre: "",
     numNucleos: "",
     frecuencia: "",
-    ram: "",
+    vram: "",
     ubicacion: "",
     estado: "",
   };
@@ -38,7 +38,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
     nombre: false,
     numNucleos: false,
     frecuencia: false,
-    ram: false,
+    vram: false,
     ubicacion: false,
     estado: false,
   };
@@ -69,47 +69,48 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
 
   const handleSubmit = async () => {
     if (isFormValid) {
-      const cpuData = {
+      const gpuData = {
         id_recurso: {
-          tamano_ram: parseInt(formData.ram),
+          tamano_ram: parseInt(formData.vram),
           estado: formData.estado === "enabled" ? true : false,
           ubicacion: formData.ubicacion,
         },
         nombre: formData.nombre,
-        numero_nucleos_cpu: parseInt(formData.numNucleos),
-        frecuencia_cpu: parseFloat(formData.frecuencia),
+        numero_nucleos_gpu: parseInt(formData.numNucleos),
+        tamano_vram: parseInt(formData.vram),
+        frecuencia_gpu: parseFloat(formData.frecuencia),
       };
       try {
-        await updateCPU(id, cpuData);
+        await updateGPU(id, gpuData);
         onSuccess();
         handleClose();
       } catch (error) {
-        console.error("Error al editar CPU:", error);
+        console.error("Error al editar GPU:", error);
       }
     }
   };
 
   useEffect(() => {
-    const fetchSelectedCPU = async (id) => {
+    const fetchSelectedGPU = async (id) => {
       try {
-        const response = await readCPU(id);
+        const response = await readGPU(id);
         const data = response.data;
-        const cpu = {
+        const gpu = {
           nombre: data.nombre,
-          numNucleos: data.numero_nucleos_cpu.toString(),
-          frecuencia: parseFloat(data.frecuencia_cpu).toFixed(2),
-          ram: data.id_recurso.tamano_ram.toString(),
+          numNucleos: data.numero_nucleos_gpu.toString(),
+          frecuencia: parseFloat(data.frecuencia_gpu).toFixed(2),
+          vram: data.tamano_vram.toString(),
           ubicacion: data.id_recurso.ubicacion,
           estado: data.id_recurso.estado ? "enabled" : "disabled",
         };
-        setFormData(cpu);
+        setFormData(gpu);
       } catch (error) {
-        console.error("Error al cargar datos de CPU:", error);
+        console.error("Error al cargar datos de GPU:", error);
       }
     };
 
     if (id !== 0) {
-      fetchSelectedCPU(id);
+      fetchSelectedGPU(id);
     }
   }, [id]);
 
@@ -126,7 +127,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
           sx={{ m: 0, p: 2, color: "primary.main" }}
           id="dialog-title"
         >
-          Editar CPU
+          Editar GPU
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -186,20 +187,20 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
             onChange={handleChange}
           />
 
-          {/* RAM */}
+          {/* VRAM */}
           <TextField
             margin="dense"
-            id="ram"
-            name="ram"
-            label="RAM"
+            id="vram"
+            name="vram"
+            label="VRAM"
             type="number"
             fullWidth
             inputProps={{ min: 0 }}
             InputProps={{
               endAdornment: <InputAdornment position="end">GB</InputAdornment>,
             }}
-            value={formData.ram}
-            error={formErrors.ram}
+            value={formData.vram}
+            error={formErrors.vram}
             onChange={handleChange}
           />
 
@@ -246,4 +247,4 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
     </div>
   );
 }
-export default EditCPUModal;
+export default EditGPUModal;
