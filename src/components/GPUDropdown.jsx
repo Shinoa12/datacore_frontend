@@ -10,7 +10,7 @@ const GPUDropdown = ({ value, onChange }) => {
         try {
             const res = await getAllGPU();
             // Filtrar la lista de GPUs para mostrar solo las que tienen estado=1
-            const filteredGPUs = res.data.filter(gpu => gpu.estado === 1);
+            const filteredGPUs = res.data.filter(gpu => gpu.id_recurso.estado === true);
             setGpuList(filteredGPUs);
         } catch (error) {
             console.error("Error al cargar GPUs:", error);

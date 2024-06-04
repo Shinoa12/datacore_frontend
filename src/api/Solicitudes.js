@@ -21,3 +21,11 @@ export const getSolicitudResultado = (idSolicitud) => {
 export const deleteSolicitud = (idSolicitud) => {
     return axios.delete(`${API_BASE_URL}${'deleteSolicitud'}${idSolicitud}`)
 }
+
+export const createSolicitud = (id_usuario, id_recurso, execution_params) => {
+    return axios.post('http://127.0.0.1:8000/datacore/api/v1/solicitudes/createSolicitud', {
+        id_usuario: id_usuario,
+        id_recurso: id_recurso,
+        execution_params: execution_params
+    });
+}

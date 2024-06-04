@@ -11,6 +11,7 @@ function CPUSolicitud() {
     const [showDropMessage, setShowDropMessage] = useState(true);
     const [executionParameters, setExecutionParameters] = useState('');
     const [showModal, setShowModal] = useState(false); 
+    const [selectedCPU, setSelectedCPU] = useState("");
 
     const handleFileChange = (event) => {
         setSelectedFiles(prevFiles => [...prevFiles, ...Array.from(event.target.files)]);
@@ -42,13 +43,18 @@ function CPUSolicitud() {
     };
 
     const handleCrearClick = () => {
-        setShowModal(true);
+        createSolicitud(selectedCPU, localStorage.getItem('username'), executionParameters)
+        .then(response => {
+            console.log('Solicitud creada con éxito:', response.data);
+        })
+        .catch(error => {
+            console.error('Error al crear la solicitud:', error);
+        });
+
     };
 
-    const [selectedCPU, setSelectedCPU] = useState("");
-
-    const handleCPUChange = (cpu) => { 
-        setSelectedCPU(cpu);
+    const handleCPUChange = (event) => { 
+        setSelectedCPU(event.target.value);
     };
 
     return (
