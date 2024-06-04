@@ -93,15 +93,17 @@ const Sidebar = ({ sidebarToggle }) => {
             </button>
           </li>
         </Link>
-        <hr className="border-4 border-white" />
+
         </>
       
       }
         
 
       </ul>
-      <div className="mt-auto text-center py-4">
-        <img src="/src/assets/datacore_logo.png" alt="DataCore" className="img-fluid mx-auto mb-2" style={{ width: "100px" }} />
+      <div className="mt-auto text-center py-4  bg-white flex">
+        <img src="/src/assets/Imagen DataCore.png" alt="DataCore" className="img-fluid mx-auto mb-2" style={{ width: "80px" }} />
+        <img src="/src/assets/PUCP-alta_resolucion-1.png" alt="Pucp-logo" className="img-fluid mx-auto mb-2" style={{ width: "130px" ,
+         height:"92px"}} />
       </div>
     </div>
   );

@@ -27,17 +27,17 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
           </IconButton>
           
           <Link to="/">
-          <div className="d-flex justify-content-start align-items-center">
+          <div className="flex justify-start items-center">
             <img
               src="/src/assets/Logo_PUCP.png"
               alt="DataCore"
-              style={{ height: "2.5rem", marginLeft: "1.75rem" }}
+              className="h-10 ml-7" 
             />
-            <h1 className="text-white" style={{
-              fontFamily: "Montserrat",fontSize: "1.5rem"
-            }}>DataCore</h1>
-            </div>
-          </Link>
+            <h1 className="text-white font-montserrat text-xl ml-1"> 
+              DataCore
+            </h1>
+          </div>
+        </Link>
           
         </div>
         <div className="flex items-center">
