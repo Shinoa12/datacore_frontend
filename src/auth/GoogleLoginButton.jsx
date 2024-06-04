@@ -33,6 +33,7 @@ const GoogleLoginButton = () => {
           localStorage.setItem("last_name", data["last_name"]);
           localStorage.setItem("is_admin", data["is_admin"]);
           localStorage.setItem("estado", data["estado"]);
+          localStorage.setItem("id_user", data["id_user"]);
           console.log(data["username"]);
           console.log(data["first_name"]);
           console.log(data["last_name"]);
