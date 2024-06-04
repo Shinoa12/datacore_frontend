@@ -52,16 +52,21 @@ export const useAuth = () => {
     }
   };
 
-  const handlerLogout = () => {
-    dispatch({
-      type: "logout",
-    });
-    sessionStorage.removeItem("Login");
-  };
-
-  return {
-    login,
-    handlerLogin,
-    handlerLogout,
-  };
-};
+    const handlerLogout = () => {
+        dispatch({
+            type: 'logout',
+        });
+        sessionStorage.removeItem('Login');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('first_name');
+        localStorage.removeItem('last_name');
+        localStorage.removeItem('is_admin');
+        localStorage.removeItem('estado');
+    }
+    return {
+        login,
+        handlerLogin,
+        handlerLogout,
+    }
+}

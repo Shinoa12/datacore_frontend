@@ -16,7 +16,7 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
         className="px-6 py-6 flex justify-between"
         style={{ backgroundColor: theme.palette.primary.main }}
       >
-        <div className="flex items-center">
+        <div className="flex flex-row items-center">
           <IconButton onClick={() => setSidebarToggle(!sidebarToggle)}>
             <MenuIcon
               sx={{
@@ -25,13 +25,20 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
               }}
             />
           </IconButton>
+          
           <Link to="/">
+          <div className="flex justify-start items-center">
             <img
-              src="/src/assets/datacore_logo.svg"
+              src="/src/assets/Logo_PUCP.png"
               alt="DataCore"
-              style={{ height: "60px", marginLeft: "1.75rem" }}
+              className="h-10 ml-7" 
             />
-          </Link>
+            <h1 className="text-white font-montserrat text-xl ml-1"> 
+              DataCore
+            </h1>
+          </div>
+        </Link>
+          
         </div>
         <div className="flex items-center">
           <IconButton onClick={handlerLogout}>
