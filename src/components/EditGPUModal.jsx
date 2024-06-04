@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
+import LoadingOverlay from "./LoadingOverlay";
 import { readGPU, updateGPU } from "../api/RecursoDropdown";
 
 /**
@@ -46,6 +47,8 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
   const [formData, setFormData] = useState(initialFormData);
   const [formErrors, setFormErrors] = useState(initialFormErrors);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Establece el formulario como válido si todos los campos están llenos
   useEffect(() => {
@@ -62,13 +65,21 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
     });
   };
 
-  const handleClose = () => {
+  const handleClose = (event, reason) => {
+    if (
+      reason &&
+      (reason === "backdropClick" || (saving && reason === "escapeKeyDown"))
+    ) {
+      return;
+    }
     onClose();
+    setFormData(initialFormData);
     setFormErrors(initialFormErrors);
   };
 
   const handleSubmit = async () => {
     if (isFormValid) {
+      setSaving(true);
       const gpuData = {
         id_recurso: {
           tamano_ram: parseInt(formData.vram),
@@ -86,12 +97,15 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
         handleClose();
       } catch (error) {
         console.error("Error al editar GPU:", error);
+      } finally {
+        setSaving(false);
       }
     }
   };
 
   useEffect(() => {
     const fetchSelectedGPU = async (id) => {
+      setLoading(true);
       try {
         const response = await readGPU(id);
         const data = response.data;
@@ -106,6 +120,8 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
         setFormData(gpu);
       } catch (error) {
         console.error("Error al cargar datos de GPU:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -123,6 +139,12 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
         fullWidth={true}
         disableRestoreFocus
       >
+        {saving && (
+          <LoadingOverlay
+            backgroundColor={"rgba(255, 255, 255, 0.5)"}
+            content={"Guardando..."}
+          />
+        )}
         <DialogTitle
           sx={{ m: 0, p: 2, color: "primary.main" }}
           id="dialog-title"
@@ -141,7 +163,13 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent dividers sx={{ p: 2 }}>
+        <DialogContent dividers sx={{ p: 2, position: "relative" }}>
+          {loading && (
+            <LoadingOverlay
+              backgroundColor={"white"}
+              content={"Cargando datos..."}
+            />
+          )}
           {/* Nombre */}
           <TextField
             autoFocus
@@ -154,6 +182,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
             value={formData.nombre}
             error={formErrors.nombre}
             onChange={handleChange}
+            disabled={saving}
           />
 
           {/* Núcleos */}
@@ -168,6 +197,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
             value={formData.numNucleos}
             error={formErrors.numNucleos}
             onChange={handleChange}
+            disabled={saving}
           />
 
           {/* Frecuencia */}
@@ -185,6 +215,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
             value={formData.frecuencia}
             error={formErrors.frecuencia}
             onChange={handleChange}
+            disabled={saving}
           />
 
           {/* VRAM */}
@@ -202,6 +233,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
             value={formData.vram}
             error={formErrors.vram}
             onChange={handleChange}
+            disabled={saving}
           />
 
           {/* Ubicación */}
@@ -215,6 +247,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
             value={formData.ubicacion}
             error={formErrors.ubicacion}
             onChange={handleChange}
+            disabled={saving}
           />
 
           {/* Estado */}
@@ -228,6 +261,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
               value={formData.estado}
               error={formErrors.estado}
               onChange={handleChange}
+              disabled={saving}
             >
               <MenuItem value="enabled">Habilitado</MenuItem>
               <MenuItem value="disabled">Deshabilitado</MenuItem>
@@ -238,7 +272,7 @@ function EditGPUModal({ open, onClose, onSuccess, id }) {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || saving}
           >
             Confirmar
           </Button>

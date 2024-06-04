@@ -14,11 +14,20 @@ import EditGPUModal from "../components/EditGPUModal";
 import SuccessModal from "../components/SuccessModal";
 import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
 
-const commonDataGridStyles = {
-  ".MuiDataGrid-overlayWrapper": {
-    minHeight: "260px",
-  },
-};
+function CustomNoRowsOverlay() {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+      }}
+    >
+      <p className="text-xl font-medium">No hay registros</p>
+    </Box>
+  );
+}
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -90,6 +99,8 @@ function Recursos() {
   const [cpuList, setCpuList] = useState([]);
   const [gpuList, setGpuList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
+  const [loadingCPU, setLoadingCPU] = useState(false);
+  const [loadingGPU, setLoadingGPU] = useState(false);
 
   const toggleAddModal = () => {
     tabValue === 0
@@ -126,6 +137,7 @@ function Recursos() {
   };
 
   const fetchCPU = async () => {
+    setLoadingCPU(true);
     try {
       const response = await getAllCPU();
       const cpus = response.data.map((item) => ({
@@ -141,10 +153,13 @@ function Recursos() {
       setCpuList(cpus);
     } catch (error) {
       console.error("Error al cargar CPUs:", error);
+    } finally {
+      setLoadingCPU(false);
     }
   };
 
   const fetchGPU = async () => {
+    setLoadingGPU(true);
     try {
       const response = await getAllGPU();
       const gpus = response.data.map((item) => ({
@@ -160,6 +175,8 @@ function Recursos() {
       setGpuList(gpus);
     } catch (error) {
       console.error("Error al cargar GPUs:", error);
+    } finally {
+      setLoadingGPU(false);
     }
   };
 
@@ -213,6 +230,7 @@ function Recursos() {
         </Tabs>
         <TabPanel value={tabValue} index={0}>
           <DataGrid
+            autoHeight
             columns={cpuHeaders}
             rows={cpuList}
             initialState={{
@@ -224,11 +242,13 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
-            sx={commonDataGridStyles}
+            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+            loading={loadingCPU}
           />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
           <DataGrid
+            autoHeight
             columns={gpuHeaders}
             rows={gpuList}
             initialState={{
@@ -240,7 +260,8 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
-            sx={commonDataGridStyles}
+            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+            loading={loadingGPU}
           />
         </TabPanel>
       </Box>
