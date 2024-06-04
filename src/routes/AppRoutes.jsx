@@ -18,6 +18,7 @@ import CPUSolicitud from "../pages/CPUSolicitud";
 import GPUSolicitud from "../pages/GPUSolicitud";
 import Ajustes from "../pages/Ajustes";
 
+
 export const AppRoutes = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
   return (

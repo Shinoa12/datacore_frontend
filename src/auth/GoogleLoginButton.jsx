@@ -21,12 +21,18 @@ const GoogleLoginButton = () => {
       .then((data) => {
         if (data.error) {
           navigate("/error");
-        } else {
+        } 
+        else if(!(data["username"].includes("pucp"))){
+          console.log("error")
+          navigate("/error");
+        }
+        else{
           localStorage.setItem("access_token", data["access_token"]);
           localStorage.setItem("username", data["username"]);
           localStorage.setItem("first_name", data["first_name"]);
           localStorage.setItem("last_name", data["last_name"]);
           localStorage.setItem("is_admin", data["is_admin"]);
+          localStorage.setItem("estado", data["estado"]);
           console.log(data["username"]);
           console.log(data["first_name"]);
           console.log(data["last_name"]);
@@ -46,7 +52,7 @@ const GoogleLoginButton = () => {
   return (
     <div className="google-login-button-container">
       <div className="button-container">
-        <GoogleButton onClick={login} label="Continuar con Google" />
+        <GoogleButton onClick={login} label="Iniciar Sesión con Google" />
       </div>
     </div>
   );

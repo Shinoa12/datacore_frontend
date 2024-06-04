@@ -62,6 +62,7 @@ export const useAuth = () => {
         localStorage.removeItem('first_name');
         localStorage.removeItem('last_name');
         localStorage.removeItem('is_admin');
+        localStorage.removeItem('estado');
     }
     return {
         login,
