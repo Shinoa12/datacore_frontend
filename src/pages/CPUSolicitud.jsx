@@ -4,6 +4,8 @@ import { faTimes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import ModalSolicitudExito from '../components/ModalSolicitudExito';
 import CPUDropdown from '../components/CPUDropdown';
+import pdfGuia from '../img/Manual de usuario para investigador.pdf';
+
 
 
 function CPUSolicitud() {
@@ -153,7 +155,8 @@ function CPUSolicitud() {
                     <h2 style={{ fontSize: '15px', marginTop: '20px', marginBottom: '10px', color: "rgb(4, 35, 84)" }}>
                         <strong>
                             Si aún no entiendes la pantalla o cómo crear tu solicitud, ¡NO TE PREOCUPES! <br></br>
-                            Te invitamos a descubrir una guía fácil y sin complicaciones. Haz click aquí.
+                            Te invitamos a descubrir una guía fácil y sin complicaciones. <br></br>
+                            <a href={pdfGuia} download style={{ textDecoration: 'underline' }}>HAZ CLICK AQUÍ</a>
                         </strong>
                     </h2>
                     <div style={{ textAlign: 'right' }}>
