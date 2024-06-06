@@ -4,10 +4,9 @@ import { faTimes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import ModalSolicitudExito from '../components/ModalSolicitudExito';
 import CPUDropdown from '../components/CPUDropdown';
+import { createSolicitud} from '../api/Solicitudes';
 import pdfGuia from '../img/Manual de usuario para investigador.pdf';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-
-
 
 
 function CPUSolicitud() {
@@ -15,6 +14,19 @@ function CPUSolicitud() {
     const [showDropMessage, setShowDropMessage] = useState(true);
     const [executionParameters, setExecutionParameters] = useState('');
     const [showModal, setShowModal] = useState(false); 
+    const [selectedCPU, setSelectedCPU] = useState({
+        frecuencia_cpu: "",
+        id_recurso : {
+            estado: true ,
+            id_recurso: 1,
+            solicitudes_encoladas: "",
+            tamano_ram: "",
+            ubicacion: "",
+        }  ,
+        
+        nombre: "",
+        numero_nucleos_cpu: ""
+    });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState('');
 
@@ -56,18 +68,25 @@ function CPUSolicitud() {
         setExecutionParameters(event.target.value);
     };
 
-    const handleCrearClick = () => {
-        setShowModal(true);
+    async function handleCrearClick () {
+        await createSolicitud(localStorage.getItem('id_user'),selectedCPU.id_recurso.id_recurso , executionParameters , selectedFiles)
+        .then(response => {
+            console.log('Solicitud creada con éxito:', response.data);
+            setShowModal(true);
+        })
+        .catch(error => {
+            console.error('Error al crear la solicitud:', error);
+        });
     };
 
     const handleModalOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
 
-    const [selectedCPU, setSelectedCPU] = useState("");
 
-    const handleCPUChange = (cpu) => { 
-        setSelectedCPU(cpu);
+    const handleCPUChange = (event) => { 
+        setSelectedCPU(event.target.value);
+        console.log(selectedCPU);
     };
 
     return (
@@ -93,7 +112,7 @@ function CPUSolicitud() {
                     <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.08)', padding: '20px', borderRadius: '5px', marginTop: '20px'}}>
                         <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos: {selectedCPU.numero_nucleos_cpu}</strong></p>
                         <p style={{ marginBottom: '10px' }}><strong>Frecuencia del procesador: {selectedCPU.frecuencia_cpu}</strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>Tamaño de memoria RAM: {selectedCPU.tamaño_ram}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Tamaño de memoria RAM: {selectedCPU.id_recurso.tamano_ram}</strong></p>
                         {/* <p style={{ marginBottom: '10px' }}><strong>Sistema Operativo:</strong></p> */}
                         <div style={{ textAlign: 'center' }}>
                             <button onClick={openModal} style={{ padding: '10px 20px', fontSize: '16px', borderRadius: '5px', backgroundColor: '#162447', color: '#fff', border: 'none', cursor: 'pointer' }} >
@@ -136,8 +155,16 @@ function CPUSolicitud() {
                             Posición en cola del recurso
                         </strong>
                     </h2>
-                    <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.08)', padding: '20px', borderRadius: '5px', marginTop: '20px'}}>
-                        <span style={{ color: "rgb(4, 35, 84)" }}>3</span>
+
+                    <div style={{
+                        position: 'relative',
+                        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        textAlign: 'left',
+                        minWidth: '30px',
+                    }}>
+                        <span style={{ color: "rgb(4, 35, 84)" }}>{selectedCPU.id_recurso.solicitudes_encoladas}</span>
                     </div>
                 </div>
                 <div style={{ flex: 1, marginLeft: '20px', marginRight: '30px', height: '400px' }}>

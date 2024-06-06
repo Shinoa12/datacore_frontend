@@ -10,7 +10,7 @@ const CPUDropdown = ({ value, onChange }) => {
         try {
             const res = await getAllCPU();
             // Filtrar la lista de CPUs para mostrar solo las que tienen estado=1
-            const filteredCPUs = res.data.filter(cpu => cpu.estado === 1);
+            const filteredCPUs = res.data.filter(cpu => cpu.id_recurso.estado === true);
             setCpuList(filteredCPUs);
         } catch (error) {
             console.error("Error al cargar CPUs:", error);
@@ -31,7 +31,7 @@ const CPUDropdown = ({ value, onChange }) => {
             label="CPUs Disponibles"
         >
             {cpuList.map(cpuItem => (
-            <MenuItem key={cpuItem.id} value={cpuItem}>{cpuItem.nombre}</MenuItem>
+            <MenuItem key={cpuItem.id_recurso.id_recurso} value={cpuItem}>{cpuItem.nombre}</MenuItem>
             ))}
         </Select>
         </FormControl>

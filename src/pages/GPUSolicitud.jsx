@@ -4,9 +4,8 @@ import { faTimes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import ModalSolicitudExito from '../components/ModalSolicitudExito';
 import GPUDropdown from '../components/GPUDropdown';
+import { createSolicitud} from '../api/Solicitudes';
 import pdfGuia from '../img/Manual de usuario para investigador.pdf';
-
-
 
 function GPUSolicitud() {
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -43,8 +42,16 @@ function GPUSolicitud() {
         setExecutionParameters(event.target.value);
     };
 
-    const handleCrearClick = () => {
-        setShowModal(true);
+    async function handleCrearClick () {
+        await createSolicitud(localStorage.getItem('id_user'),selectedGPU.id_recurso.id_recurso , executionParameters , selectedFiles)
+        .then(response => {
+            console.log('Solicitud creada con éxito:', response.data);
+            setShowModal(true);
+        })
+        .catch(error => {
+            console.error('Error al crear la solicitud:', error);
+        });
+
     };
 
     const [selectedGPU, setSelectedGPU] = useState("");
