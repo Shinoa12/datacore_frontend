@@ -15,19 +15,19 @@ function Historial() {
   const [rows, setRows] = useState([]);
   const [origialRows, setRowsR] = useState([]);
   const [filters, setFilters] = useState({
-    correo: "",
+    email: "",
     recurso: "",
-    estado: "",
-    fechaInicio: "",
-    fechaFin: "",
+    estado_solicitud: "",
+    fecha_procesamiento: "",
+    fecha_finalizada: "",
   });
   const columns = [
-    { field: "fechaRegistro", headerName: "Fecha", width: 70 },
+    { field: "fecha_registro", headerName: "Fecha", width: 70 },
     { field: "recurso", headerName: "Recurso", width: 100 },
-    { field: "correo", headerName: "Correo", width: 150 },
-    { field: "estado", headerName: "Estado", width: 150 },
-    { field: "fechaInicio", headerName: "Fecha de Inicio", width: 150 },
-    { field: "fechaFin", headerName: "Fecha de Fin", width: 150 },
+    { field: "email", headerName: "Correo", width: 150 },
+    { field: "estado_solicitud", headerName: "Estado", width: 150 },
+    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 150 },
+    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 150 },
     { field: "duracion", headerName: "Duracion", width: 100 },
   ];
 
@@ -101,7 +101,7 @@ function Historial() {
             defaultValue=""
             size="small"
             variant="standard"
-            name="correo"
+            name="email"
             onChange={handleInputChange}
           />
         </div>
@@ -125,7 +125,7 @@ function Historial() {
             id="outlined-size-small "
             size="small"
             variant="standard"
-            name="estado"
+            name="estado_solicitud"
             onChange={handleInputChange}
           />
         </div>

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect } from "react";
+import { useState } from "react";
 //MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -37,11 +37,8 @@ const style = {
   p: 4,
 };
 
-
-
 function Solicitudes() {
-  
-  var selectedID ;
+  var selectedID;
   const [lid, setTextId] = useState();
   const [lfecharegistro, setTextFechaRegistro] = useState();
   const [lestado, setTextEstado] = useState();
@@ -54,17 +51,17 @@ function Solicitudes() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const abrirdetalle = (id) => {
-    console.log("Detalle: "+id)
-    cargarDetalles(id)
-    
+  const abrirdetalle = (id_solicitud) => {
+    console.log("Detalle: " + id_solicitud);
+    cargarDetalles(id_solicitud);
+
     setOpen(true);
   };
   //Cancelar
   const [openC, setOpenC] = React.useState(false);
 
-  const abrirCancelar = (id) => {
-    selectedID = id
+  const abrirCancelar = (id_solicitud) => {
+    selectedID = id_solicitud;
     setOpenC(true);
   };
 
@@ -73,7 +70,7 @@ function Solicitudes() {
   };
 
   const confirmarCancelar = () => {
-    cancelarSolicitudes(selectedID)
+    cancelarSolicitudes(selectedID);
     setOpenC(false);
   };
 
@@ -81,48 +78,41 @@ function Solicitudes() {
 
   useEffect(() => {
     loadPage();
-}, []);
+  }, []);
 
   //Redirigir a nueva solicitud
   const nuevaSolicitud = () => {
     useNavigate("/recursos-ofrecidos");
   };
 
-  //Exportar Solicitudes
-  const exportarSolicitudes = () => {
-    const csvData = rows.map((row) => Object.values(row).join(",")).join("\n");
-    const csvBlob = new Blob([csvData], { type: "text/csv" });
-    const csvUrl = URL.createObjectURL(csvBlob);
-    const link = document.createElement("a");
-    link.href = csvUrl;
-    link.download = "solicitudes.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   //Cargar resultado de solicitud *
-const descargarDoc = (id) => {
-    getSolicitudResultado(id)
-    .then((response) => {
+  const descargarDoc = (id_solicitud) => {
+    getSolicitudResultado(id_solicitud)
+      .then((response) => {
         // Assuming the response is a Blob
         const url = window.URL.createObjectURL(new Blob([response]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', 'file.txt'); // or any other filename
+
+        // Extract the filename from the URL
+        const urlObject = new URL(url);
+        const pathname = urlObject.pathname;
+        const filename = pathname.substring(pathname.lastIndexOf("/") + 1);
+
+        link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
-    })
-    .catch((error) => {
-      console.error("Error fetching solicitudes:", error);
-    });
-};
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
+  };
 
   const [rows, setRows] = useState([]);
 
   //Cargar datos *
   const loadPage = () => {
-    getAllSolicitudes()
+    getAllSolicitudes(localStorage.getItem("id_user"))
       .then((response) => {
         setRows(response.data);
       })
@@ -133,55 +123,53 @@ const descargarDoc = (id) => {
 
   const [modalData, setModalData] = useState({});
   //Cargar detalles
-  const cargarDetalles =(id)=>{
-    getSolicitudDetalle(id)
+  const cargarDetalles = (id_solicitud) => {
+    getSolicitudDetalle(id_solicitud)
       .then((response) => {
-        setTextId(response.data.id);
-        setTextFechaRegistro(response.data.fechaRegistro);
-        setTextEstado(response.data.estado);
-        setTextCPU(response.data.cup);
-        setTextCantidadNucleo(response.data.cantidadNucleo);
-        setTextFrecuenciaProcesador(response.data.frecuenciaDelProcesador);
-        setTextTamanoRAM(response.data.ram);
+        setTextId(response.data.id_solicitud);
+        setTextFechaRegistro(response.data.fecha_registro);
+        setTextEstado(response.data.estado_solicitud);
+        setTextCPU(response.data.nombre);
+        setTextCantidadNucleo(response.data.numero_nucleos);
+        setTextFrecuenciaProcesador(response.data.frecuencia);
+        setTextTamanoRAM(response.data.tamano_ram);
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
       });
-  }
+  };
 
   //Cancelar solicitud
-  const cancelarSolicitudes =(id)=>{
+  const cancelarSolicitudes = (id_solicitud) => {
     deleteSolicitud()
-    .then((response) => {
-      loadPage()
-        console.log(id+": Eliminado")
-    })
-    .catch((error) => {
-      console.error("Error fetching solicitudes:", error);
-    });
-  }
-
+      .then((response) => {
+        loadPage();
+        console.log(id_solicitud + ": Eliminado");
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
+  };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
+    { field: "id_solicitud", headerName: "ID", width: 70 },
     { field: "duracion", headerName: "Duracion", width: 100 },
-    { field: "fechaRegistro", headerName: "Fecha de Registro", width: 150 },
-    { field: "fechaInicio", headerName: "Fecha de Inicio", width: 150 },
-    { field: "fechaFin", headerName: "Fecha de Fin", width: 150 },
-    { field: "estado", headerName: "Estado", width: 100 },
+    { field: "fecha_registro", headerName: "Fecha de Registro", width: 150 },
+    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 150 },
+    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 150 },
+    { field: "estado_solicitud", headerName: "Estado", width: 100 },
     {
-field: "cancelar",
-headerName: "Cancelar",
-sortable: false,
-renderCell: (params) => {
-    return (
-        <Button 
-            startIcon={<CloseIcon />} 
-            onClick={() => abrirCancelar(params.row.id)}
-        >
-        </Button>
-    );
-},
+      field: "cancelar",
+      headerName: "Cancelar",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <Button
+            startIcon={<CloseIcon />}
+            onClick={() => abrirCancelar(params.row.id_solicitud)}
+          ></Button>
+        );
+      },
     },
     {
       field: "detalle",
@@ -192,7 +180,7 @@ renderCell: (params) => {
         return (
           <Button
             startIcon={<RemoveRedEyeIcon />}
-            onClick={() => abrirdetalle(params.row.id)}
+            onClick={() => abrirdetalle(params.row.id_solicitud)}
           ></Button>
         );
       },
@@ -204,7 +192,10 @@ renderCell: (params) => {
       sortable: false,
       renderCell: (params) => {
         return (
-          <Button startIcon={<DownloadIcon />} onClick={() => descargarDoc(params.row.id)}>
+          <Button
+            startIcon={<DownloadIcon />}
+            onClick={() => descargarDoc(params.row.id_solicitud)}
+          >
             Descargar
           </Button>
         );
@@ -231,7 +222,7 @@ renderCell: (params) => {
       </Button>
 
       <DataGrid
-      id = "dgSolicitudes"
+        id_solicitud="dgSolicitudes"
         rows={rows}
         columns={columns}
         initialState={{
@@ -242,7 +233,7 @@ renderCell: (params) => {
         pageSizeOptions={[10, 20]}
       />
 
-{/*
+      {/*
       <Button
         variant="contained"
         startIcon={<SimCardDownloadIcon />}
@@ -326,7 +317,7 @@ renderCell: (params) => {
               <TextField
                 variant="standard"
                 id="outlined-size-small"
-                value={ lfrecuencia}
+                value={lfrecuencia}
                 size="small"
               />
             </div>
