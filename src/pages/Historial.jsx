@@ -7,7 +7,8 @@ import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
 import { TextField } from "@mui/material";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
-
+import Box from '@mui/material/Box';
+import SearchIcon from '@mui/icons-material/Search';
 //APIs
 import { getHistorial } from "../api/Historial";
 
@@ -86,77 +87,70 @@ function Historial() {
   };
 
   return (
-    <div className="row m-4">
+    <div className="row m-4" >
       <h2
         style={{ color: "rgb(4, 35, 84)" }}
         className=" font-bold text-3xl mb-4"
       >
         Historial
       </h2>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ marginRight: "auto" }}>Correo</div>
-        <div>
-          <TextField
-            id="outlined-size-small "
-            defaultValue=""
-            size="small"
-            variant="standard"
-            name="email"
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ marginRight: "auto" }}>Recurso</div>
-        <div>
-          <TextField
-            id="outlined-size-small "
-            size="small"
-            variant="standard"
-            name="recurso"
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ marginRight: "auto" }}>Estado</div>
-        <div>
-          <TextField
-            id="outlined-size-small "
-            size="small"
-            variant="standard"
-            name="estado_solicitud"
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ marginRight: "auto" }}>Fecha Inicio</div>
-        <div>
-          <input
-            type="date"
-            id="start"
-            name="fechaInicio"
-          ></input>
-        </div>
-      </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ marginRight: "auto" }}>Fecha Fin</div>
-        <div>
-          <input
-            type="date"
-            id="end"
-            name="fechaFin"
-          ></input>
-        </div>
-      </div>
-      <Button
-        variant="contained"
-        startIcon={<SimCardDownloadIcon />}
-        onClick={handleSearch}
-      >
-        Buscar
-      </Button>
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div>Correo</div>
+    <TextField
+        id="outlined-size-small "
+        defaultValue=""
+        size="small"
+        variant="standard"
+        name="email"
+        onChange={handleInputChange}
+    />
+</div>
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div>Recurso</div>
+    <TextField
+        id="outlined-size-small "
+        size="small"
+        variant="standard"
+        name="recurso"
+        onChange={handleInputChange}
+    />
+</div>
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div>Estado</div>
+    <TextField
+        id="outlined-size-small "
+        size="small"
+        variant="standard"
+        name="estado_solicitud"
+        onChange={handleInputChange}
+    />
+</div>
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div>Fecha Inicio</div>
+    <input
+        type="date"
+        id="start"
+        name="fechaInicio"
+    />
+</div>
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div>Fecha Fin</div>
+    <input
+        type="date"
+        id="end"
+        name="fechaFin"
+    />
+</div>
+
+    <Box marginTop={5} marginBottom={5} display="flex" justifyContent="flex-end">
+        <Button
+            variant="contained"
+            startIcon={<SearchIcon />}
+            onClick={handleSearch}
+        >
+            Buscar
+        </Button>
+    </Box>
       <DataGrid
         id="dgHistorial"
         rows={rows}
@@ -168,6 +162,7 @@ function Historial() {
         }}
         pageSizeOptions={[10, 20]}
       />
+      <Box marginTop={5} display="flex" justifyContent="flex-end">
       <Button
         variant="contained"
         startIcon={<SimCardDownloadIcon />}
@@ -175,6 +170,7 @@ function Historial() {
       >
         Exportar Solicitudes
       </Button>
+      </Box>
     </div>
   );
 }

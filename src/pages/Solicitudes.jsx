@@ -213,14 +213,17 @@ function Solicitudes() {
         Solicitudes
       </h2>
 
+<Box marginBottom={5} sx={{ display: 'flex', justifyContent: 'flex-end' }}>  
       <Button
+    
+        marginBottom={5}
         variant="contained"
         startIcon={<AddIcon />}
         onClick={nuevaSolicitud}
       >
         Nueva Solicitud
       </Button>
-
+</Box>
       <DataGrid
         id_solicitud="dgSolicitudes"
         rows={rows}
