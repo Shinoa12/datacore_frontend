@@ -22,10 +22,22 @@ export const deleteSolicitud = (idSolicitud) => {
     return axios.delete(`${API_BASE_URL}${'deleteSolicitud'}${idSolicitud}`)
 }
 
-export const createSolicitud = (id_usuario, id_recurso, execution_params) => {
-    return axios.post('http://127.0.0.1:8000/datacore/api/v1/solicitudes/createSolicitud', {
-        id_usuario: id_usuario,
-        id_recurso: id_recurso,
-        execution_params: execution_params
+export const createSolicitud = (id_usuario, id_recurso, execution_params, archivos) => {
+    const formData = new FormData();
+    formData.append('id_user', id_usuario);
+    formData.append('id_recurso', id_recurso); // Adjust according to your actual CPU data structure
+    formData.append('parametros_ejecucion', execution_params);
+
+    archivos.forEach((file, index) => {
+        formData.append(`archivos[${index}]`, file);
     });
+
+    console.log(formData)
+
+    return axios.post('http://127.0.0.1:8000/datacore/api/v1/crear-solicitud/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+
 }

@@ -31,7 +31,7 @@ const GPUDropdown = ({ value, onChange }) => {
             label="GPUs Disponibles"
         >
             {gpuList.map(gpuItem => (
-            <MenuItem key={gpuItem.id} value={gpuItem}>{gpuItem.nombre}</MenuItem>
+            <MenuItem key={gpuItem.id_recurso.id_recurso} value={gpuItem}>{gpuItem.nombre}</MenuItem>
             ))}
         </Select>
         </FormControl>

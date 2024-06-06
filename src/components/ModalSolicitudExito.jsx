@@ -51,7 +51,7 @@ function ModalSolicitudExito(props) {
                         <p style={{ color: "rgb(4, 35, 84)" }}>Recibirás un correo electrónico cuando el recurso te sea asignado.</p>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                        <Link to="/">
+                        <Link to="/solicitudes">
                             <button style={{ padding: '10px 20px', fontSize: '16px', borderRadius: '5px', backgroundColor: '#162447', color: '#fff', border: 'none', cursor: 'pointer', width: '100px' }} onClick={toggleModal}>
                                 Aceptar
                             </button>

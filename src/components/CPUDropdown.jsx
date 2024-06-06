@@ -31,7 +31,7 @@ const CPUDropdown = ({ value, onChange }) => {
             label="CPUs Disponibles"
         >
             {cpuList.map(cpuItem => (
-            <MenuItem key={cpuItem.id_recurso.id_recurso} value={cpuItem.id_recurso.id_recurso}>{cpuItem.nombre}</MenuItem>
+            <MenuItem key={cpuItem.id_recurso.id_recurso} value={cpuItem}>{cpuItem.nombre}</MenuItem>
             ))}
         </Select>
         </FormControl>
