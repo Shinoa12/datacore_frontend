@@ -81,9 +81,9 @@ function GPUSolicitud() {
                         </strong>
                     </h2>
                     <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.08)', padding: '20px', borderRadius: '5px', marginTop: '20px'}}>
-                        <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos NVIDIA CUDA: {selectedGPU.numero_nucleo_gpu}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>Cantidad de núcleos NVIDIA CUDA: {selectedGPU.numero_nucleos_gpu}</strong></p>
                         <p style={{ marginBottom: '10px' }}><strong>Frecuencia básica: {selectedGPU.frecuencia_gpu}</strong></p>
-                        <p style={{ marginBottom: '10px' }}><strong>VRAM: {selectedGPU.tamaño_vram}</strong></p>
+                        <p style={{ marginBottom: '10px' }}><strong>VRAM: {selectedGPU.tamano_vram}</strong></p>
                         <div style={{ textAlign: 'center' }}>
                             <Link to="/">
                                 <button style={{ padding: '10px 20px', fontSize: '16px', borderRadius: '5px', backgroundColor: '#162447', color: '#fff', border: 'none', cursor: 'pointer' }}>
@@ -106,7 +106,7 @@ function GPUSolicitud() {
                         textAlign: 'left',
                         minWidth: '30px',
                     }}>
-                        <span style={{ color: "rgb(4, 35, 84)" }}>3</span>
+                        <span style={{ color: "rgb(4, 35, 84)" }}>{selectedGPU.id_recurso.solicitudes_encoladas}</span>
                     </div>
                 </div>
                 <div style={{ flex: 1, marginLeft: '20px', marginRight: '30px', height: '400px' }}>
