@@ -22,7 +22,7 @@ function Historial() {
     fecha_finalizada: "",
   });
   const columns = [
-    { field: "fecha_registro", headerName: "Fecha", width: 70 },
+    { field: "fecha_registro", headerName: "Fecha", width: 150 },
     { field: "recurso", headerName: "Recurso", width: 100 },
     { field: "email", headerName: "Correo", width: 150 },
     { field: "estado_solicitud", headerName: "Estado", width: 150 },
@@ -137,7 +137,6 @@ function Historial() {
             type="date"
             id="start"
             name="fechaInicio"
-            onChange={handleInputChange}
           ></input>
         </div>
       </div>
@@ -148,7 +147,6 @@ function Historial() {
             type="date"
             id="end"
             name="fechaFin"
-            onChange={handleInputChange}
           ></input>
         </div>
       </div>
