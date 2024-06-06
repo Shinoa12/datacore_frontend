@@ -25,20 +25,14 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
               }}
             />
           </IconButton>
-          
+
           <Link to="/">
-          <div className="flex justify-start items-center">
             <img
-              src="/src/assets/Logo_PUCP.png"
+              src="/src/assets/datacore_logo.svg"
               alt="DataCore"
-              className="h-10 ml-7" 
+              style={{ height: "60px", marginLeft: "1.75rem" }}
             />
-            <h1 className="text-white font-montserrat text-xl ml-1"> 
-              DataCore
-            </h1>
-          </div>
-        </Link>
-          
+          </Link>
         </div>
         <div className="flex items-center">
           <IconButton onClick={handlerLogout}>
