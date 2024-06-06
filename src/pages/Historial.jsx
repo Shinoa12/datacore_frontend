@@ -9,12 +9,18 @@ import { TextField } from "@mui/material";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
 //APIs
-import { getAllSolicitudes } from "../api/Historial";
+import { getHistorial } from "../api/Historial";
 
 function Historial() {
   const [rows, setRows] = useState([]);
-  const [filters, setFilters] = useState({});
-
+  const [origialRows, setRowsR] = useState([]);
+  const [filters, setFilters] = useState({
+    correo: "",
+    recurso: "",
+    estado: "",
+    fechaInicio: "",
+    fechaFin: "",
+  });
   const columns = [
     { field: "fechaRegistro", headerName: "Fecha", width: 70 },
     { field: "recurso", headerName: "Recurso", width: 100 },
@@ -30,9 +36,10 @@ function Historial() {
   }, []);
 
   const loadPage = () => {
-    getAllSolicitudes()
+    getHistorial()
       .then((response) => {
         setRows(response.data);
+        setRowsR(response.data);
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
@@ -51,26 +58,32 @@ function Historial() {
     document.body.removeChild(link);
   };
 
-const filterRows = (rows, filters) => {
-    return rows.filter((row) => {
-        return Object.keys(filters).every((key) => {
-            if (filters[key] === "") {
-                return true;
-            }
-            // Ensure row[key] is a string before calling toLowerCase()
-            const rowValue = typeof row[key] === 'string' ? row[key].toLowerCase() : row[key];
-            return rowValue.includes(filters[key].toLowerCase());
-        });
-    });
-}
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFilters(prevFilters => ({ ...prevFilters, [name]: value }));
-  }
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
 
-  const filteredRows = filterRows(rows, filters);
+  const handleSearch = () => {
+    const filteredRows = origialRows.filter((row) => {
+        return Object.keys(filters).every((key) => {
+          if (filters[key] === "") {
+            return true;
+          }
+          const rowValue =
+            typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
+        //   console.log('rowValue:', rowValue);
+        //   console.log('filter:', filters[key].toLowerCase());
+        //   console.log('rowValue.includes(filters[key].toLowerCase()):', rowValue.includes(filters[key].toLowerCase()));
+          return rowValue.includes(filters[key].toLowerCase());
+        });
+      });
 
+    if (Object.values(filters).every((value) => value === "")) {
+      setRows(origialRows);
+    } else {
+      setRows(filteredRows);
+    }
+  };
 
   return (
     <div className="row m-4">
@@ -98,7 +111,6 @@ const filterRows = (rows, filters) => {
         <div>
           <TextField
             id="outlined-size-small "
-            value=""
             size="small"
             variant="standard"
             name="recurso"
@@ -111,7 +123,6 @@ const filterRows = (rows, filters) => {
         <div>
           <TextField
             id="outlined-size-small "
-            value=""
             size="small"
             variant="standard"
             name="estado"
@@ -122,15 +133,32 @@ const filterRows = (rows, filters) => {
       <div style={{ display: "flex", alignItems: "center" }}>
         <div style={{ marginRight: "auto" }}>Fecha Inicio</div>
         <div>
-          <input type="date" id="start" name="fechaInicio" onChange={handleInputChange}></input>
+          <input
+            type="date"
+            id="start"
+            name="fechaInicio"
+            onChange={handleInputChange}
+          ></input>
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <div style={{ marginRight: "auto" }}>Fecha Fin</div>
         <div>
-          <input type="date" id="end" name="fechaFin" onChange={handleInputChange}></input>
+          <input
+            type="date"
+            id="end"
+            name="fechaFin"
+            onChange={handleInputChange}
+          ></input>
         </div>
       </div>
+      <Button
+        variant="contained"
+        startIcon={<SimCardDownloadIcon />}
+        onClick={handleSearch}
+      >
+        Buscar
+      </Button>
       <DataGrid
         id="dgHistorial"
         rows={rows}

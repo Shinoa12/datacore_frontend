@@ -8,7 +8,9 @@
       "estado": "Pendiente",
       "cancelar": "",
       "detalle": "",
-      "resultados": ""
+      "resultados": "",
+      "recurso": "GPU",
+      "correo": "859390834@pucp.edu.pe"
     },
     {
       "id": 2,
@@ -16,10 +18,12 @@
       "fechaRegistro": "24/09/24 20:00",
       "fechaInicio": "24/09/24 20:00",
       "fechaFin": "24/09/24 20:00",
-      "estado": "Pendiente",
+      "estado": "Procesado",
       "cancelar": "",
       "detalle": "",
-      "resultados": ""
+      "resultados": "",
+      "recurso": "CPU",
+      "correo": "34523453425@pucp.edu.pe"
     },
     {
       "id": 3,
@@ -30,7 +34,9 @@
       "estado": "Pendiente",
       "cancelar": "",
       "detalle": "",
-      "resultados": ""
+      "resultados": "",
+      "recurso": "CPU",
+      "correo": "672542386757@pucp.edu.pe"
     },
     {
         "id": 4,
@@ -41,7 +47,9 @@
         "estado": "Pendiente",
         "cancelar": "",
         "detalle": "",
-        "resultados": ""
+        "resultados": "",
+        "recurso": "GPU",
+        "correo": "345234523@pucp.edu.pe"
       },
       {
         "id": 5,
@@ -52,7 +60,9 @@
         "estado": "Pendiente",
         "cancelar": "",
         "detalle": "",
-        "resultados": ""
+        "resultados": "",
+        "recurso": "CPU",
+        "correo": "7847654567564@pucp.edu.pe"
       },
       {
         "id": 6,
@@ -63,7 +73,9 @@
         "estado": "Pendiente",
         "cancelar": "",
         "detalle": "",
-        "resultados": ""
+        "resultados": "",
+        "recurso": "CPU",
+        "correo": "672542386757@pucp.edu.pe"
       },
       {
         "id": 7,
@@ -71,10 +83,12 @@
         "fechaRegistro": "24/09/24 20:00",
         "fechaInicio": "24/09/24 20:00",
         "fechaFin": "24/09/24 20:00",
-        "estado": "Pendiente",
+        "estado": "Procesado",
         "cancelar": "",
         "detalle": "",
-        "resultados": ""
+        "resultados": "",
+        "recurso": "CPU",
+        "correo": "672542386757@pucp.edu.pe"
       },
       {
         "id": 8,
@@ -82,10 +96,12 @@
         "fechaRegistro": "24/09/24 20:00",
         "fechaInicio": "24/09/24 20:00",
         "fechaFin": "24/09/24 20:00",
-        "estado": "Pendiente",
+        "estado": "Procesado",
         "cancelar": "",
         "detalle": "",
-        "resultados": ""
+        "resultados": "",
+        "recurso": "CPU",
+        "correo": "672542386757@pucp.edu.pe"
       },
       {
         "id": 9,
@@ -93,9 +109,11 @@
         "fechaRegistro": "24/09/24 20:00",
         "fechaInicio": "24/09/24 20:00",
         "fechaFin": "24/09/24 20:00",
-        "estado": "Pendiente",
+        "estado": "Procesado",
         "cancelar": "",
         "detalle": "",
-        "resultados": ""
+        "resultados": "",
+        "recurso": "CPU",
+        "correo": "672542386757@pucp.edu.pe"
       }
   ]
