@@ -1,8 +1,156 @@
-function Historial () {
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useState } from "react";
+//MUI
+import Button from "@mui/material/Button";
+import { DataGrid } from "@mui/x-data-grid";
+import { TextField } from "@mui/material";
+import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
-    return (
-        <div className="row m-4">Historial</div>
-    )
+//APIs
+import { getAllSolicitudes } from "../api/Historial";
+
+function Historial() {
+  const [rows, setRows] = useState([]);
+  const [filters, setFilters] = useState({});
+
+  const columns = [
+    { field: "fechaRegistro", headerName: "Fecha", width: 70 },
+    { field: "recurso", headerName: "Recurso", width: 100 },
+    { field: "correo", headerName: "Correo", width: 150 },
+    { field: "estado", headerName: "Estado", width: 150 },
+    { field: "fechaInicio", headerName: "Fecha de Inicio", width: 150 },
+    { field: "fechaFin", headerName: "Fecha de Fin", width: 150 },
+    { field: "duracion", headerName: "Duracion", width: 100 },
+  ];
+
+  useEffect(() => {
+    loadPage();
+  }, []);
+
+  const loadPage = () => {
+    getAllSolicitudes()
+      .then((response) => {
+        setRows(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching solicitudes:", error);
+      });
+  };
+
+  const exportarSolicitudes = () => {
+    const csvData = rows.map((row) => Object.values(row).join(",")).join("\n");
+    const csvBlob = new Blob([csvData], { type: "text/csv" });
+    const csvUrl = URL.createObjectURL(csvBlob);
+    const link = document.createElement("a");
+    link.href = csvUrl;
+    link.download = "solicitudes.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+const filterRows = (rows, filters) => {
+    return rows.filter((row) => {
+        return Object.keys(filters).every((key) => {
+            if (filters[key] === "") {
+                return true;
+            }
+            // Ensure row[key] is a string before calling toLowerCase()
+            const rowValue = typeof row[key] === 'string' ? row[key].toLowerCase() : row[key];
+            return rowValue.includes(filters[key].toLowerCase());
+        });
+    });
 }
 
-export default Historial
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFilters(prevFilters => ({ ...prevFilters, [name]: value }));
+  }
+
+  const filteredRows = filterRows(rows, filters);
+
+
+  return (
+    <div className="row m-4">
+      <h2
+        style={{ color: "rgb(4, 35, 84)" }}
+        className=" font-bold text-3xl mb-4"
+      >
+        Historial
+      </h2>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ marginRight: "auto" }}>Correo</div>
+        <div>
+          <TextField
+            id="outlined-size-small "
+            defaultValue=""
+            size="small"
+            variant="standard"
+            name="correo"
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ marginRight: "auto" }}>Recurso</div>
+        <div>
+          <TextField
+            id="outlined-size-small "
+            value=""
+            size="small"
+            variant="standard"
+            name="recurso"
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ marginRight: "auto" }}>Estado</div>
+        <div>
+          <TextField
+            id="outlined-size-small "
+            value=""
+            size="small"
+            variant="standard"
+            name="estado"
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ marginRight: "auto" }}>Fecha Inicio</div>
+        <div>
+          <input type="date" id="start" name="fechaInicio" onChange={handleInputChange}></input>
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ marginRight: "auto" }}>Fecha Fin</div>
+        <div>
+          <input type="date" id="end" name="fechaFin" onChange={handleInputChange}></input>
+        </div>
+      </div>
+      <DataGrid
+        id="dgHistorial"
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 10 },
+          },
+        }}
+        pageSizeOptions={[10, 20]}
+      />
+      <Button
+        variant="contained"
+        startIcon={<SimCardDownloadIcon />}
+        onClick={exportarSolicitudes}
+      >
+        Exportar Solicitudes
+      </Button>
+    </div>
+  );
+}
+
+export default Historial;
