@@ -25,7 +25,7 @@ const style = {
 
 function UpdateUserModal ({open , setOpen , user}) {
   
-  //Hook manejadores de cambios en campos editables
+  //Hook manejadores de cambios en campos editables del usuario
   const [facultad, setFacultad] = React.useState("");
   const [especialidad, setEspecialidad] = React.useState("");
   const [estadoUsuario, setEstadoUsuario] = React.useState("");
@@ -44,7 +44,7 @@ function UpdateUserModal ({open , setOpen , user}) {
       CargarEspecialidadesPorFacultad(user.id_facultad);
       CargarEstadosPersonas();
 
-      setFacultad(user.id_facultad || ""); // Si user.id_facultad no está definido, se establece como una cadena vacía
+      setFacultad(user.id_facultad || "");
       setEspecialidad(user.id_especialidad || "");
       setEstadoUsuario(user.id_estado_persona || "");
       setNombres(user.first_name || "");
