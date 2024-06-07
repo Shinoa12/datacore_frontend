@@ -12,6 +12,20 @@ function GPUSolicitud() {
     const [showDropMessage, setShowDropMessage] = useState(true);
     const [executionParameters, setExecutionParameters] = useState('');
     const [showModal, setShowModal] = useState(false); 
+    const [selectedGPU, setSelectedGPU] = useState({
+        frecuencia_gpu: "",
+        id_recurso : {
+            estado: true ,
+            id_recurso: "",
+            solicitudes_encoladas: "",
+            tamano_ram: "",
+            ubicacion: "",
+        }  ,
+        
+        nombre: "",
+        numero_nucleos_gpu: "",
+        tamano_vram: "",
+    });
 
     const handleFileChange = (event) => {
         setSelectedFiles(prevFiles => [...prevFiles, ...Array.from(event.target.files)]);
@@ -54,10 +68,9 @@ function GPUSolicitud() {
 
     };
 
-    const [selectedGPU, setSelectedGPU] = useState("");
-
     const handleGPUChange = (event) => {
         setSelectedGPU(event.target.value);
+        console.log(event.target.value)
     };
 
     return (

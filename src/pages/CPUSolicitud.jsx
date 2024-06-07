@@ -22,7 +22,7 @@ function CPUSolicitud() {
             solicitudes_encoladas: "",
             tamano_ram: "",
             ubicacion: "",
-        }  ,
+        },
         
         nombre: "",
         numero_nucleos_cpu: ""
