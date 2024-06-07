@@ -107,6 +107,7 @@ function AddCPUModal({ open, onClose, onSuccess }) {
           tamano_ram: parseInt(formData.ram),
           estado: formData.estado === "enabled" ? true : false,
           ubicacion: formData.ubicacion,
+          herramientas: [],
         },
         nombre: formData.nombre,
         numero_nucleos_cpu: parseInt(formData.numNucleos),
