@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faFile } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
@@ -7,7 +7,7 @@ import CPUDropdown from '../components/CPUDropdown';
 import { createSolicitud} from '../api/Solicitudes';
 import pdfGuia from '../img/Manual de usuario para investigador.pdf';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-
+import { getHerramientasPorCPU, getLibreriasPorHerramienta } from '../api/Herramientas';
 
 function CPUSolicitud() {
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -29,6 +29,9 @@ function CPUSolicitud() {
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState('');
+    const [herramientas, setHerramientas] = useState([]);
+    const [selectedHerramienta, setSelectedHerramienta] = useState('');
+    const [librerias, setLibrerias] = useState([]); // Nuevo estado para las librerías
 
 
     const openModal = () => {
@@ -89,6 +92,31 @@ function CPUSolicitud() {
         console.log(selectedCPU);
     };
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const herramientasRes = await getHerramientasPorCPU(selectedCPU.id_recurso.id_recurso);
+                setHerramientas(herramientasRes.data);
+    
+                if (selectedHerramienta) {
+                    const libreriasRes = await getLibreriasPorHerramienta(selectedHerramienta.id);
+                    setLibrerias(libreriasRes.data);
+                }
+            } catch (error) {
+                console.error("Error al cargar datos:", error);
+            }
+        };
+    
+        fetchData();
+    }, [selectedCPU, selectedHerramienta]);
+
+    const handleHerramientaChange = (event) => {
+        const herramientaId = event.target.value;
+        const selectedHerramienta = herramientas.find(herramienta => herramienta.id === herramientaId);
+        setSelectedHerramienta(selectedHerramienta);
+    };
+    
+
     return (
         <div className="ml-4 mt-4" style={{ display: 'flex', flexDirection: 'column' }}>
             <h1 style={{ color: "rgb(4, 35, 84)" }} className="font-bold text-3xl mb-4">
@@ -130,17 +158,30 @@ function CPUSolicitud() {
                                             <Select
                                                 labelId="modal-herramientas-label"
                                                 id="modal-herramientas"
-                                                value={selectedOption}
-                                                onChange={handleModalOptionChange}
+                                                value={selectedHerramienta}
+                                                onChange={handleHerramientaChange}
                                                 label="Herramientas"
                                                 style={{ width: '50%', marginTop: '20px' }}
                                             >
                                                 <MenuItem value="">Seleccionar opción</MenuItem>
-                                                <MenuItem value="opcion1">Opción 1</MenuItem>
-                                                <MenuItem value="opcion2">Opción 2</MenuItem>
-                                                <MenuItem value="opcion3">Opción 3</MenuItem>
+                                                {herramientas.map((herramienta) => (
+                                                    <MenuItem key={herramienta.id} value={herramienta.id}>
+                                                        {herramienta.nombre}
+                                                    </MenuItem>
+                                                ))}
                                             </Select>
                                         </FormControl>
+                                        {selectedHerramienta && (
+                                            <div>
+                                                <p>Herramienta seleccionada: {selectedHerramienta.nombre}</p>
+                                                <p>Librerías:</p>
+                                                <ul>
+                                                    {librerias.map(libreria => (
+                                                        <li key={libreria.id}>{libreria.nombre}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                         <div style={{ position: 'absolute', bottom: '20px', left: '20px' }}>
                                             <strong style={{ fontSize: '20px', marginBottom: '10px', color: "rgb(4, 35, 84)" }}>Si NO encontraste tu librería aquí dirígete al icono de ayuda en la sección anterior y comunícate con nuestro equipo.</strong>
                                         </div>
