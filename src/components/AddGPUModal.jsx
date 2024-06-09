@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createGPU } from "../api/RecursoDropdown";
+import { createGPU } from "../api/Recursos";
 import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";

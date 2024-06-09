@@ -12,7 +12,7 @@ import AddGPUModal from "../components/AddGPUModal";
 import EditCPUModal from "../components/EditCPUModal";
 import EditGPUModal from "../components/EditGPUModal";
 import SuccessModal from "../components/SuccessModal";
-import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
+import { listCPUs, listGPUs } from "../api/Recursos";
 
 function CustomNoRowsOverlay() {
   return (
@@ -139,7 +139,7 @@ function Recursos() {
   const fetchCPU = async () => {
     setLoadingCPU(true);
     try {
-      const response = await getAllCPU();
+      const response = await listCPUs();
       const cpus = response.data.map((item) => ({
         id: item.id_recurso.id_recurso,
         nombre: item.nombre,
@@ -161,7 +161,7 @@ function Recursos() {
   const fetchGPU = async () => {
     setLoadingGPU(true);
     try {
-      const response = await getAllGPU();
+      const response = await listGPUs();
       const gpus = response.data.map((item) => ({
         id: item.id_recurso.id_recurso,
         nombre: item.nombre,

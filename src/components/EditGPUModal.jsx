@@ -13,7 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import LoadingOverlay from "./LoadingOverlay";
-import { readGPU, updateGPU } from "../api/RecursoDropdown";
+import { readGPU, updateGPU } from "../api/Recursos";
 
 /**
  * Modal para editar GPU.

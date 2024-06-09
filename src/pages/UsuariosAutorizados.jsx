@@ -5,11 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import { Autocomplete, TextField } from "@mui/material";
-import {
-  getAllEspecialidades,
-  getAllUsers,
-  getUserById,
-} from "../api/UpdateUserAPI";
+import { getAllEspecialidades, getAllUsers, getUserById } from "../api/Users";
 import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
 

@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
-import { getAllUsers } from "../api/UpdateUserAPI";
+import { getAllUsers } from "../api/Users";
 
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
