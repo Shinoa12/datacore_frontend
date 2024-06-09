@@ -210,9 +210,9 @@ function Recursos() {
   };
 
   return (
-    <div className="mx-4 my-4">
+    <div className="mx-8 my-6">
       <Box sx={{ color: "primary.main" }}>
-        <h1 className="font-bold text-3xl mb-4">Recursos computacionales</h1>
+        <p className="font-bold text-3xl mb-4">Recursos computacionales</p>
       </Box>
       <Box sx={{ my: 3 }}>
         <Button

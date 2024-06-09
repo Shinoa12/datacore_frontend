@@ -168,10 +168,10 @@ function UsuariosAutorizados() {
   };
 
   return (
-    <div className="ml-4 mt-5 mb-5 mr-4">
-      <h2 style={{ color: "rgb(4, 35, 84)" }} className=" text-3xl mb-4">
+    <div className="mx-8 my-6">
+      <h1 style={{ color: "rgb(4, 35, 84)" }} className="font-bold text-3xl mb-4">
         Lista de usuarios autorizados
-      </h2>
+      </h1>
 
       <div className="flex justify-content-center items-center">
         <span style={{ color: "rgb(4, 35, 84)" }} className=" text-lg mr-4">

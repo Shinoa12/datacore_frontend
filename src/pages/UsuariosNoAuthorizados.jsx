@@ -181,7 +181,7 @@ function UsuariosNoAutorizados() {
   };
 
   return (
-    <div className="ml-4 mt-4">
+    <div className="mx-8 my-6">
       <h2
         style={{ color: "rgb(4, 35, 84)" }}
         className=" font-bold text-3xl mb-4"
