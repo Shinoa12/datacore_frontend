@@ -29,8 +29,6 @@ function UpdateUserModal ({open , setOpen , user}) {
   const [facultad, setFacultad] = React.useState("");
   const [especialidad, setEspecialidad] = React.useState("");
   const [estadoUsuario, setEstadoUsuario] = React.useState("");
-  const [nombres, setNombres] = React.useState("");
-  const [apellidos, setApellidos] = React.useState("");
 
   //Hook manejadores de estado de las lista de los combo box
   const [facultadList , setFacultadList] = React.useState([]);
@@ -47,8 +45,6 @@ function UpdateUserModal ({open , setOpen , user}) {
       setFacultad(user.id_facultad || "");
       setEspecialidad(user.id_especialidad || "");
       setEstadoUsuario(user.id_estado_persona || "");
-      setNombres(user.first_name || "");
-      setApellidos(user.last_name || "");
 
     }
 
@@ -71,10 +67,7 @@ function UpdateUserModal ({open , setOpen , user}) {
     setEspecialidadList(res.data);
   }
 
-  async function updateUserClick () {
-    //setear todos los hooks de estados de los campos editables
-    user.first_name = nombres;
-    user.last_name = apellidos;
+  async function updateUserClick () {;
     user.id_facultad = facultad;
     user.id_especialidad = especialidad;
     user.id_estado_persona = estadoUsuario;
@@ -84,14 +77,6 @@ function UpdateUserModal ({open , setOpen , user}) {
   }
 
   //VARIABLES QUE MANEJAN LOS CAMBIOS DE LOS INPUTS
-  const handleNombresChange = (event) => {
-    setNombres(event.target.value);
-  };
-  
-  const handleApellidosChange = (event) => {
-    setApellidos(event.target.value);
-  };
-
   const handleFacultadChange = (event) => {
     CargarEspecialidadesPorFacultad(event.target.value);
 
@@ -130,11 +115,11 @@ function UpdateUserModal ({open , setOpen , user}) {
             noValidate
             autoComplete="off"
           >
-            <TextField id="outlined-basic" label="Correo" variant="outlined" value= {user.username} aria-readonly/>
+            <TextField id="outlined-basic" label="Correo" variant="outlined" value= {user.username?.toUpperCase()} aria-readonly/>
             <hr></hr>
-            <TextField id="outlined-basic" label="Nombres" variant="outlined" value = {nombres} onChange={handleNombresChange}/>
+            <TextField id="outlined-basic" label="Nombres" variant="outlined" value = {user.first_name?.toUpperCase()} aria-readonly/>
             <hr></hr>
-            <TextField id="outlined-basic" label="Apellidos" variant="outlined" value = {apellidos} onChange={handleApellidosChange} />
+            <TextField id="outlined-basic" label="Apellidos" variant="outlined" value = {user.last_name?.toUpperCase()} aria-readonly/>
             <hr></hr>
             <FormControl required sx={{ minWidth: 120 }}>
               <InputLabel id="demo-simple-select-required-label">Facultad</InputLabel>
