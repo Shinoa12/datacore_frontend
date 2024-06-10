@@ -19,7 +19,8 @@ export const getSolicitudResultado = (idSolicitud) => {
 }
 
 export const deleteSolicitud = (idSolicitud) => {
-    return axios.delete(`${API_BASE_URL}${'deleteSolicitud/'}${idSolicitud}`)
+    
+    return axios.delete(`${API_BASE_URL}${'cancelarSolicitud/'}${idSolicitud}`)
 }
 
 export const createSolicitud = (id_usuario, id_recurso, execution_params, archivos) => {
