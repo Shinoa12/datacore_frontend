@@ -29,18 +29,18 @@ function UsuariosAutorizados() {
   }
 
   const columns = [
-    { field: "id", headerName: "ID", width: 90, editable: false },
+    { field: "id", headerName: "ID", width: 50, editable: false },
     { field: "correo", headerName: "Correo", width: 200, editable: false },
-    { field: "nombres", headerName: "Nombres", width: 150, editable: false},
-    { field: "facultad", headerName: "Facultad", width: 150, editable: false},
-    { field: "especialidad", headerName: "Especialidad", width: 150, editable: false},
-    { field: "recursos_maximos", headerName: "Recursos Máximos", sortable: false, width: 160 , editable : false},
+    { field: "nombres", headerName: "Nombres", width: 400, editable: false},
+    { field: "facultad", headerName: "Facultad", width: 250, editable: false},
+    { field: "especialidad", headerName: "Especialidad", width: 250, editable: false},
+    { field: "recursos_maximos", headerName: "Recursos Máximos", sortable: false, width: 200 , editable : false},
     {
       field: "options",
       headerName: "Opciones",
       description: "",
       sortable: false,
-      width: 160,
+      width: 100,
       renderCell: (params) => {
         const onClick = async (e) => {
           e.stopPropagation(); // don't select this row after clicking
