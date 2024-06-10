@@ -23,14 +23,14 @@ const CPUDropdown = ({ value, onChange }) => {
   }, []);
 
   return (
-    <FormControl required sx={{ minWidth: 120 }}>
-      <InputLabel id="cpu-dropdown-label">CPU</InputLabel>
+    <FormControl margin="dense" fullWidth>
+      <InputLabel id="cpu-dropdown-label">Nombre</InputLabel>
       <Select
         labelId="cpu-dropdown-label"
         id="cpu-dropdown"
         value={value}
         onChange={onChange}
-        label="CPUs Disponibles"
+        label="Nombre"
       >
         {cpuList.map((cpuItem) => (
           <MenuItem key={cpuItem.id_recurso.id_recurso} value={cpuItem}>

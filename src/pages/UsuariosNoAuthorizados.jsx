@@ -184,7 +184,7 @@ function UsuariosNoAutorizados() {
     <div className="mx-8 my-6">
       <h2
         style={{ color: "rgb(4, 35, 84)" }}
-        className=" font-bold text-3xl mb-4"
+        className="font-bold text-3xl"
       >
         Lista de usuarios no autorizados
       </h2>

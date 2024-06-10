@@ -211,10 +211,10 @@ function Recursos() {
 
   return (
     <div className="mx-8 my-6">
-      <Box sx={{ color: "primary.main" }}>
-        <p className="font-bold text-3xl mb-4">Recursos computacionales</p>
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">Recursos computacionales</p>
       </Box>
-      <Box sx={{ my: 3 }}>
+      <Box sx={{ mb: 3 }}>
         <Button
           variant="contained"
           onClick={toggleAddModal}

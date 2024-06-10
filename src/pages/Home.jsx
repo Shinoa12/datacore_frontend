@@ -14,6 +14,7 @@ function Home() {
               color: "primary.main",
               textAlign: "center",
               mt: 4,
+              mb: 6,
             }}
           >
             <p className="font-bold text-3xl mb-3">
@@ -22,7 +23,7 @@ function Home() {
             <p className="font-semibold text-2xl">¿Qué tal tu día?</p>
 
             <hr
-              className="mt-6 mb-12"
+              className="mt-6"
               style={{ width: "100%", borderTop: "4px solid" }}
             />
           </Box>

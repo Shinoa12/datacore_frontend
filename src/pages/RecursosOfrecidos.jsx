@@ -6,10 +6,10 @@ import { BsCpuFill, BsGpuCard } from "react-icons/bs";
 function RecursosOfrecidos() {
   return (
     <div className="mx-8 my-6">
-      <Box sx={{ color: "primary.main" }}>
-        <p className="font-bold text-3xl mb-4">Nueva solicitud</p>
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">Nueva solicitud</p>
       </Box>
-      <Box sx={{ color: "primary.main", textAlign: "center", mt: 4, mb: 8 }}>
+      <Box sx={{ color: "primary.main", textAlign: "center", mb: 8 }}>
         <p className="font-semibold text-3xl">
           ¿Qué servicio deseas solicitar?
         </p>
