@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faFile } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CPUDropdown from "../components/CPUDropdown";
@@ -16,6 +16,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
+import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
@@ -198,7 +199,12 @@ function CPUSolicitud() {
         <Box sx={{ flex: 1 }}>
           {/* Archivos */}
           <Box sx={{ mb: 4 }}>
-            <Box sx={{ color: "primary.main", mb: 2 }}>
+            <Box
+              sx={{
+                color: "primary.main",
+                mb: 2,
+              }}
+            >
               <p className="font-bold text-xl">Archivos</p>
             </Box>
             <Box
@@ -210,7 +216,7 @@ function CPUSolicitud() {
                 height: "10rem",
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "0.5rem",
                 justifyContent: showDropMessage ? "center" : "flex-start",
                 alignItems: showDropMessage ? "center" : "flex-start",
                 overflow: "auto",
@@ -225,22 +231,21 @@ function CPUSolicitud() {
                     sx={{ color: "primary.main" }}
                   />
                   <Box>
-                    <label
-                      style={{
-                        color: "#1976D2",
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                      }}
+                    <p>Arrastra archivos aquí o</p>
+                    <Button
+                      component="label"
+                      variant="contained"
+                      tabIndex={-1}
+                      sx={{ mt: 1 }}
                     >
-                      Haz clic para elegir un archivo
+                      Elige archivos
                       <input
                         type="file"
                         hidden
                         onChange={handleFileChange}
                         multiple
                       ></input>
-                    </label>
-                    <span> o arrástralo aquí</span>
+                    </Button>
                   </Box>
                 </>
               ) : (
@@ -278,7 +283,7 @@ function CPUSolicitud() {
               <TextField
                 multiline
                 fullWidth
-                placeholder="Agregar parámetros..."
+                placeholder="Ingresa parámetros aquí..."
                 rows={6}
                 InputProps={{
                   style: {
