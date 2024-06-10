@@ -50,7 +50,6 @@ function UpdateUserModal ({open , setOpen , user}) {
 
   }, [open]);
 
-
   //FUNCIONES PARA ACCEDER A LOS METODOS API
   async function CargarFacultades(){
     const res = await getAllFacultad();

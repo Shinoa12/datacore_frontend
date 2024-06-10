@@ -141,11 +141,11 @@ function Solicitudes() {
 
   //Cancelar solicitud
   function cancelarSolicitudes (){
-    console.log(selectedIdSolicitud)
+
     deleteSolicitud(selectedIdSolicitud)
       .then((response) => {
         loadPage();
-        console.log( response.data.id_solicitud + ": Eliminado");
+        console.log( response.data.id_solicitud + ": cancelado");
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
