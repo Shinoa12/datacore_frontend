@@ -12,12 +12,11 @@ import Historial from "../pages/Historial";
 import Solicitudes from "../pages/Solicitudes";
 import Home from "../pages/Home";
 import UsuariosAutorizados from "../pages/UsuariosAutorizados";
-import UsuariosNoAutorizados from "../pages/UsuariosNoAuthorizados";
+import UsuariosDesautorizados from "../pages/UsuariosDesautorizados";
 import RecursosOfrecidos from "../pages/RecursosOfrecidos";
 import CPUSolicitud from "../pages/CPUSolicitud";
 import GPUSolicitud from "../pages/GPUSolicitud";
 import Ajustes from "../pages/Ajustes";
-
 
 export const AppRoutes = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -41,8 +40,8 @@ export const AppRoutes = () => {
               element={<UsuariosAutorizados />}
             />
             <Route
-              path="/usuarios-no-autorizados"
-              element={<UsuariosNoAutorizados />}
+              path="/usuarios-desautorizados"
+              element={<UsuariosDesautorizados />}
             />
             <Route path="/recursos-ofrecidos" element={<RecursosOfrecidos />} />
             <Route path="/cpu-solicitud" element={<CPUSolicitud />} />

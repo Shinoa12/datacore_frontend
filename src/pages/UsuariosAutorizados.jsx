@@ -1,22 +1,24 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import { getAllUsers, getUserById, getAllEstadoPersona } from "../api/Users";
-import { MdModeEdit } from "react-icons/md";
+import Select from "@mui/material/Select";
+import EditIcon from "@mui/icons-material/Edit";
 import UpdateUserModal from "../components/UpdateUserModal";
+import NoRowsOverlay from "../components/NoRowsOverlay";
+import { getAllUsers, getUserById, getAllEstadoPersona } from "../api/Users";
 
 function UsuariosAutorizados() {
-  const [open, setOpen] = React.useState(false);
-  const [rows, setRows] = React.useState([]);
-  const [data, setData] = React.useState([]);
-  const [user, setUser] = React.useState({});
-  const [selectedState, setSelectedState] = React.useState(0);
-  const [estadoPersonaList, setEstadoPersonaList] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [data, setData] = useState([]);
+  const [user, setUser] = useState({});
+  const [selectedState, setSelectedState] = useState(0);
+  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   async function CargarUsuario(idUser) {
     const res = await getUserById(idUser);
@@ -25,48 +27,35 @@ function UsuariosAutorizados() {
   }
 
   const columns = [
-    { field: "id", headerName: "ID", width: 50, editable: false },
-    { field: "correo", headerName: "Correo", width: 200, editable: false },
-    { field: "nombres", headerName: "Nombres", width: 400, editable: false },
-    { field: "facultad", headerName: "Facultad", width: 250, editable: false },
+    { field: "id", headerName: "ID", width: 50 },
+    { field: "nombres", headerName: "Nombres", width: 220 },
+    { field: "correo", headerName: "Correo", width: 220 },
+    { field: "facultad", headerName: "Facultad", width: 180 },
     {
       field: "especialidad",
       headerName: "Especialidad",
-      width: 250,
-      editable: false,
+      width: 180,
     },
     {
       field: "recursos_maximos",
-      headerName: "Recursos Máximos",
+      headerName: "Recursos máx.",
+      width: 130,
       sortable: false,
-      width: 200,
-      editable: false,
     },
     {
-      field: "options",
+      field: "opciones",
       headerName: "Opciones",
-      description: "",
-      sortable: false,
       width: 100,
-      renderCell: (params) => {
-        const onClick = async (e) => {
-          e.stopPropagation(); // don't select this row after clicking
-          await CargarUsuario(params.row.id);
-          setOpen(true);
-        };
-
-        return (
-          <MdModeEdit
-            className="inline-block w-6 h-5 mr-2 -mt-2"
-            onClick={onClick}
-            style={{ cursor: "pointer" }}
-          ></MdModeEdit>
-        );
-      },
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => openEditModal(params.row.id)}>
+          <EditIcon sx={{ color: "primary.main" }} />
+        </IconButton>
+      ),
     },
   ];
 
-  React.useEffect(() => {
+  useEffect(() => {
     CargarEstadosPersonas();
 
     const fetchData = async () => {
@@ -128,71 +117,67 @@ function UsuariosAutorizados() {
     setLoading(false);
   }
 
+  const openEditModal = async (id) => {
+    await CargarUsuario(id);
+    setOpen(true);
+  };
+
   return (
     <div className="mx-8 my-6">
       <Box sx={{ color: "primary.main", mb: 4 }}>
         <p className="font-bold text-3xl">Lista de usuarios autorizados</p>
       </Box>
 
-      <div className="flex justify-content-center items-center">
-        <span style={{ color: "rgb(4, 35, 84)" }} className=" text-lg mr-4">
-          Estado:
-        </span>
-        <Select
-          labelId="demo-simple-select-required-label"
-          id="demo-simple-select-required"
-          value={selectedState}
-          label="Estado"
-          onChange={handleStateChange}
-        >
-          <MenuItem key={0} value={0}>
-            TODOS
-          </MenuItem>
-          {estadoPersonaList
-            .filter(
-              (estadoPersonaItem) =>
-                estadoPersonaItem.nombre !== "DESAUTORIZADO"
-            )
-            .map((estadoPersonaItem) => (
-              <MenuItem
-                key={estadoPersonaItem.id_estado_persona}
-                value={estadoPersonaItem.id_estado_persona}
-              >
-                {estadoPersonaItem.nombre}
-              </MenuItem>
-            ))}
-        </Select>
-      </div>
-
-      <Box sx={{ height: 400, width: "100%" }} className="mt-4">
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          disableRowSelectionOnClick
-          disableSelectionOnClick
-        />
+      {/* Filtro de estado */}
+      <Box sx={{ mb: 4 }}>
+        <FormControl margin="dense">
+          <InputLabel id="estado-label">Estado</InputLabel>
+          <Select
+            labelId="estado-label"
+            id="estado"
+            name="estado"
+            label="Estado"
+            value={selectedState}
+            onChange={handleStateChange}
+            disabled={loading || rows.length === 0}
+          >
+            <MenuItem key={0} value={0}>
+              TODOS
+            </MenuItem>
+            {estadoPersonaList
+              .filter(({ nombre }) => nombre !== "DESAUTORIZADO")
+              .map(({ id_estado_persona, nombre }) => (
+                <MenuItem key={id_estado_persona} value={id_estado_persona}>
+                  {nombre}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
       </Box>
+
+      {/* Tabla */}
+      <DataGrid
+        autoHeight
+        columns={columns}
+        rows={rows}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5]}
+        disableRowSelectionOnClick
+        slots={{ noRowsOverlay: NoRowsOverlay }}
+        loading={loading}
+      />
 
       <UpdateUserModal
         open={open}
         setOpen={setOpen}
         user={user}
       ></UpdateUserModal>
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </div>
   );
 }

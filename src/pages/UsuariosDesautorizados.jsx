@@ -1,13 +1,12 @@
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import { getAllUsers, getUserById } from "../api/Users";
 import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
+import NoRowsOverlay from "../components/NoRowsOverlay";
 
-function UsuariosNoAutorizados() {
+function UsuariosDesautorizados() {
   const columns = [
     { field: "id", headerName: "ID", width: 90 },
     { field: "correo", headerName: "Correo", width: 200 },
@@ -112,10 +111,11 @@ function UsuariosNoAutorizados() {
   };
 
   return (
-    <div className="ml-4 mt-5 mb-5 mr-4">
-      <h2 style={{ color: "rgb(4, 35, 84)" }} className=" text-3xl mb-4">
-        Lista de usuarios desautorizados
-      </h2>
+    <div className="mx-8 my-6">
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">Lista de usuarios desautorizados</p>
+      </Box>
+
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={rows}
@@ -129,6 +129,8 @@ function UsuariosNoAutorizados() {
           }}
           pageSizeOptions={[5]}
           disableRowSelectionOnClick
+          slots={{ noRowsOverlay: NoRowsOverlay }}
+          loading={loading}
         />
       </Box>
 
@@ -137,15 +139,8 @@ function UsuariosNoAutorizados() {
         setOpen={setOpen}
         user={user}
       ></UpdateUserModal>
-
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </div>
   );
 }
 
-export default UsuariosNoAutorizados;
+export default UsuariosDesautorizados;

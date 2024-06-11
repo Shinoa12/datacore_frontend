@@ -45,7 +45,7 @@ const Sidebar = ({ sidebarToggle }) => {
               </li>
             </Link>
             <hr className="border-4 border-white" />
-            <Link to="usuarios-no-autorizados">
+            <Link to="usuarios-desautorizados">
               <li className="mb-2 hover:shadow hover:bg-blue-500 py-2 text-center">
                 <button className="px-3 text-sm">
                   <FaUserSlash className="inline-block w-6 h-5 mr-3 -mt-2"></FaUserSlash>

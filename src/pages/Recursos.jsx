@@ -12,22 +12,8 @@ import AddGPUModal from "../components/AddGPUModal";
 import EditCPUModal from "../components/EditCPUModal";
 import EditGPUModal from "../components/EditGPUModal";
 import SuccessModal from "../components/SuccessModal";
+import NoRowsOverlay from "../components/NoRowsOverlay";
 import { listCPUs, listGPUs } from "../api/Recursos";
-
-function CustomNoRowsOverlay() {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-      }}
-    >
-      <p className="text-xl font-medium">No hay registros</p>
-    </Box>
-  );
-}
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -55,8 +41,8 @@ function Recursos() {
     { field: "tamano_ram", headerName: "RAM", width: 120 },
     { field: "ubicacion", headerName: "Ubicación", width: 120 },
     {
-      field: "acciones",
-      headerName: "Acciones",
+      field: "opciones",
+      headerName: "Opciones",
       width: 100,
       sortable: false,
       renderCell: (params) => (
@@ -76,8 +62,8 @@ function Recursos() {
     { field: "tamano_vram", headerName: "VRAM", width: 120 },
     { field: "ubicacion", headerName: "Ubicación", width: 120 },
     {
-      field: "acciones",
-      headerName: "Acciones",
+      field: "opciones",
+      headerName: "Opciones",
       width: 100,
       sortable: false,
       renderCell: (params) => (
@@ -242,7 +228,7 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
-            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+            slots={{ noRowsOverlay: NoRowsOverlay }}
             loading={loadingCPU}
           />
         </TabPanel>
@@ -260,7 +246,7 @@ function Recursos() {
             }}
             pageSizeOptions={[10]}
             disableRowSelectionOnClick
-            slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+            slots={{ noRowsOverlay: NoRowsOverlay }}
             loading={loadingGPU}
           />
         </TabPanel>
