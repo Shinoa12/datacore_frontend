@@ -1,12 +1,9 @@
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import {
-  getAllUsers,
-  getUserById
-} from "../api/UpdateUserAPI";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { getAllUsers, getUserById } from "../api/Users";
 import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
 
@@ -142,7 +139,7 @@ function UsuariosNoAutorizados() {
       ></UpdateUserModal>
 
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
         <CircularProgress color="inherit" />
@@ -152,4 +149,3 @@ function UsuariosNoAutorizados() {
 }
 
 export default UsuariosNoAutorizados;
-

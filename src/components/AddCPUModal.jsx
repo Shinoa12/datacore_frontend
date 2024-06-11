@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createCPU } from "../api/RecursoDropdown";
+import { createCPU } from "../api/Recursos";
 import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";

@@ -1,15 +1,11 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import {
-  getAllUsers,
-  getUserById,
-  getAllEstadoPersona
-} from "../api/UpdateUserAPI";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { getAllUsers, getUserById, getAllEstadoPersona } from "../api/Users";
 import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
 
@@ -19,7 +15,7 @@ function UsuariosAutorizados() {
   const [data, setData] = React.useState([]);
   const [user, setUser] = React.useState({});
   const [selectedState, setSelectedState] = React.useState(0);
-  const [estadoPersonaList , setEstadoPersonaList] = React.useState([]);
+  const [estadoPersonaList, setEstadoPersonaList] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
   async function CargarUsuario(idUser) {
@@ -31,10 +27,21 @@ function UsuariosAutorizados() {
   const columns = [
     { field: "id", headerName: "ID", width: 50, editable: false },
     { field: "correo", headerName: "Correo", width: 200, editable: false },
-    { field: "nombres", headerName: "Nombres", width: 400, editable: false},
-    { field: "facultad", headerName: "Facultad", width: 250, editable: false},
-    { field: "especialidad", headerName: "Especialidad", width: 250, editable: false},
-    { field: "recursos_maximos", headerName: "Recursos Máximos", sortable: false, width: 200 , editable : false},
+    { field: "nombres", headerName: "Nombres", width: 400, editable: false },
+    { field: "facultad", headerName: "Facultad", width: 250, editable: false },
+    {
+      field: "especialidad",
+      headerName: "Especialidad",
+      width: 250,
+      editable: false,
+    },
+    {
+      field: "recursos_maximos",
+      headerName: "Recursos Máximos",
+      sortable: false,
+      width: 200,
+      editable: false,
+    },
     {
       field: "options",
       headerName: "Opciones",
@@ -79,48 +86,53 @@ function UsuariosAutorizados() {
     fetchData();
   }, []);
 
-  async function CargarEstadosPersonas(){
+  async function CargarEstadosPersonas() {
     const res = await getAllEstadoPersona();
     setEstadoPersonaList(res.data);
   }
 
   const transformData = (originalData) => {
     return originalData
-      .filter(user => user.id_estado_persona === 2 || user.id_estado_persona === 3)
-      .map(user => ({
+      .filter(
+        (user) => user.id_estado_persona === 2 || user.id_estado_persona === 3
+      )
+      .map((user) => ({
         id: user.id, // Use the original unique ID
         correo: user.email || "", // Get email or use empty string if missing
-        nombres: `${user.first_name?.toUpperCase() || ""} ${user.last_name?.toUpperCase() || ""}`, // Combine and uppercase names (use empty strings if missing)
+        nombres: `${user.first_name?.toUpperCase() || ""} ${
+          user.last_name?.toUpperCase() || ""
+        }`, // Combine and uppercase names (use empty strings if missing)
         facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
         especialidad: "ingeniería Informática",
         recursos_maximos: 1,
-        originalId: user.id // Keep the original ID for reference
+        originalId: user.id, // Keep the original ID for reference
       }));
   };
 
-  function handleStateChange (event) {
-    const newState = event.target.value
+  function handleStateChange(event) {
+    const newState = event.target.value;
     setSelectedState(newState);
     setLoading(true);
 
     if (newState !== 0) {
-      console.log(newState)
+      console.log(newState);
       const filteredRows = data.filter(
         (row) => row.id_estado_persona === newState
       ); // Filter based on selected state
       setRows(transformData(filteredRows));
-    } else { // MUESTRA TODA LA DATA
-      console.log(newState)
+    } else {
+      // MUESTRA TODA LA DATA
+      console.log(newState);
       setRows(transformData(data));
     }
     setLoading(false);
-  };
+  }
 
   return (
-    <div className="ml-4 mt-5 mb-5 mr-4">
-      <h2 style={{ color: "rgb(4, 35, 84)" }} className=" text-3xl mb-4">
-        Lista de usuarios autorizados
-      </h2>
+    <div className="mx-8 my-6">
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">Lista de usuarios autorizados</p>
+      </Box>
 
       <div className="flex justify-content-center items-center">
         <span style={{ color: "rgb(4, 35, 84)" }} className=" text-lg mr-4">
@@ -133,15 +145,22 @@ function UsuariosAutorizados() {
           label="Estado"
           onChange={handleStateChange}
         >
-          <MenuItem key={0} value={0}>TODOS</MenuItem>
+          <MenuItem key={0} value={0}>
+            TODOS
+          </MenuItem>
           {estadoPersonaList
-            .filter(estadoPersonaItem => estadoPersonaItem.nombre !== 'DESAUTORIZADO')
-            .map(estadoPersonaItem => (
-              <MenuItem key={estadoPersonaItem.id_estado_persona} value={estadoPersonaItem.id_estado_persona}>
+            .filter(
+              (estadoPersonaItem) =>
+                estadoPersonaItem.nombre !== "DESAUTORIZADO"
+            )
+            .map((estadoPersonaItem) => (
+              <MenuItem
+                key={estadoPersonaItem.id_estado_persona}
+                value={estadoPersonaItem.id_estado_persona}
+              >
                 {estadoPersonaItem.nombre}
               </MenuItem>
-            ))
-        }
+            ))}
         </Select>
       </div>
 
@@ -169,7 +188,7 @@ function UsuariosAutorizados() {
       ></UpdateUserModal>
 
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
         <CircularProgress color="inherit" />
@@ -179,4 +198,3 @@ function UsuariosAutorizados() {
 }
 
 export default UsuariosAutorizados;
-

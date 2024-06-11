@@ -12,7 +12,7 @@ import AddGPUModal from "../components/AddGPUModal";
 import EditCPUModal from "../components/EditCPUModal";
 import EditGPUModal from "../components/EditGPUModal";
 import SuccessModal from "../components/SuccessModal";
-import { getAllCPU, getAllGPU } from "../api/RecursoDropdown";
+import { listCPUs, listGPUs } from "../api/Recursos";
 
 function CustomNoRowsOverlay() {
   return (
@@ -139,7 +139,7 @@ function Recursos() {
   const fetchCPU = async () => {
     setLoadingCPU(true);
     try {
-      const response = await getAllCPU();
+      const response = await listCPUs();
       const cpus = response.data.map((item) => ({
         id: item.id_recurso.id_recurso,
         nombre: item.nombre,
@@ -161,7 +161,7 @@ function Recursos() {
   const fetchGPU = async () => {
     setLoadingGPU(true);
     try {
-      const response = await getAllGPU();
+      const response = await listGPUs();
       const gpus = response.data.map((item) => ({
         id: item.id_recurso.id_recurso,
         nombre: item.nombre,
@@ -210,11 +210,11 @@ function Recursos() {
   };
 
   return (
-    <div className="mx-4 my-4">
-      <Box sx={{ color: "primary.main" }}>
-        <h1 className="font-bold text-3xl mb-4">Recursos computacionales</h1>
+    <div className="mx-8 my-6">
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">Recursos computacionales</p>
       </Box>
-      <Box sx={{ my: 3 }}>
+      <Box sx={{ mb: 3 }}>
         <Button
           variant="contained"
           onClick={toggleAddModal}
