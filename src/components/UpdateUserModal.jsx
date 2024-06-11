@@ -1,238 +1,328 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import TextField from "@mui/material/TextField";
+import CloseIcon from "@mui/icons-material/Close";
+import LoadingOverlay from "./LoadingOverlay";
 import {
   getAllFacultad,
   getAllEspecialidadPorFacultad,
   getAllEstadoPersona,
   updateUser,
+  getUserById,
 } from "../api/Users";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import CloseIcon from "@mui/icons-material/Close";
-import TextField from "@mui/material/TextField";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 500,
-  bgcolor: "background.paper",
-  p: 4,
-};
+function UpdateUserModal({ open, onClose, onSuccess, id }) {
+  const initialFormData = {
+    correo: "",
+    nombres: "",
+    apellidos: "",
+    recursos_max: 0,
+    facultad: "",
+    especialidad: "",
+    estado: "",
+  };
 
-function UpdateUserModal({ open, setOpen, user }) {
-  //Hook manejadores de cambios en campos editables del usuario
-  const [facultad, setFacultad] = React.useState("");
-  const [especialidad, setEspecialidad] = React.useState("");
-  const [estadoUsuario, setEstadoUsuario] = React.useState("");
+  const [formData, setFormData] = useState(initialFormData);
+  const [facultadList, setFacultadList] = useState([]);
+  const [especialidadList, setEspecialidadList] = useState([]);
+  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  //Hook manejadores de estado de las lista de los combo box
-  const [facultadList, setFacultadList] = React.useState([]);
-  const [especialidadList, setEspecialidadList] = React.useState([]);
-  const [estadoPersonaList, setEstadoPersonaList] = React.useState([]);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-  React.useEffect(() => {
-    if (open === true) {
-      CargarFacultades();
-      CargarEspecialidadesPorFacultad(user.id_facultad);
-      CargarEstadosPersonas();
-
-      setFacultad(user.id_facultad || "");
-      setEspecialidad(user.id_especialidad || "");
-      setEstadoUsuario(user.id_estado_persona || "");
+  const handleClose = (event, reason) => {
+    if (
+      reason &&
+      (reason === "backdropClick" || (saving && reason === "escapeKeyDown"))
+    ) {
+      return;
     }
-  }, [open]);
-
-  //FUNCIONES PARA ACCEDER A LOS METODOS API
-  async function CargarFacultades() {
-    const res = await getAllFacultad();
-    setFacultadList(res.data);
-  }
-
-  async function CargarEstadosPersonas() {
-    const res = await getAllEstadoPersona();
-    setEstadoPersonaList(res.data);
-  }
-
-  async function CargarEspecialidadesPorFacultad(idFacultad) {
-    const res = await getAllEspecialidadPorFacultad(idFacultad);
-    setEspecialidadList(res.data);
-  }
-
-  async function updateUserClick() {
-    user.id_facultad = facultad;
-    user.id_especialidad = especialidad;
-    user.id_estado_persona = estadoUsuario;
-
-    const res = await updateUser(user.id, user);
-    console.log(res);
-  }
-
-  //VARIABLES QUE MANEJAN LOS CAMBIOS DE LOS INPUTS
-  const handleFacultadChange = (event) => {
-    CargarEspecialidadesPorFacultad(event.target.value);
-
-    setFacultad(event.target.value);
+    onClose();
+    setFormData(initialFormData);
   };
 
-  const handleEspecialidadChange = (event) => {
-    setEspecialidad(event.target.value);
+  const handleSubmit = async () => {
+    setSaving(true);
+    const userData = {
+      id_facultad: formData.facultad,
+      id_especialidad: formData.especialidad,
+      id_estado_persona: formData.estado,
+    };
+    try {
+      await updateUser(id, userData);
+      onSuccess();
+      handleClose();
+    } catch (error) {
+      console.error("Error al editar usuario:", error);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleEstadoUsuarioChange = (event) => {
-    setEstadoUsuario(event.target.value);
+  const fetchFacultadList = async () => {
+    const response = await getAllFacultad();
+    setFacultadList(response.data);
   };
+
+  const fetchEspecialidadesPorFacultad = async (idFacultad) => {
+    const response = await getAllEspecialidadPorFacultad(idFacultad);
+    setEspecialidadList(response.data);
+  };
+
+  const fetchEstadoPersonaList = async () => {
+    const response = await getAllEstadoPersona();
+    setEstadoPersonaList(response.data);
+  };
+
+  const fetchSelectedUser = async (id) => {
+    setLoading(true);
+    try {
+      const response = await getUserById(id);
+      const data = response.data;
+      const user = {
+        correo: data.email,
+        nombres: data.first_name,
+        apellidos: data.last_name,
+        recursos_max: data.recursos_max,
+        facultad: data.id_facultad,
+        especialidad: data.id_especialidad,
+        estado: data.id_estado_persona,
+      };
+      setFormData(user);
+      await fetchEspecialidadesPorFacultad(user.facultad);
+    } catch (error) {
+      console.error("Error al cargar datos de usuario:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFacultadList();
+    fetchEstadoPersonaList();
+  }, []);
+
+  useEffect(() => {
+    if (id !== 0) {
+      fetchSelectedUser(id);
+    }
+  }, [id]);
+
+  // Actualizar especialidades al cambiar facultad
+  useEffect(() => {
+    if (formData.facultad !== "") {
+      setFormData({
+        ...formData,
+        especialidad: "",
+      });
+      fetchEspecialidadesPorFacultad(formData.facultad);
+    }
+  }, [formData.facultad]);
+
+  // Establecer como especialidad el primer valor
+  useEffect(() => {
+    if (especialidadList.length > 0) {
+      setFormData({
+        ...formData,
+        especialidad: especialidadList[0].id_especialidad,
+      });
+    }
+  }, [especialidadList]);
 
   return (
     <div>
-      <Modal
+      <Dialog
         open={open}
-        onClose={() => setOpen(!open)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        onClose={handleClose}
+        aria-labelledby="dialog-title"
+        fullWidth={true}
+        disableRestoreFocus
       >
-        <Box sx={style}>
-          <CloseIcon
-            onClick={() => setOpen(!open)}
-            style={{
-              position: "absolute",
-              top: 32,
-              right: 30,
-              cursor: "pointer",
-            }}
+        {saving && (
+          <LoadingOverlay
+            backgroundColor={"rgba(255, 255, 255, 0.5)"}
+            content={"Guardando..."}
           />
-          <Typography id="modal-modal-title" variant="h5" component="h2">
-            Editar Usuario
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            <Box
-              component="form"
-              sx={{
-                "& > :not(style)": { mb: 1, width: "48ch" },
-              }}
-              noValidate
-              autoComplete="off"
+        )}
+        <DialogTitle
+          sx={{ m: 0, p: 2, color: "primary.main" }}
+          id="dialog-title"
+        >
+          Editar usuario
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 12,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers sx={{ p: 2, position: "relative" }}>
+          {loading && (
+            <LoadingOverlay
+              backgroundColor={"white"}
+              content={"Cargando datos..."}
+            />
+          )}
+          {/* Nombres */}
+          <TextField
+            margin="dense"
+            id="nombres"
+            name="nombres"
+            label="Nombres"
+            type="text"
+            fullWidth
+            value={formData.nombres}
+            onChange={handleChange}
+            disabled
+          />
+
+          {/* Apellidos */}
+          <TextField
+            margin="dense"
+            id="apellidos"
+            name="apellidos"
+            label="Apellidos"
+            type="text"
+            fullWidth
+            value={formData.apellidos}
+            onChange={handleChange}
+            disabled
+          />
+
+          {/* Correo */}
+          <TextField
+            autoFocus
+            margin="dense"
+            id="correo"
+            name="correo"
+            label="Correo"
+            type="text"
+            fullWidth
+            value={formData.correo}
+            onChange={handleChange}
+            disabled
+          />
+
+          {/* Recursos máximos */}
+          <TextField
+            margin="dense"
+            id="recursos_max"
+            name="recursos_max"
+            label="Recursos máximos"
+            type="number"
+            fullWidth
+            value={formData.recursos_max}
+            onChange={handleChange}
+            disabled
+          />
+
+          {/* Estado */}
+          <FormControl margin="dense" fullWidth>
+            <InputLabel id="estado-label">
+              {formData.estado !== "" ? "Estado" : "Cargando estados..."}
+            </InputLabel>
+            <Select
+              labelId="estado-label"
+              id="estado"
+              name="estado"
+              label="Estado"
+              value={estadoPersonaList.length > 0 ? formData.estado : ""}
+              onChange={handleChange}
+              disabled={formData.estado === "" || saving}
             >
-              <TextField
-                id="outlined-basic"
-                label="Correo"
-                variant="outlined"
-                value={user.username?.toUpperCase()}
-                aria-readonly
-              />
-              <hr></hr>
-              <TextField
-                id="outlined-basic"
-                label="Nombres"
-                variant="outlined"
-                value={user.first_name?.toUpperCase()}
-                aria-readonly
-              />
-              <hr></hr>
-              <TextField
-                id="outlined-basic"
-                label="Apellidos"
-                variant="outlined"
-                value={user.last_name?.toUpperCase()}
-                aria-readonly
-              />
-              <hr></hr>
-              <FormControl required sx={{ minWidth: 120 }}>
-                <InputLabel id="demo-simple-select-required-label">
-                  Facultad
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-required-label"
-                  id="demo-simple-select-required"
-                  value={facultad}
-                  label="Facultad *"
-                  onChange={handleFacultadChange}
-                >
-                  {facultadList.map((facultadItem) => (
-                    <MenuItem
-                      key={facultadItem.id_facultad}
-                      value={facultadItem.id_facultad}
-                    >
-                      {facultadItem.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <hr></hr>
-              <FormControl required sx={{ minWidth: 120 }}>
-                <InputLabel id="demo-simple-select-required-label">
-                  Especialidad
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-required-label"
-                  id="demo-simple-select-required"
-                  value={especialidad}
-                  label="Especialidad *"
-                  onChange={handleEspecialidadChange}
-                >
-                  {especialidadList.map((especialidadItem) => (
-                    <MenuItem
-                      key={especialidadItem.id_especialidad}
-                      value={especialidadItem.id_especialidad}
-                    >
-                      {especialidadItem.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <hr></hr>
-              <TextField
-                id="outlined-basic"
-                label="Recursos máximos"
-                variant="outlined"
-                value={user.recursos_max}
-                aria-readonly
-              />
-              <hr></hr>
-              <FormControl required sx={{ minWidth: 120 }}>
-                <InputLabel id="demo-simple-select-required-label">
-                  Estado
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-required-label"
-                  id="demo-simple-select-required"
-                  value={estadoUsuario}
-                  label="Estado *"
-                  onChange={handleEstadoUsuarioChange}
-                >
-                  {estadoPersonaList.map((estadoPersonaItem) => (
-                    <MenuItem
-                      key={estadoPersonaItem.id_estado_persona}
-                      value={estadoPersonaItem.id_estado_persona}
-                    >
-                      {estadoPersonaItem.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <br></br>
-              <br></br>
-              <Stack
-                spacing={2}
-                direction="row"
-                justifyContent="center" // Para centrar horizontalmente
-                alignItems="center" // Para centrar verticalmente
-              >
-                <Button onClick={updateUserClick} variant="contained">
-                  Confirmar cambios
-                </Button>
-              </Stack>
-            </Box>
-          </Typography>
-        </Box>
-      </Modal>
+              {estadoPersonaList.map(({ id_estado_persona, nombre }) => (
+                <MenuItem key={id_estado_persona} value={id_estado_persona}>
+                  {nombre}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Facultad */}
+          <FormControl margin="dense" fullWidth>
+            <InputLabel id="facultad-label">
+              {formData.facultad !== "" ? "Facultad" : "Cargando facultades..."}
+            </InputLabel>
+            <Select
+              labelId="facultad-label"
+              id="facultad"
+              name="facultad"
+              label="Facultad"
+              value={facultadList.length > 0 ? formData.facultad : ""}
+              onChange={handleChange}
+              disabled={
+                formData.facultad === "" ||
+                formData.especialidad === "" ||
+                saving
+              }
+            >
+              {facultadList.map(({ id_facultad, nombre }) => (
+                <MenuItem key={id_facultad} value={id_facultad}>
+                  {nombre}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* Especialidad */}
+          <FormControl margin="dense" fullWidth>
+            <InputLabel id="especialidad-label">
+              {formData.especialidad !== ""
+                ? "Especialidad"
+                : "Cargando especialidades..."}
+            </InputLabel>
+            <Select
+              labelId="especialidad-label"
+              id="especialidad"
+              name="especialidad"
+              label="Especialidad"
+              value={
+                especialidadList.length > 0 && !loading
+                  ? formData.especialidad
+                  : ""
+              }
+              onChange={handleChange}
+              disabled={formData.especialidad === "" || saving}
+            >
+              {especialidadList.map(({ id_especialidad, nombre }) => (
+                <MenuItem key={id_especialidad} value={id_especialidad}>
+                  {nombre}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions sx={{ display: "flex", justifyContent: "end", p: 2 }}>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={
+              saving || Object.values(formData).some((value) => value === "")
+            }
+          >
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

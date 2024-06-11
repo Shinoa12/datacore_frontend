@@ -1,30 +1,20 @@
-import axios from 'axios'
+import axios from "axios";
 
-export const getAllFacultad = () => {
-    return axios.get('http://127.0.0.1:8000/datacore/api/v1/facultades/')
-}
+const API_BASE_URL = "http://127.0.0.1:8000/datacore/api/v1/";
 
-export const getAllEspecialidadPorFacultad = (idFacultad) => {
-    return axios.get(`http://127.0.0.1:8000/datacore/api/v1/especialidades/porFacultad/${idFacultad}`)
-}
+const apiGet = (endpoint) => {
+  return axios.get(`${API_BASE_URL}${endpoint}`);
+};
 
-export const getAllEspecialidades = () => {
-    return axios.get(`http://127.0.0.1:8000/datacore/api/v1/especialidades/`)
-}
+const apiPatch = (endpoint, data) => {
+  return axios.patch(`${API_BASE_URL}${endpoint}`, data);
+};
 
-export const getAllEstadoPersona = () => {
-    return axios.get('http://127.0.0.1:8000/datacore/api/v1/estadosPersonas/')
-}
-
-export const getUserById = (idUser) => {
-    return axios.get(`http://127.0.0.1:8000/datacore/api/v1/users/${idUser}`)
-}
-
-export const getAllUsers = () => {
-    return axios.get(`http://127.0.0.1:8000/datacore/api/v1/users/`)
-}
-
-export const updateUser = (idUser,user) => {
-    return axios.put(`http://127.0.0.1:8000/datacore/api/v1/users/${idUser}/` , user)
-}
-
+export const getAllFacultad = () => apiGet("facultades/");
+export const getAllEspecialidadPorFacultad = (id) =>
+  apiGet(`especialidades/porFacultad/${id}/`);
+export const getAllEspecialidades = () => apiGet("especialidades/");
+export const getAllEstadoPersona = () => apiGet("estadosPersonas/");
+export const getUserById = (id) => apiGet(`users/${id}/`);
+export const getAllUsers = () => apiGet("users/");
+export const updateUser = (id, user) => apiPatch(`users/${id}/`, user);
