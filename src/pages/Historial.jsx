@@ -151,18 +151,21 @@ function Historial() {
             Buscar
         </Button>
     </Box>
+    <Box sx={{ height: 400, width: "100%" }} className="mt-4">
       <DataGrid
-        id="dgHistorial"
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 },
-          },
-        }}
-        pageSizeOptions={[10, 20]}
+          id="dgHistorial"
+          rows={rows}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 10 },
+            },
+          }}
+          pageSizeOptions={[10]}
       />
-      <Box marginTop={5} display="flex" justifyContent="flex-end">
+    </Box>
+      
+    <Box marginTop={5} display="flex" justifyContent="flex-end">
       <Button
         variant="contained"
         startIcon={<SimCardDownloadIcon />}
@@ -170,7 +173,7 @@ function Historial() {
       >
         Exportar Solicitudes
       </Button>
-      </Box>
+    </Box>
     </div>
   );
 }

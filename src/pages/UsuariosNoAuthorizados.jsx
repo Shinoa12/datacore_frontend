@@ -1,165 +1,94 @@
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
-import { getAllUsers } from "../api/Users";
-
-const columns = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "correo", headerName: "Correo", width: 200 },
-  {
-    field: "nombres",
-    headerName: "Nombres",
-    width: 150,
-    editable: true,
-  },
-  {
-    field: "facultad",
-    headerName: "Facultad",
-    width: 150,
-    editable: true,
-  },
-
-  {
-    field: "especialidad",
-    headerName: "Especialidad",
-    // type: "number",
-    width: 110,
-    editable: true,
-  },
-  {
-    field: "fecha_deshabilitacion",
-    headerName: "Fecha Deshabilitación",
-    // type: "number",
-    width: 110,
-    editable: true,
-  },
-  {
-    field: "motivo",
-    headerName: "Motivo",
-    // type: "number",
-    width: 110,
-    editable: true,
-  },
-  //   {
-  //     field: "fullName",
-  //     headerName: "Recursos Máximos",
-  //     description: "This column has a value getter and is not sortable.",
-  //     sortable: false,
-  //     width: 160,
-  //     valueGetter: (value, row) => `${row.facultad || ""} ${row.nombres || ""}`,
-  //   },
-];
-
-// const rows = [
-//   {
-//     id: 1,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 2,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 3,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 4,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 5,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 6,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 7,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 8,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 9,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   {
-//     id: 10,
-//     correo: "christia@pupc.edu.pe",
-//     nombres: "CHRISTIAN OCHOA PATIÑO",
-//     facultad: "Ciencias e Ingeniería",
-//     especialidad: "Ingeniería Informática",
-//     fecha_deshabilitacion: "12/04/2024",
-//     motivo: "Cambio Facultad"
-//   },
-//   //
-// ];
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { getAllUsers, getUserById } from "../api/Users";
+import { MdModeEdit } from "react-icons/md";
+import UpdateUserModal from "../components/UpdateUserModal";
 
 function UsuariosNoAutorizados() {
+  const columns = [
+    { field: "id", headerName: "ID", width: 90 },
+    { field: "correo", headerName: "Correo", width: 200 },
+    {
+      field: "nombres",
+      headerName: "Nombres",
+      width: 150,
+      editable: false,
+    },
+    {
+      field: "facultad",
+      headerName: "Facultad",
+      width: 150,
+      editable: false,
+    },
+    {
+      field: "especialidad",
+      headerName: "Especialidad",
+      width: 110,
+      editable: false,
+    },
+    {
+      field: "fecha_deshabilitacion",
+      headerName: "Fecha Deshabilitación",
+      width: 110,
+      editable: false,
+    },
+    {
+      field: "motivo",
+      headerName: "Motivo",
+      width: 110,
+      editable: false,
+    },
+    {
+      field: "options",
+      headerName: "Opciones",
+      description: "",
+      sortable: false,
+      width: 160,
+      renderCell: (params) => {
+        const onClick = async (e) => {
+          e.stopPropagation(); // don't select this row after clicking
+          await CargarUsuario(params.row.id);
+          setOpen(true);
+        };
+        return (
+          <MdModeEdit
+            className="inline-block w-6 h-5 mr-2 -mt-2"
+            onClick={onClick}
+            style={{ cursor: "pointer" }}
+          ></MdModeEdit>
+        );
+      },
+    },
+  ];
+
   const [rows, setRows] = React.useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [user, setUser] = React.useState({});
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await getAllUsers();
         transformData(res.data);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchData();
   }, []);
+
+  async function CargarUsuario(idUser) {
+    const res = await getUserById(idUser);
+    console.log(res);
+    setUser(res.data);
+  }
 
   const transformData = (originalData) => {
     const newData = [];
@@ -173,7 +102,9 @@ function UsuariosNoAutorizados() {
             user.last_name?.toUpperCase() || ""
           }`, // Combine and uppercase names (use empty strings if missing)
           facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
-          age: 1, // Replace with your logic for age
+          especialidad: "ingeniería Informática", // Add specialty if needed
+          fecha_deshabilitacion: user.fecha_deshabilitacion || "", // Replace with your logic for date
+          motivo: user.motivo || "", // Replace with your logic for reason
         });
       }
     }
@@ -181,12 +112,9 @@ function UsuariosNoAutorizados() {
   };
 
   return (
-    <div className="mx-8 my-6">
-      <h2
-        style={{ color: "rgb(4, 35, 84)" }}
-        className="font-bold text-3xl"
-      >
-        Lista de usuarios no autorizados
+    <div className="ml-4 mt-5 mb-5 mr-4">
+      <h2 style={{ color: "rgb(4, 35, 84)" }} className=" text-3xl mb-4">
+        Lista de usuarios desautorizados
       </h2>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
@@ -195,15 +123,27 @@ function UsuariosNoAutorizados() {
           initialState={{
             pagination: {
               paginationModel: {
-                pespecialidadSize: 5,
+                pageSize: 5,
               },
             },
           }}
-          pespecialidadSizeOptions={[5]}
-          //   checkboxSelection
+          pageSizeOptions={[5]}
           disableRowSelectionOnClick
         />
       </Box>
+
+      <UpdateUserModal
+        open={open}
+        setOpen={setOpen}
+        user={user}
+      ></UpdateUserModal>
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
