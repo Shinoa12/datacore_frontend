@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import DiscardChangesModal from "./DiscardChangesModal";
+import LoadingOverlay from "./LoadingOverlay";
 
 /**
  * Modal para agregar GPU.
@@ -47,6 +48,7 @@ function AddGPUModal({ open, onClose, onSuccess }) {
   const [formErrors, setFormErrors] = useState(initialFormErrors);
   const [isFormValid, setIsFormValid] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Establece el formulario como válido si todos los campos están llenos
   useEffect(() => {
@@ -101,6 +103,7 @@ function AddGPUModal({ open, onClose, onSuccess }) {
 
   const handleSubmit = async () => {
     if (isFormValid) {
+      setSaving(true);
       const gpuData = {
         id_recurso: {
           solicitudes_encoladas: 0,
@@ -120,6 +123,8 @@ function AddGPUModal({ open, onClose, onSuccess }) {
         returnToTable();
       } catch (error) {
         console.error("Error al crear GPU:", error);
+      } finally {
+        setSaving(false);
       }
     }
   };
@@ -133,6 +138,12 @@ function AddGPUModal({ open, onClose, onSuccess }) {
         fullWidth={true}
         disableRestoreFocus
       >
+        {saving && (
+          <LoadingOverlay
+            backgroundColor={"rgba(255, 255, 255, 0.5)"}
+            content={"Guardando..."}
+          />
+        )}
         <DialogTitle
           sx={{ m: 0, p: 2, color: "primary.main" }}
           id="dialog-title"

@@ -8,6 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import EditIcon from "@mui/icons-material/Edit";
 import UpdateUserModal from "../components/UpdateUserModal";
+import SuccessModal from "../components/SuccessModal";
 import NoRowsOverlay from "../components/NoRowsOverlay";
 import {
   getAllUsers,
@@ -52,6 +53,7 @@ function UsuariosAutorizados() {
   const [especialidadList, setEspecialidadList] = useState([]);
   const [rows, setRows] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -147,9 +149,13 @@ function UsuariosAutorizados() {
   };
 
   const handleEditSuccess = async () => {
-    console.log("edit success");
+    setShowSuccessModal(true);
     await fetchUserList();
     setSelectedStatus(0);
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
   };
 
   useEffect(() => {
@@ -233,7 +239,13 @@ function UsuariosAutorizados() {
         onClose={closeEditModal}
         onSuccess={handleEditSuccess}
         id={selectedUser}
-      ></UpdateUserModal>
+      />
+
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={closeSuccessModal}
+        content="El usuario ha sido editado satisfactoriamente."
+      />
     </div>
   );
 }
