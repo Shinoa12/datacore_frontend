@@ -38,7 +38,6 @@ const style = {
 };
 
 function Solicitudes() {
-  var selectedID;
   const [lid, setTextId] = useState();
   const [lfecharegistro, setTextFechaRegistro] = useState();
   const [lestado, setTextEstado] = useState();
@@ -46,6 +45,7 @@ function Solicitudes() {
   const [lnucleo, setTextCantidadNucleo] = useState();
   const [lfrecuencia, setTextFrecuenciaProcesador] = useState();
   const [ltamano, setTextTamanoRAM] = useState();
+  const [selectedIdSolicitud, setSelectedIdSolicitud] = useState();
 
   //Detalle
   const [open, setOpen] = React.useState(false);
@@ -61,7 +61,7 @@ function Solicitudes() {
   const [openC, setOpenC] = React.useState(false);
 
   const abrirCancelar = (id_solicitud) => {
-    selectedID = id_solicitud;
+    setSelectedIdSolicitud(id_solicitud);
     setOpenC(true);
   };
 
@@ -70,7 +70,7 @@ function Solicitudes() {
   };
 
   const confirmarCancelar = () => {
-    cancelarSolicitudes(selectedID);
+    cancelarSolicitudes();
     setOpenC(false);
   };
 
@@ -140,11 +140,12 @@ function Solicitudes() {
   };
 
   //Cancelar solicitud
-  const cancelarSolicitudes = (id_solicitud) => {
-    deleteSolicitud()
+  function cancelarSolicitudes (){
+
+    deleteSolicitud(selectedIdSolicitud)
       .then((response) => {
         loadPage();
-        console.log(id_solicitud + ": Eliminado");
+        console.log( response.data.id_solicitud + ": cancelado");
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);

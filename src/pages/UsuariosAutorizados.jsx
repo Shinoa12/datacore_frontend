@@ -1,30 +1,22 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
-import { Autocomplete, TextField } from "@mui/material";
-import { getAllEspecialidades, getAllUsers, getUserById } from "../api/Users";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { getAllUsers, getUserById, getAllEstadoPersona } from "../api/Users";
 import { MdModeEdit } from "react-icons/md";
 import UpdateUserModal from "../components/UpdateUserModal";
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
-}));
 
 function UsuariosAutorizados() {
   const [open, setOpen] = React.useState(false);
   const [rows, setRows] = React.useState([]);
   const [data, setData] = React.useState([]);
-  const [especialidades, setEspecialidades] = React.useState([]);
   const [user, setUser] = React.useState({});
-  const [selectedState, setSelectedState] = React.useState(null);
+  const [selectedState, setSelectedState] = React.useState(0);
+  const [estadoPersonaList, setEstadoPersonaList] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
 
   async function CargarUsuario(idUser) {
     const res = await getUserById(idUser);
@@ -33,47 +25,34 @@ function UsuariosAutorizados() {
   }
 
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
-    { field: "correo", headerName: "Correo", width: 200 },
-    {
-      field: "nombres",
-      headerName: "Nombres",
-      width: 150,
-      editable: false,
-    },
-    {
-      field: "facultad",
-      headerName: "Facultad",
-      width: 150,
-      editable: false,
-    },
-
+    { field: "id", headerName: "ID", width: 50, editable: false },
+    { field: "correo", headerName: "Correo", width: 200, editable: false },
+    { field: "nombres", headerName: "Nombres", width: 400, editable: false },
+    { field: "facultad", headerName: "Facultad", width: 250, editable: false },
     {
       field: "especialidad",
       headerName: "Especialidad",
-      width: 150,
+      width: 250,
       editable: false,
     },
     {
       field: "recursos_maximos",
       headerName: "Recursos Máximos",
-      description: "This column has a value getter and is not sortable.",
       sortable: false,
-      width: 160,
+      width: 200,
+      editable: false,
     },
     {
       field: "options",
       headerName: "Opciones",
       description: "",
       sortable: false,
-      width: 160,
+      width: 100,
       renderCell: (params) => {
         const onClick = async (e) => {
           e.stopPropagation(); // don't select this row after clicking
-
           await CargarUsuario(params.row.id);
           setOpen(true);
-          console.log(params, "hola mundo");
         };
 
         return (
@@ -88,20 +67,10 @@ function UsuariosAutorizados() {
   ];
 
   React.useEffect(() => {
-    const fetchEspecialidades = async () => {
-      try {
-        const res = await getAllEspecialidades();
-        setEspecialidades(res.data);
-        // const filteredData = transformData(res.data); // Filter data initially
-        // setRows(filteredData);
-      } catch (error) {
-        // console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchEspecialidades();
+    CargarEstadosPersonas();
 
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await getAllUsers();
         setData(res.data);
@@ -109,86 +78,90 @@ function UsuariosAutorizados() {
         setRows(filteredData);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+  async function CargarEstadosPersonas() {
+    const res = await getAllEstadoPersona();
+    setEstadoPersonaList(res.data);
+  }
 
   const transformData = (originalData) => {
-    const newData = [];
-
-    console.log(newData, "newData");
-    for (const index in originalData) {
-      const user = originalData[index];
-
-      if (user.id_estado_persona === 2 || user.id_estado_persona === 3) {
-        console.log(user);
-        newData.push({
-          id: parseInt(index) + 1, // Start IDs from 1 (adjust as needed)
-          correo: user.email || "", // Get email or use empty string if missing
-          nombres: `${user.first_name?.toUpperCase() || ""} ${
-            user.last_name?.toUpperCase() || ""
-          }`, // Combine and uppercase names (use empty strings if missing)
-          facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
-          especialidad: "ingeniería Informática",
-          recursos_maximos: 1,
-        });
-      }
-    }
-    return newData;
+    return originalData
+      .filter(
+        (user) => user.id_estado_persona === 2 || user.id_estado_persona === 3
+      )
+      .map((user) => ({
+        id: user.id, // Use the original unique ID
+        correo: user.email || "", // Get email or use empty string if missing
+        nombres: `${user.first_name?.toUpperCase() || ""} ${
+          user.last_name?.toUpperCase() || ""
+        }`, // Combine and uppercase names (use empty strings if missing)
+        facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
+        especialidad: "ingeniería Informática",
+        recursos_maximos: 1,
+        originalId: user.id, // Keep the original ID for reference
+      }));
   };
 
-  const options = [
-    { label: "Por Autorizar", value: 2 },
-    { label: "Autorizado", value: 3 },
-  ];
+  function handleStateChange(event) {
+    const newState = event.target.value;
+    setSelectedState(newState);
+    setLoading(true);
 
-  const handleStateChange = (event, newValue) => {
-    setSelectedState(newValue);
-    console.log(newValue);
-    if (newValue) {
-      console.log(data, "los datos");
+    if (newState !== 0) {
+      console.log(newState);
       const filteredRows = data.filter(
-        (row) => row.id_estado_persona === newValue.value
+        (row) => row.id_estado_persona === newState
       ); // Filter based on selected state
       setRows(transformData(filteredRows));
     } else {
-      console.log("entra aqui?");
-      // Reset to all data if no state is selected
-      setRows(transformData(rows)); // Fetch and filter all data again
+      // MUESTRA TODA LA DATA
+      console.log(newState);
+      setRows(transformData(data));
     }
-  };
+    setLoading(false);
+  }
 
   return (
     <div className="mx-8 my-6">
-      <Box sx={{color: "primary.main", mb: 4}}>
-        <p className="font-bold text-3xl">
-          Lista de usuarios autorizados
-        </p>
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">Lista de usuarios autorizados</p>
       </Box>
 
       <div className="flex justify-content-center items-center">
         <span style={{ color: "rgb(4, 35, 84)" }} className=" text-lg mr-4">
           Estado:
         </span>
-
-        <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          options={options}
-          sx={{ width: 300 }}
+        <Select
+          labelId="demo-simple-select-required-label"
+          id="demo-simple-select-required"
           value={selectedState}
+          label="Estado"
           onChange={handleStateChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
+        >
+          <MenuItem key={0} value={0}>
+            TODOS
+          </MenuItem>
+          {estadoPersonaList
+            .filter(
+              (estadoPersonaItem) =>
+                estadoPersonaItem.nombre !== "DESAUTORIZADO"
+            )
+            .map((estadoPersonaItem) => (
+              <MenuItem
+                key={estadoPersonaItem.id_estado_persona}
+                value={estadoPersonaItem.id_estado_persona}
+              >
+                {estadoPersonaItem.nombre}
+              </MenuItem>
+            ))}
+        </Select>
       </div>
 
       <Box sx={{ height: 400, width: "100%" }} className="mt-4">
@@ -214,169 +187,12 @@ function UsuariosAutorizados() {
         user={user}
       ></UpdateUserModal>
 
-      {/* <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-        fullWidth={true}
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
       >
-        <DialogTitle
-          sx={{ m: 0, p: 2 }}
-          id="customized-dialog-title"
-          style={{ color: "rgb(4, 35, 84)" }}
-        >
-          Editar Usuario
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent dividers>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
-            <Typography sx={{ marginRight: "10px" }}>Correo:</Typography>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="" // Remove label prop to avoid redundancy
-              type="text"
-              fullWidth
-              variant="standard"
-              // value={name}
-              onChange={(event) =>
-                handleSave({ ...name, name: event.target.value })
-              }
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Typography sx={{ marginRight: "10px" }}>Nombres:</Typography>
-            <TextField
-              margin="dense"
-              id="lastName"
-              label="" // Remove label prop to avoid redundancy
-              type="text"
-              fullWidth
-              variant="standard"
-              // value={lastName}
-              onChange={(event) =>
-                handleSave({ ...lastName, lastName: event.target.value })
-              }
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Typography sx={{ marginRight: "10px" }}>Apellidos:</Typography>
-            <TextField
-              margin="dense"
-              id="lastName"
-              label="" // Remove label prop to avoid redundancy
-              type="text"
-              fullWidth
-              variant="standard"
-              // value={lastName}
-              onChange={(event) =>
-                handleSave({ ...lastName, lastName: event.target.value })
-              }
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Typography sx={{ marginRight: "10px" }}>Facultad:</Typography>
-            <TextField
-              margin="dense"
-              id="lastName"
-              label="" // Remove label prop to avoid redundancy
-              type="text"
-              fullWidth
-              variant="standard"
-              // value={lastName}
-              onChange={(event) =>
-                handleSave({ ...lastName, lastName: event.target.value })
-              }
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Typography sx={{ marginRight: "10px" }}>Especialidad:</Typography>
-            <TextField
-              margin="dense"
-              id="lastName"
-              label="" // Remove label prop to avoid redundancy
-              type="text"
-              fullWidth
-              variant="standard"
-              // value={lastName}
-              onChange={(event) =>
-                handleSave({ ...lastName, lastName: event.target.value })
-              }
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Typography sx={{ marginRight: "10px" }}>
-              Recursos Máximos:
-            </Typography>
-            <TextField
-              margin="dense"
-              id="lastName"
-              label="" // Remove label prop to avoid redundancy
-              type="text"
-              fullWidth
-              variant="standard"
-              // value={lastName}
-              onChange={(event) =>
-                handleSave({ ...lastName, lastName: event.target.value })
-              }
-            />
-          </div>
-        </DialogContent>
-        <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
-          <Button variant="contained" onClick={handleClose}>
-            Confirmar
-          </Button>
-        </DialogActions>
-      </BootstrapDialog> */}
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,15 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
@@ -24,6 +33,10 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import ModalSolicitudExito from "../components/ModalSolicitudExito";
 import manualPdf from "../assets/manual_investigador.pdf";
 import { createSolicitud } from "../api/Solicitudes";
+import {
+  getHerramientasPorCPU,
+  getLibreriasPorHerramienta,
+} from "../api/Herramientas";
 
 function CPUSolicitud() {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -45,6 +58,10 @@ function CPUSolicitud() {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [herramientas, setHerramientas] = useState([]);
+  const [selectedHerramienta, setSelectedHerramienta] = useState(null);
+  const [librerias, setLibrerias] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -113,8 +130,67 @@ function CPUSolicitud() {
 
   const handleCPUChange = (event) => {
     setSelectedCPU(event.target.value);
-    console.log(selectedCPU);
+    setSelectedHerramienta(null);
+    setHerramientas([]);
+    setLibrerias([]);
   };
+
+  const handleHerramientaChange = (event) => {
+    const herramienta = event.target.value;
+    console.log("Selected herramienta:", herramienta);
+    setSelectedHerramienta(herramienta);
+    setLibrerias([]);
+  };
+
+  useEffect(() => {
+    const fetchHerramientas = async () => {
+      try {
+        console.log(
+          "Fetching herramientas for CPU ID:",
+          selectedCPU.id_recurso.id_recurso
+        );
+        const herramientasRes = await getHerramientasPorCPU(
+          selectedCPU.id_recurso.id_recurso
+        );
+        console.log("Herramientas fetched:", herramientasRes.data);
+        setHerramientas(herramientasRes.data);
+      } catch (error) {
+        console.error("Error al cargar herramientas:", error);
+      }
+    };
+
+    if (selectedCPU.id_recurso.id_recurso) {
+      fetchHerramientas();
+    }
+  }, [selectedCPU]);
+
+  useEffect(() => {
+    const fetchLibrerias = async () => {
+      try {
+        if (selectedHerramienta && selectedHerramienta.id_herramienta) {
+          console.log(
+            "Fetching librerias for Herramienta ID:",
+            selectedHerramienta.id_herramienta
+          );
+          const libreriasRes = await getLibreriasPorHerramienta(
+            selectedHerramienta.id_herramienta
+          );
+          console.log("Librerías obtenidas:", libreriasRes.data);
+          setLibrerias(libreriasRes.data);
+        } else {
+          console.log("No herramienta selected or herramienta ID is missing.");
+        }
+      } catch (error) {
+        console.error("Error al cargar librerías:", error);
+      }
+    };
+
+    fetchLibrerias();
+  }, [selectedHerramienta]);
+
+  const filteredLibrerias = librerias.filter((libreria) =>
+    libreria.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="mx-8 my-6">
@@ -319,19 +395,20 @@ function CPUSolicitud() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            zIndex: "1000",
           }}
         >
           <div
             style={{
               position: "relative",
-              zIndex: "1000",
+              zIndex: "1001",
               backgroundColor: "#fff",
               padding: "20px",
               borderRadius: "10px",
               width: "90%",
-              maxWidth: "1000px",
+              maxWidth: "600px",
               height: "80%",
-              maxHeight: "800px",
+              maxHeight: "600px",
               textAlign: "left",
             }}
           >
@@ -352,34 +429,76 @@ function CPUSolicitud() {
             >
               <FontAwesomeIcon icon={faTimes} style={{ fontSize: "24px" }} />
             </span>
-            <FormControl required sx={{ minWidth: 240, width: "100%" }}>
-              <InputLabel id="modal-herramientas-label">
-                Herramientas
-              </InputLabel>
-              <Select
-                labelId="modal-herramientas-label"
-                id="modal-herramientas"
-                value={selectedOption}
-                onChange={handleModalOptionChange}
-                label="Herramientas"
-                style={{ width: "50%", marginTop: "20px" }}
-              >
-                <MenuItem value="">Seleccionar opción</MenuItem>
-                <MenuItem value="opcion1">Opción 1</MenuItem>
-                <MenuItem value="opcion2">Opción 2</MenuItem>
-                <MenuItem value="opcion3">Opción 3</MenuItem>
-              </Select>
-            </FormControl>
-            <div
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "20px",
-              }}
-            >
+            {selectedCPU.id_recurso.id_recurso && herramientas.length > 0 && (
+              <FormControl required sx={{ minWidth: 240, width: "100%" }}>
+                <InputLabel id="modal-herramientas-label">
+                  Herramientas
+                </InputLabel>
+                <Select
+                  labelId="modal-herramientas-label"
+                  id="modal-herramientas"
+                  value={selectedHerramienta || ""}
+                  onChange={handleHerramientaChange}
+                  label="Herramientas"
+                  style={{ width: "100%", marginTop: "20px" }}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar opción</em>
+                  </MenuItem>
+                  {herramientas.map((herramienta) => (
+                    <MenuItem
+                      key={herramienta.id_herramienta}
+                      value={herramienta}
+                    >
+                      {herramienta.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            {selectedHerramienta && (
+              <div>
+                <br></br>
+                <p>
+                  <strong>
+                    Herramienta seleccionada: {selectedHerramienta.nombre}
+                  </strong>
+                </p>
+                <TextField
+                  label="Buscar"
+                  variant="outlined"
+                  fullWidth
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ marginTop: "20px", marginBottom: "20px" }}
+                />
+                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  <TableContainer component={Paper}>
+                    <Table stickyHeader>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Librería</TableCell>
+                          <TableCell>Versión</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredLibrerias.map((libreria) => (
+                          <TableRow key={libreria.id}>
+                            <TableCell>{libreria.nombre}</TableCell>
+                            <TableCell>{libreria.version}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+              </div>
+            )}
+
+            <div style={{ position: "absolute", bottom: "20px", left: "20px" }}>
               <strong
                 style={{
-                  fontSize: "20px",
+                  fontSize: "15px",
                   marginBottom: "10px",
                   color: "rgb(4, 35, 84)",
                 }}

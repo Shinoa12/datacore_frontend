@@ -28,12 +28,10 @@ const style = {
 };
 
 function UpdateUserModal({ open, setOpen, user }) {
-  //Hook manejadores de cambios en campos editables
+  //Hook manejadores de cambios en campos editables del usuario
   const [facultad, setFacultad] = React.useState("");
   const [especialidad, setEspecialidad] = React.useState("");
   const [estadoUsuario, setEstadoUsuario] = React.useState("");
-  const [nombres, setNombres] = React.useState("");
-  const [apellidos, setApellidos] = React.useState("");
 
   //Hook manejadores de estado de las lista de los combo box
   const [facultadList, setFacultadList] = React.useState([]);
@@ -46,11 +44,9 @@ function UpdateUserModal({ open, setOpen, user }) {
       CargarEspecialidadesPorFacultad(user.id_facultad);
       CargarEstadosPersonas();
 
-      setFacultad(user.id_facultad || ""); // Si user.id_facultad no está definido, se establece como una cadena vacía
+      setFacultad(user.id_facultad || "");
       setEspecialidad(user.id_especialidad || "");
       setEstadoUsuario(user.id_estado_persona || "");
-      setNombres(user.first_name || "");
-      setApellidos(user.last_name || "");
     }
   }, [open]);
 
@@ -71,9 +67,6 @@ function UpdateUserModal({ open, setOpen, user }) {
   }
 
   async function updateUserClick() {
-    //setear todos los hooks de estados de los campos editables
-    user.first_name = nombres;
-    user.last_name = apellidos;
     user.id_facultad = facultad;
     user.id_especialidad = especialidad;
     user.id_estado_persona = estadoUsuario;
@@ -83,14 +76,6 @@ function UpdateUserModal({ open, setOpen, user }) {
   }
 
   //VARIABLES QUE MANEJAN LOS CAMBIOS DE LOS INPUTS
-  const handleNombresChange = (event) => {
-    setNombres(event.target.value);
-  };
-
-  const handleApellidosChange = (event) => {
-    setApellidos(event.target.value);
-  };
-
   const handleFacultadChange = (event) => {
     CargarEspecialidadesPorFacultad(event.target.value);
 
@@ -139,7 +124,7 @@ function UpdateUserModal({ open, setOpen, user }) {
                 id="outlined-basic"
                 label="Correo"
                 variant="outlined"
-                value={user.username}
+                value={user.username?.toUpperCase()}
                 aria-readonly
               />
               <hr></hr>
@@ -147,16 +132,16 @@ function UpdateUserModal({ open, setOpen, user }) {
                 id="outlined-basic"
                 label="Nombres"
                 variant="outlined"
-                value={nombres}
-                onChange={handleNombresChange}
+                value={user.first_name?.toUpperCase()}
+                aria-readonly
               />
               <hr></hr>
               <TextField
                 id="outlined-basic"
                 label="Apellidos"
                 variant="outlined"
-                value={apellidos}
-                onChange={handleApellidosChange}
+                value={user.last_name?.toUpperCase()}
+                aria-readonly
               />
               <hr></hr>
               <FormControl required sx={{ minWidth: 120 }}>
