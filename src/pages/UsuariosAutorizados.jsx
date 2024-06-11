@@ -9,23 +9,14 @@ import Select from "@mui/material/Select";
 import EditIcon from "@mui/icons-material/Edit";
 import UpdateUserModal from "../components/UpdateUserModal";
 import NoRowsOverlay from "../components/NoRowsOverlay";
-import { getAllUsers, getUserById, getAllEstadoPersona } from "../api/Users";
+import {
+  getAllUsers,
+  getAllEstadoPersona,
+  getAllFacultad,
+  getAllEspecialidades,
+} from "../api/Users";
 
 function UsuariosAutorizados() {
-  const [open, setOpen] = useState(false);
-  const [rows, setRows] = useState([]);
-  const [data, setData] = useState([]);
-  const [user, setUser] = useState({});
-  const [selectedState, setSelectedState] = useState(0);
-  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  async function CargarUsuario(idUser) {
-    const res = await getUserById(idUser);
-    console.log(res);
-    setUser(res.data);
-  }
-
   const columns = [
     { field: "id", headerName: "ID", width: 50 },
     { field: "nombres", headerName: "Nombres", width: 220 },
@@ -55,72 +46,136 @@ function UsuariosAutorizados() {
     },
   ];
 
-  useEffect(() => {
-    CargarEstadosPersonas();
+  const [userList, setUserList] = useState([]);
+  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
+  const [facultadList, setFacultadList] = useState([]);
+  const [especialidadList, setEspecialidadList] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [dataReady, setDataReady] = useState(false);
 
-    const fetchData = async () => {
-      setLoading(true);
+  const fetchUserList = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllUsers();
+      setUserList(response.data);
+      const filteredData = transformUserList(response.data);
+      setRows(filteredData);
+    } catch (error) {
+      console.error("Error al cargar usuarios:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEstadoPersonaList = async () => {
+    const response = await getAllEstadoPersona();
+    setEstadoPersonaList(response.data);
+  };
+
+  const fetchFacultadList = async () => {
+    const response = await getAllFacultad();
+    setFacultadList(response.data);
+  };
+
+  const fetchEspecialidadList = async () => {
+    const response = await getAllEspecialidades();
+    setEspecialidadList(response.data);
+  };
+
+  // Mantiene solo los usuarios pendientes y autorizados
+  const transformUserList = (list) => {
+    if (!dataReady) return [];
+
+    const filteredList = list
+      .filter(
+        (user) => user.id_estado_persona === 2 || user.id_estado_persona === 3
+      )
+      .map((user) => {
+        const facultadObj = facultadList.find(
+          (item) => item.id_facultad == user.id_facultad
+        );
+        const especialidadObj = especialidadList.find(
+          (item) => item.id_especialidad == user.id_especialidad
+        );
+
+        return {
+          id: user.id,
+          correo: user.email,
+          nombres: `${user.first_name?.toUpperCase()} ${user.last_name?.toUpperCase()}`,
+          facultad: facultadObj ? facultadObj.nombre : "",
+          especialidad: especialidadObj ? especialidadObj.nombre : "",
+          recursos_maximos: user.recursos_max,
+        };
+      });
+
+    return filteredList;
+  };
+
+  const changeFilter = (status) => {
+    setSelectedStatus(status);
+    setLoading(true);
+
+    if (status !== 0) {
+      const filteredList = userList.filter(
+        (user) => user.id_estado_persona === status
+      );
+      setRows(transformUserList(filteredList));
+    } else {
+      setRows(transformUserList(userList));
+    }
+
+    setLoading(false);
+  };
+
+  const handleStatusChange = (event) => {
+    const status = event.target.value;
+    changeFilter(status);
+  };
+
+  const openEditModal = (id) => {
+    setSelectedUser(id);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setSelectedUser(0);
+  };
+
+  const handleEditSuccess = async () => {
+    console.log("edit success");
+    await fetchUserList();
+    setSelectedStatus(0);
+  };
+
+  useEffect(() => {
+    const fetchAllData = async () => {
       try {
-        const res = await getAllUsers();
-        setData(res.data);
-        const filteredData = transformData(res.data); // Filter data initially
-        setRows(filteredData);
+        setLoading(true);
+        await fetchEstadoPersonaList();
+        await fetchFacultadList();
+        await fetchEspecialidadList();
+        await fetchUserList();
+        setDataReady(true);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error al recuperar datos:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchAllData();
   }, []);
 
-  async function CargarEstadosPersonas() {
-    const res = await getAllEstadoPersona();
-    setEstadoPersonaList(res.data);
-  }
-
-  const transformData = (originalData) => {
-    return originalData
-      .filter(
-        (user) => user.id_estado_persona === 2 || user.id_estado_persona === 3
-      )
-      .map((user) => ({
-        id: user.id, // Use the original unique ID
-        correo: user.email || "", // Get email or use empty string if missing
-        nombres: `${user.first_name?.toUpperCase() || ""} ${
-          user.last_name?.toUpperCase() || ""
-        }`, // Combine and uppercase names (use empty strings if missing)
-        facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
-        especialidad: "ingeniería Informática",
-        recursos_maximos: 1,
-        originalId: user.id, // Keep the original ID for reference
-      }));
-  };
-
-  function handleStateChange(event) {
-    const newState = event.target.value;
-    setSelectedState(newState);
-    setLoading(true);
-
-    if (newState !== 0) {
-      console.log(newState);
-      const filteredRows = data.filter(
-        (row) => row.id_estado_persona === newState
-      ); // Filter based on selected state
-      setRows(transformData(filteredRows));
-    } else {
-      // MUESTRA TODA LA DATA
-      console.log(newState);
-      setRows(transformData(data));
+  useEffect(() => {
+    if (dataReady) {
+      setRows(transformUserList(userList));
     }
-    setLoading(false);
-  }
-
-  const openEditModal = async (id) => {
-    await CargarUsuario(id);
-    setOpen(true);
-  };
+  }, [dataReady, userList, facultadList, especialidadList]);
 
   return (
     <div className="mx-8 my-6">
@@ -137,8 +192,8 @@ function UsuariosAutorizados() {
             id="estado"
             name="estado"
             label="Estado"
-            value={selectedState}
-            onChange={handleStateChange}
+            value={selectedStatus}
+            onChange={handleStatusChange}
             disabled={loading || rows.length === 0}
           >
             <MenuItem key={0} value={0}>
@@ -174,9 +229,10 @@ function UsuariosAutorizados() {
       />
 
       <UpdateUserModal
-        open={open}
-        setOpen={setOpen}
-        user={user}
+        open={showEditModal}
+        onClose={closeEditModal}
+        onSuccess={handleEditSuccess}
+        id={selectedUser}
       ></UpdateUserModal>
     </div>
   );
