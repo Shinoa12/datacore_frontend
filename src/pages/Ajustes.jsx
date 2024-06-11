@@ -82,9 +82,10 @@ function Ajustes() {
           }}
         >
           <Box>
-            <p className="font-semibold">Tiempo de uso máximo</p>
+            <p className="font-semibold">Horas de uso máximo</p>
             <p className="text-sm font-light">
-              Tiempo de uso de recursos antes de una notificación
+              Lapso máximo en horas para el uso de recursos antes de una
+              notificación
             </p>
           </Box>
           <TextField
@@ -101,7 +102,7 @@ function Ajustes() {
         </Box>
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button variant="contained" onClick={handleSubmit}>
-            Confirmar
+            Guardar
           </Button>
         </Box>
       </Box>
