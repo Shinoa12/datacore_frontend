@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import CPUDropdown from "../components/CPUDropdown";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
@@ -25,13 +23,20 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+
 import CloseIcon from "@mui/icons-material/Close";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
+import CPUDropdown from "../components/CPUDropdown";
 import ModalSolicitudExito from "../components/ModalSolicitudExito";
-import manualPdf from "../assets/manual_investigador.pdf";
+import SolicitudHelpModal from "../components/SolicitudHelpModal";
+
 import { createSolicitud } from "../api/Solicitudes";
 import {
   getHerramientasPorCPU,
@@ -39,11 +44,7 @@ import {
 } from "../api/Herramientas";
 
 function CPUSolicitud() {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [showDropMessage, setShowDropMessage] = useState(true);
-  const [executionParameters, setExecutionParameters] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [selectedCPU, setSelectedCPU] = useState({
+  const initialCpuState = {
     frecuencia_cpu: "",
     id_recurso: {
       estado: true,
@@ -52,11 +53,17 @@ function CPUSolicitud() {
       tamano_ram: "",
       ubicacion: "",
     },
-
     nombre: "",
     numero_nucleos_cpu: "",
-  });
+  };
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [showDropMessage, setShowDropMessage] = useState(true);
+  const [executionParameters, setExecutionParameters] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCPU, setSelectedCPU] = useState(initialCpuState);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [herramientas, setHerramientas] = useState([]);
   const [selectedHerramienta, setSelectedHerramienta] = useState(null);
@@ -140,6 +147,14 @@ function CPUSolicitud() {
     console.log("Selected herramienta:", herramienta);
     setSelectedHerramienta(herramienta);
     setLibrerias([]);
+  };
+
+  const openHelpModal = () => {
+    setShowHelpModal(true);
+  };
+
+  const closeHelpModal = () => {
+    setShowHelpModal(false);
   };
 
   useEffect(() => {
@@ -226,36 +241,44 @@ function CPUSolicitud() {
                 sx={{ display: "flex", justifyContent: "space-between", pb: 1 }}
               >
                 <p className="font-bold">Cantidad de núcleos</p>
-                <p className="font-semibold">
-                  {selectedCPU.numero_nucleos_cpu}
-                </p>
+                {selectedCPU.numero_nucleos_cpu !== "" && (
+                  <p className="font-semibold">
+                    {selectedCPU.numero_nucleos_cpu}
+                  </p>
+                )}
               </Box>
               <Divider />
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
               >
                 <p className="font-bold">Frecuencia del procesador</p>
-                <p className="font-semibold">
-                  {parseFloat(selectedCPU.frecuencia_cpu).toFixed(2)} GHz
-                </p>
+                {selectedCPU.frecuencia_cpu !== "" && (
+                  <p className="font-semibold">
+                    {parseFloat(selectedCPU.frecuencia_cpu).toFixed(2)} GHz
+                  </p>
+                )}
               </Box>
               <Divider />
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
               >
                 <p className="font-bold">Tamaño de memoria RAM</p>
-                <p className="font-semibold">
-                  {selectedCPU.id_recurso.tamano_ram} GB
-                </p>
+                {selectedCPU.id_recurso.tamano_ram !== "" && (
+                  <p className="font-semibold">
+                    {selectedCPU.id_recurso.tamano_ram} GB
+                  </p>
+                )}
               </Box>
               <Divider />
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", pt: 1 }}
               >
                 <p className="font-bold">Solicitudes en cola</p>
-                <p className="font-semibold">
-                  {selectedCPU.id_recurso.solicitudes_encoladas}
-                </p>
+                {selectedCPU.id_recurso.solicitudes_encoladas !== "" && (
+                  <p className="font-semibold">
+                    {selectedCPU.id_recurso.solicitudes_encoladas}
+                  </p>
+                )}
               </Box>
             </Box>
           </Box>
@@ -373,16 +396,23 @@ function CPUSolicitud() {
           </Box>
         </Box>
       </Box>
-
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: "1.5rem" }}>
-        <Button component={Link} to="/recursos-ofrecidos" variant="outlined">
-          Regresar
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Button
+          variant="outlined"
+          startIcon={<HelpOutlineIcon />}
+          onClick={openHelpModal}
+        >
+          Necesito ayuda
         </Button>
-        <Button variant="contained" onClick={handleCrearClick}>
-          Crear
-        </Button>
+        <Box sx={{ display: "flex", gap: "1.5rem" }}>
+          <Button component={Link} to="/recursos-ofrecidos" variant="outlined">
+            Regresar
+          </Button>
+          <Button variant="contained" onClick={handleCrearClick}>
+            Crear
+          </Button>
+        </Box>
       </Box>
-
       {isModalOpen && (
         <div
           style={{
@@ -512,6 +542,8 @@ function CPUSolicitud() {
       )}
 
       {showModal && <ModalSolicitudExito />}
+
+      <SolicitudHelpModal open={showHelpModal} onClose={closeHelpModal} />
     </div>
   );
 }
