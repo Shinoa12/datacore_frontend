@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
+import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
@@ -34,7 +36,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faFile } from "@fortawesome/free-solid-svg-icons";
 
 import GPUDropdown from "../components/GPUDropdown";
-import ModalSolicitudExito from "../components/ModalSolicitudExito";
+import SuccessModal from "../components/SuccessModal";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
 
 import { createSolicitud } from "../api/Solicitudes";
@@ -61,22 +63,24 @@ function GPUSolicitud() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [showDropMessage, setShowDropMessage] = useState(true);
   const [executionParameters, setExecutionParameters] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedGPU, setSelectedGPU] = useState(initialGpuState);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showLibrariesModal, setShowLibrariesModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [herramientas, setHerramientas] = useState([]);
   const [selectedHerramienta, setSelectedHerramienta] = useState(null);
   const [librerias, setLibrerias] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const openModal = () => {
-    setIsModalOpen(true);
+    setShowLibrariesModal(true);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    setShowLibrariesModal(false);
   };
 
   const handleFileChange = (event) => {
@@ -116,7 +120,18 @@ function GPUSolicitud() {
     setExecutionParameters(event.target.value);
   };
 
-  async function handleCrearClick() {
+  const openSuccessModal = () => {
+    setShowSuccessModal(true);
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate("/solicitudes");
+  };
+
+  const handleCrearClick = async () => {
+    setLoading(true);
+
     await createSolicitud(
       localStorage.getItem("id_user"),
       selectedGPU.id_recurso.id_recurso,
@@ -124,13 +139,15 @@ function GPUSolicitud() {
       selectedFiles
     )
       .then((response) => {
-        console.log("Solicitud creada con éxito:", response.data);
-        setShowModal(true);
+        openSuccessModal();
       })
       .catch((error) => {
         console.error("Error al crear la solicitud:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }
+  };
 
   const handleModalOptionChange = (event) => {
     setSelectedOption(event.target.value);
@@ -210,6 +227,13 @@ function GPUSolicitud() {
 
   return (
     <div className="mx-8 my-6">
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
       <Box sx={{ color: "primary.main", mb: 4 }}>
         <p className="font-bold text-3xl">GPU disponibles</p>
       </Box>
@@ -413,7 +437,7 @@ function GPUSolicitud() {
         </Box>
       </Box>
 
-      {isModalOpen && (
+      {showLibrariesModal && (
         <div
           style={{
             position: "fixed",
@@ -541,7 +565,11 @@ function GPUSolicitud() {
         </div>
       )}
 
-      {showModal && <ModalSolicitudExito />}
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={closeSuccessModal}
+        content="Recibirás un correo cuando el recurso te sea asignado."
+      />
 
       <SolicitudHelpModal open={showHelpModal} onClose={closeHelpModal} />
     </div>
