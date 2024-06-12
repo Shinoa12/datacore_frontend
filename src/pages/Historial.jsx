@@ -77,12 +77,27 @@ function Historial() {
           if (filters[key] === "") {
             return true;
           }
-          const rowValue =
-            typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
-        //   console.log('rowValue:', rowValue);
-        //   console.log('filter:', filters[key].toLowerCase());
-        //   console.log('rowValue.includes(filters[key].toLowerCase()):', rowValue.includes(filters[key].toLowerCase()));
-          return rowValue.includes(filters[key].toLowerCase());
+
+          if (key === 'fecha_procesamiento' || key === 'fecha_finalizada') {
+            const date = new Date(row[key]);
+            const [date1, date2] = filters[key].split(',');
+
+            if (date1 && date2) {
+              const startDate = new Date(date1);
+              const endDate = new Date(date2);
+              return date >= startDate && date <= endDate;
+            } else if (date1) {
+              const startDate = new Date(date1);
+              return date >= startDate;
+            } else if (date2) {
+              const endDate = new Date(date2);
+              return date <= endDate;
+            }
+          } else {
+            const rowValue =
+              typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
+            return rowValue.includes(filters[key].toLowerCase());
+          }
         });
       });
 
