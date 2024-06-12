@@ -224,11 +224,11 @@ function UsuariosAutorizados() {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 10,
             },
           },
         }}
-        pageSizeOptions={[5]}
+        pageSizeOptions={[10]}
         disableRowSelectionOnClick
         slots={{ noRowsOverlay: NoRowsOverlay }}
         loading={loading}
