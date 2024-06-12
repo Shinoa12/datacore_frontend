@@ -81,10 +81,10 @@ function Solicitudes() {
   useEffect(() => {
     loadPage();
   }, []);
-
+  const navigate = useNavigate();
   //Redirigir a nueva solicitud
   const nuevaSolicitud = () => {
-    useNavigate("/recursos-ofrecidos");
+    navigate("/recursos-ofrecidos");
   };
 
   //Cargar resultado de solicitud *
