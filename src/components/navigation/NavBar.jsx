@@ -12,10 +12,15 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
   const { handlerLogout } = useContext(AuthContext);
 
   return (
-    <div className={`${sidebarToggle ? "" : "ml-64"} w-full`}>
+    <div
+      className={`fixed top-0 right-0 z-10 w-full transition-all duration-300`}
+      style={{
+        width: sidebarToggle ? "100%" : "calc(100% - 16rem)", // 16rem (64 * 0.25rem) es el ancho de la sidebar
+        backgroundColor: theme.palette.primary.main,
+      }}
+    >
       <nav
         className="px-6 py-6 flex justify-between"
-        style={{ backgroundColor: theme.palette.primary.main }}
       >
         <div className="flex flex-row items-center">
           <IconButton onClick={() => setSidebarToggle(!sidebarToggle)}>
