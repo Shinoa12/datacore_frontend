@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
+import HelpIcon from "@mui/icons-material/Help";
 
 function Navbar({ sidebarToggle, setSidebarToggle }) {
   const theme = useTheme();
@@ -34,7 +35,15 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
             />
           </Link>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-6">
+          <IconButton component={Link} to="/ayuda">
+            <HelpIcon
+              sx={{
+                color: "white",
+                fontSize: "1.75rem",
+              }}
+            />
+          </IconButton>
           <IconButton onClick={handlerLogout}>
             <LogoutIcon
               sx={{
