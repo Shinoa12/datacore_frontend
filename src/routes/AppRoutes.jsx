@@ -17,6 +17,7 @@ import RecursosOfrecidos from "../pages/RecursosOfrecidos";
 import CPUSolicitud from "../pages/CPUSolicitud";
 import GPUSolicitud from "../pages/GPUSolicitud";
 import Ajustes from "../pages/Ajustes";
+import Ayuda from "../pages/Ayuda";
 
 export const AppRoutes = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
@@ -50,6 +51,7 @@ export const AppRoutes = () => {
             <Route path="/recursos" element={<Recursos />} />
             <Route path="/solicitudes" element={<Solicitudes />} />
             <Route path="/ajustes" element={<Ajustes />} />
+            <Route path="/ayuda" element={<Ayuda />} />
           </Routes>
         </div>
       </div>
