@@ -1,18 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import TextField from "@mui/material/TextField";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+
+import CloseIcon from "@mui/icons-material/Close";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faFile } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
-import ModalSolicitudExito from "../components/ModalSolicitudExito";
+
 import GPUDropdown from "../components/GPUDropdown";
+import SuccessModal from "../components/SuccessModal";
+import SolicitudHelpModal from "../components/SolicitudHelpModal";
+
 import { createSolicitud } from "../api/Solicitudes";
-import manualPdf from "../assets/manual_investigador.pdf";
+import {
+  getHerramientasPorGPU,
+  getLibreriasPorHerramienta,
+} from "../api/Herramientas";
 
 function GPUSolicitud() {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [showDropMessage, setShowDropMessage] = useState(true);
-  const [executionParameters, setExecutionParameters] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [selectedGPU, setSelectedGPU] = useState({
+  const initialGpuState = {
     frecuencia_gpu: "",
     id_recurso: {
       estado: true,
@@ -21,11 +55,33 @@ function GPUSolicitud() {
       tamano_ram: "",
       ubicacion: "",
     },
-
     nombre: "",
     numero_nucleos_gpu: "",
     tamano_vram: "",
-  });
+  };
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [showDropMessage, setShowDropMessage] = useState(true);
+  const [executionParameters, setExecutionParameters] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedGPU, setSelectedGPU] = useState(initialGpuState);
+  const [showLibrariesModal, setShowLibrariesModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [herramientas, setHerramientas] = useState([]);
+  const [selectedHerramienta, setSelectedHerramienta] = useState(null);
+  const [librerias, setLibrerias] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const openModal = () => {
+    setShowLibrariesModal(true);
+  };
+
+  const closeModal = () => {
+    setShowLibrariesModal(false);
+  };
 
   const handleFileChange = (event) => {
     setSelectedFiles((prevFiles) => [
@@ -64,7 +120,18 @@ function GPUSolicitud() {
     setExecutionParameters(event.target.value);
   };
 
-  async function handleCrearClick() {
+  const openSuccessModal = () => {
+    setShowSuccessModal(true);
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate("/solicitudes");
+  };
+
+  const handleCrearClick = async () => {
+    setLoading(true);
+
     await createSolicitud(
       localStorage.getItem("id_user"),
       selectedGPU.id_recurso.id_recurso,
@@ -72,277 +139,439 @@ function GPUSolicitud() {
       selectedFiles
     )
       .then((response) => {
-        console.log("Solicitud creada con éxito:", response.data);
-        setShowModal(true);
+        openSuccessModal();
       })
       .catch((error) => {
         console.error("Error al crear la solicitud:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }
+  };
+
+  const handleModalOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
   const handleGPUChange = (event) => {
     setSelectedGPU(event.target.value);
-    console.log(event.target.value);
+    setSelectedHerramienta(null);
+    setHerramientas([]);
+    setLibrerias([]);
   };
 
+  const handleHerramientaChange = (event) => {
+    const herramienta = event.target.value;
+    console.log("Selected herramienta:", herramienta);
+    setSelectedHerramienta(herramienta);
+    setLibrerias([]);
+  };
+
+  const openHelpModal = () => {
+    setShowHelpModal(true);
+  };
+
+  const closeHelpModal = () => {
+    setShowHelpModal(false);
+  };
+
+  useEffect(() => {
+    const fetchHerramientas = async () => {
+      try {
+        console.log(
+          "Fetching herramientas for GPU ID:",
+          selectedGPU.id_recurso.id_recurso
+        );
+        const herramientasRes = await getHerramientasPorGPU(
+          selectedGPU.id_recurso.id_recurso
+        );
+        console.log("Herramientas fetched:", herramientasRes.data);
+        setHerramientas(herramientasRes.data);
+      } catch (error) {
+        console.error("Error al cargar herramientas:", error);
+      }
+    };
+
+    if (selectedGPU.id_recurso.id_recurso) {
+      fetchHerramientas();
+    }
+  }, [selectedGPU]);
+
+  useEffect(() => {
+    const fetchLibrerias = async () => {
+      try {
+        if (selectedHerramienta && selectedHerramienta.id_herramienta) {
+          console.log(
+            "Fetching librerias for Herramienta ID:",
+            selectedHerramienta.id_herramienta
+          );
+          const libreriasRes = await getLibreriasPorHerramienta(
+            selectedHerramienta.id_herramienta
+          );
+          console.log("Librerías obtenidas:", libreriasRes.data);
+          setLibrerias(libreriasRes.data);
+        } else {
+          console.log("No herramienta selected or herramienta ID is missing.");
+        }
+      } catch (error) {
+        console.error("Error al cargar librerías:", error);
+      }
+    };
+
+    fetchLibrerias();
+  }, [selectedHerramienta]);
+
+  const filteredLibrerias = librerias.filter((libreria) =>
+    libreria.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div
-      className="ml-4 mt-4"
-      style={{ display: "flex", flexDirection: "column" }}
-    >
-      <h1
-        style={{ color: "rgb(4, 35, 84)" }}
-        className="font-bold text-3xl mb-4"
+    <div className="mx-8 my-6">
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
       >
-        GPU disponibles
-      </h1>
-      <div style={{ display: "flex", flex: 1 }}>
-        <div style={{ flex: 1 }}>
-          <h2
-            style={{
-              fontSize: "20px",
-              marginBottom: "10px",
-              color: "rgb(4, 35, 84)",
-            }}
-          >
-            <strong>Recurso computacional</strong>
-          </h2>
-          <GPUDropdown value={selectedGPU} onChange={handleGPUChange} />
-          <br></br>
-          <br></br>
-          <h2
-            style={{
-              fontSize: "20px",
-              marginBottom: "10px",
-              color: "rgb(4, 35, 84)",
-            }}
-          >
-            <strong>Detalle del recurso</strong>
-          </h2>
-          <div
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.08)",
-              padding: "20px",
-              borderRadius: "5px",
-              marginTop: "20px",
-            }}
-          >
-            <p style={{ marginBottom: "10px" }}>
-              <strong>
-                Cantidad de núcleos NVIDIA CUDA:{" "}
-                {selectedGPU.numero_nucleos_gpu}
-              </strong>
-            </p>
-            <p style={{ marginBottom: "10px" }}>
-              <strong>Frecuencia básica: {selectedGPU.frecuencia_gpu}</strong>
-            </p>
-            <p style={{ marginBottom: "10px" }}>
-              <strong>VRAM: {selectedGPU.tamano_vram}</strong>
-            </p>
-            <div style={{ textAlign: "center" }}>
-              <Link to="/">
-                <button
-                  style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    borderRadius: "5px",
-                    backgroundColor: "#162447",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Descubre más sobre el recurso
-                </button>
-              </Link>
-            </div>
-          </div>
-          <br></br>
-          <h2
-            style={{
-              fontSize: "20px",
-              marginBottom: "10px",
-              color: "rgb(4, 35, 84)",
-            }}
-          >
-            <strong>Posición en cola del recurso</strong>
-          </h2>
-          <div
-            style={{
-              position: "relative",
-              backgroundColor: "rgba(0, 0, 0, 0.08)",
-              padding: "10px",
-              borderRadius: "5px",
-              textAlign: "left",
-              minWidth: "30px",
-            }}
-          >
-            <span style={{ color: "rgb(4, 35, 84)" }}>
-              {selectedGPU.id_recurso.solicitudes_encoladas}
-            </span>
-          </div>
-        </div>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      <Box sx={{ color: "primary.main", mb: 4 }}>
+        <p className="font-bold text-3xl">GPU disponibles</p>
+      </Box>
+
+      <Box sx={{ display: "flex", gap: "2rem" }}>
+        {/* Información principal */}
+        <Box sx={{ flex: 1 }}>
+          {/* Selector de recurso */}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ color: "primary.main", mb: 2 }}>
+              <p className="font-bold text-xl">Recurso computacional</p>
+            </Box>
+            <GPUDropdown value={selectedGPU} onChange={handleGPUChange} />
+          </Box>
+
+          {/* Detalle */}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ color: "primary.main", mb: 2 }}>
+              <p className="font-bold text-xl">Detalle del recurso</p>
+            </Box>
+            <Box
+              sx={{
+                p: 3,
+                width: "100%",
+                backgroundColor: "#F0F0F0",
+                borderRadius: "0.25rem",
+              }}
+            >
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", pb: 1 }}
+              >
+                <p className="font-bold">Cantidad de núcleos NVIDIA CUDA</p>
+                {selectedGPU.numero_nucleos_gpu !== "" && (
+                  <p className="font-semibold">
+                    {selectedGPU.numero_nucleos_gpu}
+                  </p>
+                )}
+              </Box>
+              <Divider />
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
+              >
+                <p className="font-bold">Frecuencia básica</p>
+                {selectedGPU.frecuencia_gpu !== "" && (
+                  <p className="font-semibold">
+                    {parseFloat(selectedGPU.frecuencia_gpu).toFixed(2)} GHz
+                  </p>
+                )}
+              </Box>
+              <Divider />
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
+              >
+                <p className="font-bold">Tamaño de memoria VRAM</p>
+                {selectedGPU.tamano_vram !== "" && (
+                  <p className="font-semibold">{selectedGPU.tamano_vram} GB</p>
+                )}
+              </Box>
+              <Divider />
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", pt: 1 }}
+              >
+                <p className="font-bold">Solicitudes en cola</p>
+                {selectedGPU.id_recurso.solicitudes_encoladas !== "" && (
+                  <p className="font-semibold">
+                    {selectedGPU.id_recurso.solicitudes_encoladas}
+                  </p>
+                )}
+              </Box>
+            </Box>
+          </Box>
+          <Box sx={{ textAlign: "center" }}>
+            <Button
+              variant="contained"
+              startIcon={<LibraryBooksIcon />}
+              onClick={openModal}
+              fullWidth
+            >
+              Ver librerías
+            </Button>
+          </Box>
+        </Box>
+
+        {/* Adicionales */}
+        <Box sx={{ flex: 1 }}>
+          {/* Archivos */}
+          <Box sx={{ mb: 4 }}>
+            <Box
+              sx={{
+                color: "primary.main",
+                mb: 2,
+              }}
+            >
+              <p className="font-bold text-xl">Archivos</p>
+            </Box>
+            <Box
+              sx={{
+                px: 1,
+                border: "2px dashed #ccc",
+                borderRadius: "0.25rem",
+                textAlign: "center",
+                height: "10rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+                justifyContent: showDropMessage ? "center" : "flex-start",
+                alignItems: showDropMessage ? "center" : "flex-start",
+                overflow: "auto",
+              }}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+            >
+              {selectedFiles.length === 0 ? (
+                <>
+                  <UploadFileIcon
+                    fontSize="large"
+                    sx={{ color: "primary.main" }}
+                  />
+                  <Box>
+                    <p>Arrastra archivos aquí o</p>
+                    <Button
+                      component="label"
+                      variant="contained"
+                      tabIndex={-1}
+                      sx={{ mt: 1 }}
+                    >
+                      Elige archivos
+                      <input
+                        type="file"
+                        hidden
+                        onChange={handleFileChange}
+                        multiple
+                      ></input>
+                    </Button>
+                  </Box>
+                </>
+              ) : (
+                <List>
+                  {selectedFiles.map((file, index) => (
+                    <ListItem
+                      key={index}
+                      secondaryAction={
+                        <IconButton
+                          edge="end"
+                          onClick={() => handleRemoveFile(file)}
+                          sx={{ color: "primary.main" }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      }
+                    >
+                      <ListItemIcon sx={{ color: "primary.main" }}>
+                        <InsertDriveFileIcon />
+                      </ListItemIcon>
+                      <ListItemText primary={file.name} />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          </Box>
+
+          {/* Parámetros */}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ color: "primary.main", mb: 2 }}>
+              <p className="font-bold text-xl">Parámetros de ejecución</p>
+            </Box>
+            <Box>
+              <TextField
+                multiline
+                fullWidth
+                placeholder="Ingresa parámetros aquí..."
+                rows={6}
+                InputProps={{
+                  style: {
+                    fontFamily: "monospace",
+                  },
+                }}
+                value={executionParameters}
+                onChange={handleExecutionParametersChange}
+              />
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Button
+          variant="outlined"
+          startIcon={<HelpOutlineIcon />}
+          onClick={openHelpModal}
+        >
+          Necesito ayuda
+        </Button>
+        <Box sx={{ display: "flex", gap: "1.5rem" }}>
+          <Button component={Link} to="/recursos-ofrecidos" variant="outlined">
+            Regresar
+          </Button>
+          <Button variant="contained" onClick={handleCrearClick}>
+            Crear
+          </Button>
+        </Box>
+      </Box>
+
+      {showLibrariesModal && (
         <div
           style={{
-            flex: 1,
-            marginLeft: "20px",
-            marginRight: "30px",
-            height: "400px",
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: "1000",
           }}
         >
-          <h2
-            style={{
-              fontSize: "20px",
-              marginBottom: "10px",
-              color: "rgb(4, 35, 84)",
-            }}
-          >
-            <strong>Archivos</strong>
-          </h2>
           <div
             style={{
-              border: "2px dashed #ccc",
-              borderRadius: "5px",
-              padding: "20px",
-              textAlign: "center",
-              cursor: "pointer",
               position: "relative",
-              height: "200px",
+              zIndex: "1001",
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "10px",
+              width: "90%",
+              maxWidth: "600px",
+              height: "80%",
+              maxHeight: "600px",
+              textAlign: "left",
             }}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
           >
-            {!selectedFiles.length && (
-              <label
-                style={{
-                  color: "blue",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                }}
-              >
-                Haz clic para elegir un archivo
-                <input
-                  type="file"
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
-                  multiple
-                />
-              </label>
-            )}
-            {!selectedFiles.length && showDropMessage && (
-              <span> o arrastra y suelta archivos aquí</span>
-            )}
-            {selectedFiles.length > 0 && (
-              <div style={{ marginTop: "10px", textAlign: "left" }}>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {selectedFiles.map((file, index) => (
-                    <li key={index} style={{ marginBottom: "5px" }}>
-                      <FontAwesomeIcon
-                        icon={faFile}
-                        style={{ marginRight: "5px" }}
-                      />
-                      {file.name}
-                      <FontAwesomeIcon
-                        icon={faTimes}
-                        style={{ marginLeft: "5px", cursor: "pointer" }}
-                        onClick={() => handleRemoveFile(file)}
-                      />
-                    </li>
+            <h2
+              style={{ color: "rgb(4, 35, 84)" }}
+              className="font-bold text-3xl mb-4"
+            >
+              Librerías
+            </h2>
+            <span
+              style={{
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                cursor: "pointer",
+              }}
+              onClick={closeModal}
+            >
+              <FontAwesomeIcon icon={faTimes} style={{ fontSize: "24px" }} />
+            </span>
+            {selectedGPU.id_recurso.id_recurso && herramientas.length > 0 && (
+              <FormControl required sx={{ minWidth: 240, width: "100%" }}>
+                <InputLabel id="modal-herramientas-label">
+                  Herramientas
+                </InputLabel>
+                <Select
+                  labelId="modal-herramientas-label"
+                  id="modal-herramientas"
+                  value={selectedHerramienta || ""}
+                  onChange={handleHerramientaChange}
+                  label="Herramientas"
+                  style={{ width: "100%", marginTop: "20px" }}
+                >
+                  <MenuItem value="">
+                    <em>Seleccionar opción</em>
+                  </MenuItem>
+                  {herramientas.map((herramienta) => (
+                    <MenuItem
+                      key={herramienta.id_herramienta}
+                      value={herramienta}
+                    >
+                      {herramienta.nombre}
+                    </MenuItem>
                   ))}
-                </ul>
+                </Select>
+              </FormControl>
+            )}
+            {selectedHerramienta && (
+              <div>
+                <br></br>
+                <p>
+                  <strong>
+                    Herramienta seleccionada: {selectedHerramienta.nombre}
+                  </strong>
+                </p>
+                <TextField
+                  label="Buscar"
+                  variant="outlined"
+                  fullWidth
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ marginTop: "20px", marginBottom: "20px" }}
+                />
+                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  <TableContainer component={Paper}>
+                    <Table stickyHeader>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Librería</TableCell>
+                          <TableCell>Versión</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredLibrerias.map((libreria) => (
+                          <TableRow key={libreria.id}>
+                            <TableCell>{libreria.nombre}</TableCell>
+                            <TableCell>{libreria.version}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
               </div>
             )}
-          </div>
-          <h2
-            style={{
-              fontSize: "20px",
-              marginTop: "20px",
-              marginBottom: "10px",
-              color: "rgb(4, 35, 84)",
-            }}
-          >
-            <strong>Parámetros de ejecución</strong>
-          </h2>
-          <input
-            type="text"
-            value={executionParameters}
-            onChange={handleExecutionParametersChange}
-            placeholder="Agregar parámetros..."
-            style={{
-              width: "100%",
-              height: "100px",
-              fontSize: "16px",
-              fontStyle: "italic",
-              textAlign: "left",
-              paddingLeft: "20px",
-              t: "20px",
-              paddingTop: "20px",
-              paddingBottom: "20px",
-              backgroundColor: "rgba(0, 0, 0, 0.08)",
-              border: "none",
-              borderRadius: "5px",
-              boxSizing: "border-box",
-            }}
-          />
-          <h2
-            style={{
-              fontSize: "15px",
-              marginTop: "20px",
-              marginBottom: "10px",
-              color: "rgb(4, 35, 84)",
-            }}
-          >
-            <strong>
-              Si aún no entiendes la pantalla o cómo crear tu solicitud, ¡NO TE
-              PREOCUPES! <br></br>
-              Te invitamos a descubrir una guía fácil y sin complicaciones.{" "}
-              <br></br>
-              <a
-                href={manualPdf}
-                download
-                style={{ textDecoration: "underline" }}
-              >
-                HAZ CLICK AQUÍ
-              </a>
-            </strong>
-          </h2>
-          <div style={{ textAlign: "right" }}>
-            <Link to="/recursos-ofrecidos">
-              <button
+
+            <div style={{ position: "absolute", bottom: "20px", left: "20px" }}>
+              <strong
                 style={{
-                  padding: "10px 20px",
-                  fontSize: "16px",
-                  borderRadius: "5px",
-                  backgroundColor: "#162447",
-                  color: "#fff",
-                  border: "none",
-                  cursor: "pointer",
-                  width: "100px",
+                  fontSize: "15px",
+                  marginBottom: "10px",
+                  color: "rgb(4, 35, 84)",
                 }}
               >
-                Regresar
-              </button>
-            </Link>
-            <button
-              style={{
-                padding: "10px 20px",
-                marginLeft: "40px",
-                fontSize: "16px",
-                borderRadius: "5px",
-                backgroundColor: "#162447",
-                color: "#fff",
-                border: "none",
-                cursor: "pointer",
-                width: "100px",
-              }}
-              onClick={handleCrearClick}
-            >
-              Crear
-            </button>
-            {showModal && <ModalSolicitudExito />}
+                Si NO encontraste tu librería aquí dirígete al icono de ayuda en
+                la sección anterior y comunícate con nuestro equipo.
+              </strong>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={closeSuccessModal}
+        content="Recibirás un correo cuando el recurso te sea asignado."
+      />
+
+      <SolicitudHelpModal open={showHelpModal} onClose={closeHelpModal} />
     </div>
   );
 }
