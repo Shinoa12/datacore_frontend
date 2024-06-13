@@ -2,6 +2,8 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
+import { parseISO, format } from 'date-fns';
+
 //MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -79,10 +81,10 @@ function Solicitudes() {
   useEffect(() => {
     loadPage();
   }, []);
-
+  const navigate = useNavigate();
   //Redirigir a nueva solicitud
   const nuevaSolicitud = () => {
-    useNavigate("/recursos-ofrecidos");
+    navigate("/recursos-ofrecidos");
   };
 
   //Cargar resultado de solicitud *
@@ -114,7 +116,14 @@ function Solicitudes() {
   const loadPage = () => {
     getAllSolicitudes(localStorage.getItem("id_user"))
       .then((response) => {
-        setRows(response.data);
+        const formattedData = response.data.map(item => ({
+          ...item,
+          fecha_registro: format(parseISO(item.fecha_registro), 'dd/MM/yyyy hh:mm:ss a'),
+          fecha_procesamiento: format(parseISO(item.fecha_procesamiento), 'dd/MM/yyyy hh:mm:ss a'),
+          fecha_finalizada: format(parseISO(item.fecha_finalizada), 'dd/MM/yyyy hh:mm:ss a'),
+      }));
+      
+      setRows(formattedData);
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
@@ -126,8 +135,12 @@ function Solicitudes() {
   const cargarDetalles = (id_solicitud) => {
     getSolicitudDetalle(id_solicitud)
       .then((response) => {
+        // Assuming response.data.fecha_registro is in ISO format
+        const date = parseISO(response.data.fecha_registro);
+        const formattedDate = format(date, 'dd/MM/yyyy hh:mm:ss a');
+
         setTextId(response.data.id_solicitud);
-        setTextFechaRegistro(response.data.fecha_registro);
+        setTextFechaRegistro(formattedDate);
         setTextEstado(response.data.estado_solicitud);
         setTextCPU(response.data.nombre);
         setTextCantidadNucleo(response.data.numero_nucleos);
@@ -154,28 +167,29 @@ function Solicitudes() {
 
   const columns = [
     { field: "id_solicitud", headerName: "ID", width: 70 },
-    { field: "duracion", headerName: "Duracion", width: 100 },
-    { field: "fecha_registro", headerName: "Fecha de Registro", width: 150 },
-    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 150 },
-    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 150 },
-    { field: "estado_solicitud", headerName: "Estado", width: 100 },
-    {
-      field: "cancelar",
-      headerName: "Cancelar",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Button
-            startIcon={<CloseIcon />}
-            onClick={() => abrirCancelar(params.row.id_solicitud)}
-          ></Button>
-        );
-      },
+    { field: "duracion", headerName: "Duracion", width: 150 },
+    { field: "fecha_registro", headerName: "Fecha de Registro", width: 200 },
+    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 200 },
+    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 200 },
+    { field: "estado_solicitud", headerName: "Estado", width: 200 },
+{
+    field: "cancelar",
+    headerName: "Cancelar",
+    width: 100,
+    sortable: false,
+    renderCell: (params) => {
+        return params.row.estado_solicitud === 'creada' ? (
+            <Button
+                startIcon={<CloseIcon />}
+                onClick={() => abrirCancelar(params.row.id_solicitud)}
+            ></Button>
+        ) : null;
     },
+},
     {
       field: "detalle",
       headerName: "Detalle",
-      width: 70,
+      width: 100,
       sortable: false,
       renderCell: (params) => {
         return (
@@ -189,7 +203,7 @@ function Solicitudes() {
     {
       field: "resultados",
       headerName: "Resultados",
-      width: 130,
+      width: 150,
       sortable: false,
       renderCell: (params) => {
         return (

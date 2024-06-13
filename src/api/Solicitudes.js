@@ -8,7 +8,7 @@ export const getAllSolicitudes = (idUsuario) => {
     //return axios.get("https://raw.githubusercontent.com/Xuan-Yiming/testdata/main/dataSolicitudes.json")
 }
 
-export const getSolicitudDetalle = (idUsuario) => {
+export const getSolicitudDetalle = (idSolicitud) => {
     return axios.get(`${API_BASE_URL}${'getSolicitudDetalle/'}${idSolicitud}`)
     //return axios.get("https://raw.githubusercontent.com/Xuan-Yiming/testdata/main/dataDetalleSolicitde.json")
 }
