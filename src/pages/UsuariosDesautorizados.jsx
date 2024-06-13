@@ -133,8 +133,6 @@ function UsuariosDesautorizados() {
           loading={loading}
         />
       </Box>
-
-      <EditUserModal open={open} setOpen={setOpen} user={user}></EditUserModal>
     </div>
   );
 }
