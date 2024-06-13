@@ -2,7 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
-import { parseISO, format } from 'date-fns';
+import { parseISO, format } from "date-fns";
 
 //MUI
 import Button from "@mui/material/Button";
@@ -116,14 +116,23 @@ function Solicitudes() {
   const loadPage = () => {
     getAllSolicitudes(localStorage.getItem("id_user"))
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.map((item) => ({
           ...item,
-          fecha_registro: format(parseISO(item.fecha_registro), 'dd/MM/yyyy hh:mm:ss a'),
-          fecha_procesamiento: format(parseISO(item.fecha_procesamiento), 'dd/MM/yyyy hh:mm:ss a'),
-          fecha_finalizada: format(parseISO(item.fecha_finalizada), 'dd/MM/yyyy hh:mm:ss a'),
-      }));
-      
-      setRows(formattedData);
+          fecha_registro: format(
+            parseISO(item.fecha_registro),
+            "dd/MM/yyyy hh:mm:ss a"
+          ),
+          fecha_procesamiento: format(
+            parseISO(item.fecha_procesamiento),
+            "dd/MM/yyyy hh:mm:ss a"
+          ),
+          fecha_finalizada: format(
+            parseISO(item.fecha_finalizada),
+            "dd/MM/yyyy hh:mm:ss a"
+          ),
+        }));
+
+        setRows(formattedData);
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
@@ -137,7 +146,7 @@ function Solicitudes() {
       .then((response) => {
         // Assuming response.data.fecha_registro is in ISO format
         const date = parseISO(response.data.fecha_registro);
-        const formattedDate = format(date, 'dd/MM/yyyy hh:mm:ss a');
+        const formattedDate = format(date, "dd/MM/yyyy hh:mm:ss a");
 
         setTextId(response.data.id_solicitud);
         setTextFechaRegistro(formattedDate);
@@ -153,17 +162,16 @@ function Solicitudes() {
   };
 
   //Cancelar solicitud
-  function cancelarSolicitudes (){
-
+  function cancelarSolicitudes() {
     deleteSolicitud(selectedIdSolicitud)
       .then((response) => {
         loadPage();
-        console.log( response.data.id_solicitud + ": cancelado");
+        console.log(response.data.id_solicitud + ": cancelado");
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
       });
-  };
+  }
 
   const columns = [
     { field: "id_solicitud", headerName: "ID", width: 70 },
@@ -172,20 +180,20 @@ function Solicitudes() {
     { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 200 },
     { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 200 },
     { field: "estado_solicitud", headerName: "Estado", width: 200 },
-{
-    field: "cancelar",
-    headerName: "Cancelar",
-    width: 100,
-    sortable: false,
-    renderCell: (params) => {
-        return params.row.estado_solicitud === 'creada' ? (
-            <Button
-                startIcon={<CloseIcon />}
-                onClick={() => abrirCancelar(params.row.id_solicitud)}
-            ></Button>
+    {
+      field: "cancelar",
+      headerName: "Cancelar",
+      width: 100,
+      sortable: false,
+      renderCell: (params) => {
+        return params.row.estado_solicitud === "creada" ? (
+          <Button
+            startIcon={<CloseIcon />}
+            onClick={() => abrirCancelar(params.row.id_solicitud)}
+          ></Button>
         ) : null;
+      },
     },
-},
     {
       field: "detalle",
       headerName: "Detalle",
@@ -228,17 +236,19 @@ function Solicitudes() {
         Solicitudes
       </h2>
 
-<Box marginBottom={5} sx={{ display: 'flex', justifyContent: 'flex-end' }}>  
-      <Button
-    
+      <Box
         marginBottom={5}
-        variant="contained"
-        startIcon={<AddIcon />}
-        onClick={nuevaSolicitud}
+        sx={{ display: "flex", justifyContent: "flex-end" }}
       >
-        Nueva Solicitud
-      </Button>
-</Box>
+        <Button
+          marginBottom={5}
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={nuevaSolicitud}
+        >
+          Nueva Solicitud
+        </Button>
+      </Box>
       <DataGrid
         id_solicitud="dgSolicitudes"
         rows={rows}
@@ -274,77 +284,62 @@ function Solicitudes() {
           >
             Detalle de Solicitud
           </h2>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label = "ID"
-                id="outlined-size-small "
-                value={lid}
-                size="small"
-                
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label = "Fecha de registro"
-                id="outlined-size-small "
-                value={lfecharegistro}
-                size="small"
-                
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label = "Estado"
-                id="outlined-size-small "
-                value={lestado}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label = "CPU"
-                id="outlined-size-small "
-                value={lcpu}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label = "Cantidad de núcleos"
-                id="outlined-size-small"
-                value={lnucleo}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="Frecuencia del procesador"
-                id="outlined-size-small"
-                value={lfrecuencia}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-              <div>
-              <TextField
-                label = "Tamaño de memoria RAM"
-                id="outlined-size-small "
-                value={ltamano}
-                size="small"
-              />
-            </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
+            }}
+          >
+            <TextField
+              label="ID"
+              id="outlined-size-small "
+              value={lid}
+              fullWidth
+            />
+
+            <TextField
+              label="Fecha de registro"
+              id="outlined-size-small "
+              value={lfecharegistro}
+              fullWidth
+            />
+
+            <TextField
+              label="Estado"
+              id="outlined-size-small "
+              value={lestado}
+              fullWidth
+            />
+
+            <TextField
+              label="CPU"
+              id="outlined-size-small "
+              value={lcpu}
+              fullWidth
+            />
+
+            <TextField
+              label="Cantidad de núcleos"
+              id="outlined-size-small"
+              value={lnucleo}
+              fullWidth
+            />
+
+            <TextField
+              label="Frecuencia del procesador"
+              id="outlined-size-small"
+              value={lfrecuencia}
+              fullWidth
+            />
+
+            <TextField
+              label="Tamaño de memoria RAM"
+              id="outlined-size-small "
+              value={ltamano}
+              fullWidth
+            />
           </div>
         </Box>
       </Modal>
