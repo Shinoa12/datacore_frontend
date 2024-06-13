@@ -18,6 +18,7 @@ import { getHistorial } from "../api/Historial";
 function Historial() {
   const [rows, setRows] = useState([]);
   const [origialRows, setRowsR] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     email: "",
     recurso: "",
@@ -41,6 +42,7 @@ function Historial() {
   }, []);
 
   const loadPage = () => {
+    setLoading(true);
     getHistorial()
       .then((response) => {
         const formattedData = response.data.map((item) => ({
@@ -63,6 +65,9 @@ function Historial() {
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -124,7 +129,7 @@ function Historial() {
   };
 
   return (
-    <div className="row m-4">
+    <div className="mx-8 my-6">
       <h2
         style={{ color: "rgb(4, 35, 84)" }}
         className=" font-bold text-3xl mb-4"
@@ -167,6 +172,7 @@ function Historial() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          marginTop: "1rem",
         }}
       >
         <div>Fecha Registro</div>
@@ -218,6 +224,7 @@ function Historial() {
             },
           }}
           pageSizeOptions={[10, 20, 30, 40, 50]}
+          loading={loading}
         />
       </Box>
 
