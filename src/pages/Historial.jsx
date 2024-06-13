@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
+import { parseISO, format } from 'date-fns';
 //MUI
 import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
@@ -23,12 +24,12 @@ function Historial() {
     fecha_finalizada: "",
   });
   const columns = [
-    { field: "fecha_registro", headerName: "Fecha", width: 150 },
-    { field: "recurso", headerName: "Recurso", width: 100 },
-    { field: "email", headerName: "Correo", width: 150 },
+    { field: "fecha_registro", headerName: "Fecha", width: 200 },
+    { field: "recurso", headerName: "Recurso", width: 300 },
+    { field: "email", headerName: "Correo", width: 300 },
     { field: "estado_solicitud", headerName: "Estado", width: 150 },
-    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 150 },
-    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 150 },
+    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 200 },
+    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 200 },
     { field: "duracion", headerName: "Duracion", width: 100 },
   ];
 
@@ -39,8 +40,14 @@ function Historial() {
   const loadPage = () => {
     getHistorial()
       .then((response) => {
-        setRows(response.data);
-        setRowsR(response.data);
+        const formattedData = response.data.map(item => ({
+          ...item,
+          fecha_registro: format(parseISO(item.fecha_registro), 'dd/MM/yyyy hh:mm:ss a'),
+          fecha_procesamiento: format(parseISO(item.fecha_procesamiento), 'dd/MM/yyyy hh:mm:ss a'),
+          fecha_finalizada: format(parseISO(item.fecha_finalizada), 'dd/MM/yyyy hh:mm:ss a'),
+      }));
+        setRows(formattedData);
+        setRowsR(formattedData);
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
@@ -70,12 +77,27 @@ function Historial() {
           if (filters[key] === "") {
             return true;
           }
-          const rowValue =
-            typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
-        //   console.log('rowValue:', rowValue);
-        //   console.log('filter:', filters[key].toLowerCase());
-        //   console.log('rowValue.includes(filters[key].toLowerCase()):', rowValue.includes(filters[key].toLowerCase()));
-          return rowValue.includes(filters[key].toLowerCase());
+
+          if (key === 'fecha_procesamiento' || key === 'fecha_finalizada') {
+            const date = new Date(row[key]);
+            const [date1, date2] = filters[key].split(',');
+
+            if (date1 && date2) {
+              const startDate = new Date(date1);
+              const endDate = new Date(date2);
+              return date >= startDate && date <= endDate;
+            } else if (date1) {
+              const startDate = new Date(date1);
+              return date >= startDate;
+            } else if (date2) {
+              const endDate = new Date(date2);
+              return date <= endDate;
+            }
+          } else {
+            const rowValue =
+              typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
+            return rowValue.includes(filters[key].toLowerCase());
+          }
         });
       });
 
