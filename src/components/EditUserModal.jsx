@@ -137,6 +137,11 @@ function EditUserModal({
     }
   }, [formData.facultad, especialidadList]);
 
+  // Evita errores de especialidad fuera de rango
+  const isEspecialidadValid = filteredEspecialidadList.some(
+    (especialidad) => especialidad.id_especialidad === formData.especialidad
+  );
+
   return (
     <div>
       <Dialog
@@ -278,7 +283,11 @@ function EditUserModal({
               id="especialidad"
               name="especialidad"
               label="Especialidad"
-              value={formData.especialidad}
+              value={
+                filteredEspecialidadList.length !== 0 && isEspecialidadValid
+                  ? formData.especialidad
+                  : ""
+              }
               onChange={handleChange}
               disabled={saving}
             >
