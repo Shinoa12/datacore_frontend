@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { parseISO, format } from 'date-fns';
+import moment from 'moment';
+
 //MUI
 import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
@@ -78,22 +80,15 @@ function Historial() {
             return true;
           }
 
-          if (key === 'fecha_procesamiento' || key === 'fecha_finalizada') {
-            const date = new Date(row[key]);
-            const [date1, date2] = filters[key].split(',');
-
-            if (date1 && date2) {
-              const startDate = new Date(date1);
-              const endDate = new Date(date2);
-              return date >= startDate && date <= endDate;
-            } else if (date1) {
-              const startDate = new Date(date1);
-              return date >= startDate;
-            } else if (date2) {
-              const endDate = new Date(date2);
-              return date <= endDate;
-            }
-          } else {
+          if (key === 'fecha_procesamiento') {
+            const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A").toDate();
+            const startDate = new Date(filters[key]);
+            return date >= startDate;
+          } else if ( key === 'fecha_finalizada'){
+            const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A").toDate();
+            const endDate = new Date(filters[key]);
+            return date <= endDate;
+          }else {
             const rowValue =
               typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
             return rowValue.includes(filters[key].toLowerCase());
@@ -152,7 +147,8 @@ function Historial() {
     <input
         type="date"
         id="start"
-        name="fechaInicio"
+        name="fecha_procesamiento"
+        onChange={handleInputChange}
     />
 </div>
 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -160,7 +156,8 @@ function Historial() {
     <input
         type="date"
         id="end"
-        name="fechaFin"
+        name="fecha_finalizada"
+        onChange={handleInputChange}
     />
 </div>
 
