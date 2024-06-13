@@ -3,7 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import React from "react";
 import { getAllUsers, getUserById } from "../api/Users";
 import { MdModeEdit } from "react-icons/md";
-import UpdateUserModal from "../components/UpdateUserModal";
+import EditUserModal from "../components/EditUserModal";
 import NoRowsOverlay from "../components/NoRowsOverlay";
 
 function UsuariosDesautorizados() {
@@ -134,11 +134,7 @@ function UsuariosDesautorizados() {
         />
       </Box>
 
-      <UpdateUserModal
-        open={open}
-        setOpen={setOpen}
-        user={user}
-      ></UpdateUserModal>
+      <EditUserModal open={open} setOpen={setOpen} user={user}></EditUserModal>
     </div>
   );
 }

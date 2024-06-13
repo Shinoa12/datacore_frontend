@@ -12,15 +12,30 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 import LoadingOverlay from "./LoadingOverlay";
-import {
-  getAllFacultad,
-  getAllEspecialidadPorFacultad,
-  getAllEstadoPersona,
-  updateUser,
-  getUserById,
-} from "../api/Users";
+import { getUserById, updateUser } from "../api/Users";
 
-function UpdateUserModal({ open, onClose, onSuccess, id }) {
+/**
+ * Modal para editar usuario.
+ *
+ * @param {object} props
+ * @param {boolean} props.open Indica la visibilidad del modal
+ * @param {() => void} props.onClose Se ejecuta al salir del modal
+ * @param {() => void} props.onSuccess Se ejecuta cuando la creación es exitosa
+ * @param {number} props.id ID del usuario a editar
+ * @param {Array} props.facultadList Lista de facultades
+ * @param {Array} props.especialidadList Lista de especialidades
+ * @param {Array} props.estadoList Lista de estados
+ * @returns {JSX.Element}
+ */
+function EditUserModal({
+  open,
+  onClose,
+  onSuccess,
+  id,
+  facultadList,
+  especialidadList,
+  estadoList,
+}) {
   const initialFormData = {
     correo: "",
     nombres: "",
@@ -32,28 +47,21 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  const [facultadList, setFacultadList] = useState([]);
-  const [especialidadList, setEspecialidadList] = useState([]);
-  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
+  const [filteredEspecialidadList, setFilteredEspecialidadList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
+  // Maneja el cierre correcto del modal
   const handleClose = (event, reason) => {
-    if (
-      reason &&
-      (reason === "backdropClick" || (saving && reason === "escapeKeyDown"))
-    ) {
+    // Rechaza la salida del modal con un clic afuera o al guardar
+    if (reason && (reason === "backdropClick" || saving)) {
       return;
     }
     onClose();
     setFormData(initialFormData);
   };
 
+  // Guarda los cambios al usuario
   const handleSubmit = async () => {
     setSaving(true);
     const userData = {
@@ -66,27 +74,13 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
       onSuccess();
       handleClose();
     } catch (error) {
-      console.error("Error al editar usuario:", error);
+      console.error("Error al guardar usuario:", error);
     } finally {
       setSaving(false);
     }
   };
 
-  const fetchFacultadList = async () => {
-    const response = await getAllFacultad();
-    setFacultadList(response.data);
-  };
-
-  const fetchEspecialidadesPorFacultad = async (idFacultad) => {
-    const response = await getAllEspecialidadPorFacultad(idFacultad);
-    setEspecialidadList(response.data);
-  };
-
-  const fetchEstadoPersonaList = async () => {
-    const response = await getAllEstadoPersona();
-    setEstadoPersonaList(response.data);
-  };
-
+  // Obtiene el usuario seleccionado en la tabla anterior
   const fetchSelectedUser = async (id) => {
     setLoading(true);
     try {
@@ -102,7 +96,6 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
         estado: data.id_estado_persona,
       };
       setFormData(user);
-      await fetchEspecialidadesPorFacultad(user.facultad);
     } catch (error) {
       console.error("Error al cargar datos de usuario:", error);
     } finally {
@@ -110,37 +103,39 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
     }
   };
 
-  useEffect(() => {
-    fetchFacultadList();
-    fetchEstadoPersonaList();
-  }, []);
-
+  // Obtiene el usuario correspondiente cuando se cambia el ID
   useEffect(() => {
     if (id !== 0) {
       fetchSelectedUser(id);
     }
   }, [id]);
 
-  // Actualizar especialidades al cambiar facultad
-  useEffect(() => {
-    if (formData.facultad !== "") {
-      setFormData({
-        ...formData,
-        especialidad: "",
-      });
-      fetchEspecialidadesPorFacultad(formData.facultad);
-    }
-  }, [formData.facultad]);
+  // Maneja los cambios en los campos del formulario
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-  // Establecer como especialidad el primer valor
+  // Maneja el cambio de facultad para actualizar las especialidades
+  const handleFacultadChange = (event) => {
+    const { value } = event.target;
+    setFormData({ ...formData, facultad: value, especialidad: "" });
+
+    const newList = especialidadList.filter(
+      (especialidad) => especialidad.id_facultad === value
+    );
+    setFilteredEspecialidadList(newList);
+  };
+
+  // Maneja el cambio de especialidades ante cambios de facultad no manuales
   useEffect(() => {
-    if (especialidadList.length > 0) {
-      setFormData({
-        ...formData,
-        especialidad: especialidadList[0].id_especialidad,
-      });
+    if (formData.facultad) {
+      const newList = especialidadList.filter(
+        (especialidad) => especialidad.id_facultad === formData.facultad
+      );
+      setFilteredEspecialidadList(newList);
     }
-  }, [especialidadList]);
+  }, [formData.facultad, especialidadList]);
 
   return (
     <div>
@@ -237,19 +232,17 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
 
           {/* Estado */}
           <FormControl margin="dense" fullWidth>
-            <InputLabel id="estado-label">
-              {formData.estado !== "" ? "Estado" : "Cargando estados..."}
-            </InputLabel>
+            <InputLabel id="estado-label">Estado</InputLabel>
             <Select
               labelId="estado-label"
               id="estado"
               name="estado"
               label="Estado"
-              value={estadoPersonaList.length > 0 ? formData.estado : ""}
+              value={formData.estado}
               onChange={handleChange}
-              disabled={formData.estado === "" || saving}
+              disabled={saving}
             >
-              {estadoPersonaList.map(({ id_estado_persona, nombre }) => (
+              {estadoList.map(({ id_estado_persona, nombre }) => (
                 <MenuItem key={id_estado_persona} value={id_estado_persona}>
                   {nombre}
                 </MenuItem>
@@ -259,21 +252,15 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
 
           {/* Facultad */}
           <FormControl margin="dense" fullWidth>
-            <InputLabel id="facultad-label">
-              {formData.facultad !== "" ? "Facultad" : "Cargando facultades..."}
-            </InputLabel>
+            <InputLabel id="facultad-label">Facultad</InputLabel>
             <Select
               labelId="facultad-label"
               id="facultad"
               name="facultad"
               label="Facultad"
-              value={facultadList.length > 0 ? formData.facultad : ""}
-              onChange={handleChange}
-              disabled={
-                formData.facultad === "" ||
-                formData.especialidad === "" ||
-                saving
-              }
+              value={formData.facultad}
+              onChange={handleFacultadChange}
+              disabled={saving}
             >
               {facultadList.map(({ id_facultad, nombre }) => (
                 <MenuItem key={id_facultad} value={id_facultad}>
@@ -285,25 +272,17 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
 
           {/* Especialidad */}
           <FormControl margin="dense" fullWidth>
-            <InputLabel id="especialidad-label">
-              {formData.especialidad !== ""
-                ? "Especialidad"
-                : "Cargando especialidades..."}
-            </InputLabel>
+            <InputLabel id="especialidad-label">Especialidad</InputLabel>
             <Select
               labelId="especialidad-label"
               id="especialidad"
               name="especialidad"
               label="Especialidad"
-              value={
-                especialidadList.length > 0 && !loading
-                  ? formData.especialidad
-                  : ""
-              }
+              value={formData.especialidad}
               onChange={handleChange}
-              disabled={formData.especialidad === "" || saving}
+              disabled={saving}
             >
-              {especialidadList.map(({ id_especialidad, nombre }) => (
+              {filteredEspecialidadList.map(({ id_especialidad, nombre }) => (
                 <MenuItem key={id_especialidad} value={id_especialidad}>
                   {nombre}
                 </MenuItem>
@@ -327,4 +306,4 @@ function UpdateUserModal({ open, onClose, onSuccess, id }) {
   );
 }
 
-export default UpdateUserModal;
+export default EditUserModal;

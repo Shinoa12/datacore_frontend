@@ -7,7 +7,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import EditIcon from "@mui/icons-material/Edit";
-import UpdateUserModal from "../components/UpdateUserModal";
+import EditUserModal from "../components/EditUserModal";
 import SuccessModal from "../components/SuccessModal";
 import NoRowsOverlay from "../components/NoRowsOverlay";
 import {
@@ -49,9 +49,9 @@ function UsuariosAutorizados() {
 
   const [userList, setUserList] = useState([]);
   const [filteredUserList, setFilteredUserList] = useState([]);
-  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
   const [facultadList, setFacultadList] = useState([]);
   const [especialidadList, setEspecialidadList] = useState([]);
+  const [estadoList, setEstadoList] = useState([]);
   const [selectedUser, setSelectedUser] = useState(0);
   const [selectedEstado, setSelectedEstado] = useState(0);
   const [listsFetched, setListsFetched] = useState(false);
@@ -64,14 +64,14 @@ function UsuariosAutorizados() {
     setListsFetched(false);
     setUsersFetched(false);
     try {
-      const [estadoPersonaResponse, facultadResponse, especialidadResponse] =
+      const [estadoResponse, facultadResponse, especialidadResponse] =
         await Promise.all([
           getAllEstadoPersona(),
           getAllFacultad(),
           getAllEspecialidades(),
         ]);
 
-      setEstadoPersonaList(estadoPersonaResponse.data);
+      setEstadoList(estadoResponse.data);
       setFacultadList(facultadResponse.data);
       setEspecialidadList(especialidadResponse.data);
 
@@ -188,7 +188,7 @@ function UsuariosAutorizados() {
             <MenuItem key={0} value={0}>
               TODOS
             </MenuItem>
-            {estadoPersonaList
+            {estadoList
               .filter(({ nombre }) => nombre !== "DESAUTORIZADO")
               .map(({ id_estado_persona, nombre }) => (
                 <MenuItem key={id_estado_persona} value={id_estado_persona}>
@@ -217,11 +217,14 @@ function UsuariosAutorizados() {
         loading={!(listsFetched && usersFetched)}
       />
 
-      <UpdateUserModal
+      <EditUserModal
         open={showEditModal}
         onClose={closeEditModal}
         onSuccess={handleEditSuccess}
         id={selectedUser}
+        facultadList={facultadList}
+        especialidadList={especialidadList}
+        estadoList={estadoList}
       />
 
       <SuccessModal
