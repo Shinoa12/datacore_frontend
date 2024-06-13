@@ -275,32 +275,31 @@ function Solicitudes() {
             Detalle de Solicitud
           </h2>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>ID</div>
             <div>
               <TextField
+                label = "ID"
                 id="outlined-size-small "
                 value={lid}
                 size="small"
-                variant="standard"
+                
               />
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>Fecha de registro</div>
             <div>
               <TextField
+                label = "Fecha de registro"
                 id="outlined-size-small "
                 value={lfecharegistro}
                 size="small"
-                variant="standard"
+                
               />
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>Estado</div>
             <div>
               <TextField
-                variant="standard"
+                label = "Estado"
                 id="outlined-size-small "
                 value={lestado}
                 size="small"
@@ -308,10 +307,9 @@ function Solicitudes() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>CPU</div>
             <div>
               <TextField
-                variant="standard"
+                label = "CPU"
                 id="outlined-size-small "
                 value={lcpu}
                 size="small"
@@ -319,10 +317,9 @@ function Solicitudes() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>Cantidad de núcleos</div>
             <div>
               <TextField
-                variant="standard"
+                label = "Cantidad de núcleos"
                 id="outlined-size-small"
                 value={lnucleo}
                 size="small"
@@ -330,10 +327,9 @@ function Solicitudes() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>Frecuencia del procesador</div>
             <div>
               <TextField
-                variant="standard"
+                label="Frecuencia del procesador"
                 id="outlined-size-small"
                 value={lfrecuencia}
                 size="small"
@@ -341,10 +337,9 @@ function Solicitudes() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ marginRight: "auto" }}>Tamaño de memoria RAM</div>
-            <div>
+              <div>
               <TextField
-                variant="standard"
+                label = "Tamaño de memoria RAM"
                 id="outlined-size-small "
                 value={ltamano}
                 size="small"

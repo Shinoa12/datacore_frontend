@@ -114,10 +114,10 @@ function Historial() {
 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
     <div>Correo</div>
     <TextField
+        label="Correo"
         id="outlined-size-small "
         defaultValue=""
         size="small"
-        variant="standard"
         name="email"
         onChange={handleInputChange}
     />
@@ -125,9 +125,9 @@ function Historial() {
 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
     <div>Recurso</div>
     <TextField
+        label="Recurso"
         id="outlined-size-small "
         size="small"
-        variant="standard"
         name="recurso"
         onChange={handleInputChange}
     />
@@ -135,9 +135,9 @@ function Historial() {
 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
     <div>Estado</div>
     <TextField
+        label="Estado"
         id="outlined-size-small "
         size="small"
-        variant="standard"
         name="estado_solicitud"
         onChange={handleInputChange}
     />
