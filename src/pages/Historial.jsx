@@ -2,16 +2,16 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
-import { parseISO, format } from 'date-fns';
-import moment from 'moment';
+import { parseISO, format } from "date-fns";
+import moment from "moment";
 
 //MUI
 import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
 import { TextField } from "@mui/material";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
-import Box from '@mui/material/Box';
-import SearchIcon from '@mui/icons-material/Search';
+import Box from "@mui/material/Box";
+import SearchIcon from "@mui/icons-material/Search";
 //APIs
 import { getHistorial } from "../api/Historial";
 
@@ -24,6 +24,7 @@ function Historial() {
     estado_solicitud: "",
     fecha_procesamiento: "",
     fecha_finalizada: "",
+    fecha_registro: "",
   });
   const columns = [
     { field: "fecha_registro", headerName: "Fecha", width: 200 },
@@ -42,12 +43,21 @@ function Historial() {
   const loadPage = () => {
     getHistorial()
       .then((response) => {
-        const formattedData = response.data.map(item => ({
+        const formattedData = response.data.map((item) => ({
           ...item,
-          fecha_registro: format(parseISO(item.fecha_registro), 'dd/MM/yyyy hh:mm:ss a'),
-          fecha_procesamiento: format(parseISO(item.fecha_procesamiento), 'dd/MM/yyyy hh:mm:ss a'),
-          fecha_finalizada: format(parseISO(item.fecha_finalizada), 'dd/MM/yyyy hh:mm:ss a'),
-      }));
+          fecha_registro: format(
+            parseISO(item.fecha_registro),
+            "dd/MM/yyyy hh:mm:ss a"
+          ),
+          fecha_procesamiento: format(
+            parseISO(item.fecha_procesamiento),
+            "dd/MM/yyyy hh:mm:ss a"
+          ),
+          fecha_finalizada: format(
+            parseISO(item.fecha_finalizada),
+            "dd/MM/yyyy hh:mm:ss a"
+          ),
+        }));
         setRows(formattedData);
         setRowsR(formattedData);
       })
@@ -75,26 +85,36 @@ function Historial() {
 
   const handleSearch = () => {
     const filteredRows = origialRows.filter((row) => {
-        return Object.keys(filters).every((key) => {
-          if (filters[key] === "") {
-            return true;
-          }
+      return Object.keys(filters).every((key) => {
+        if (filters[key] === "") {
+          return true;
+        }
 
-          if (key === 'fecha_procesamiento') {
-            const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A").toDate();
-            const startDate = new Date(filters[key]);
-            return date >= startDate;
-          } else if ( key === 'fecha_finalizada'){
-            const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A").toDate();
-            const endDate = new Date(filters[key]);
-            return date <= endDate;
-          }else {
-            const rowValue =
-              typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
-            return rowValue.includes(filters[key].toLowerCase());
-          }
-        });
+        if (key === "fecha_procesamiento") {
+          const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A")
+            .startOf("day")
+            .toDate();
+          const startDate = moment(filters[key]).startOf("day").toDate();
+          return date >= startDate;
+        } else if (key === "fecha_finalizada") {
+          const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A")
+            .startOf("day")
+            .toDate();
+          const endDate = moment(filters[key]).startOf("day").toDate();
+          return date <= endDate;
+        } else if (key === "fecha_registro") {
+          const date = moment(row[key], "DD/MM/YYYY hh:mm:ss A")
+            .startOf("day")
+            .toDate();
+          const endDate = moment(filters[key]).startOf("day").toDate();
+          return date.getTime() === endDate.getTime();
+        } else {
+          const rowValue =
+            typeof row[key] === "string" ? row[key].toLowerCase() : row[key];
+          return rowValue.includes(filters[key].toLowerCase());
+        }
       });
+    });
 
     if (Object.values(filters).every((value) => value === "")) {
       setRows(origialRows);
@@ -104,74 +124,91 @@ function Historial() {
   };
 
   return (
-    <div className="row m-4" >
+    <div className="row m-4">
       <h2
         style={{ color: "rgb(4, 35, 84)" }}
         className=" font-bold text-3xl mb-4"
       >
         Historial
       </h2>
-<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <div>Correo</div>
-    <TextField
-        label="Correo"
-        id="outlined-size-small "
-        defaultValue=""
-        size="small"
-        name="email"
-        onChange={handleInputChange}
-    />
-</div>
-<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <div>Recurso</div>
-    <TextField
-        label="Recurso"
-        id="outlined-size-small "
-        size="small"
-        name="recurso"
-        onChange={handleInputChange}
-    />
-</div>
-<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <div>Estado</div>
-    <TextField
-        label="Estado"
-        id="outlined-size-small "
-        size="small"
-        name="estado_solicitud"
-        onChange={handleInputChange}
-    />
-</div>
-<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <div>Fecha Inicio</div>
-    <input
-        type="date"
-        id="start"
-        name="fecha_procesamiento"
-        onChange={handleInputChange}
-    />
-</div>
-<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <div>Fecha Fin</div>
-    <input
-        type="date"
-        id="end"
-        name="fecha_finalizada"
-        onChange={handleInputChange}
-    />
-</div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          label="Correo"
+          id="outlined-size-small "
+          defaultValue=""
+          size="small"
+          name="email"
+          onChange={handleInputChange}
+        />
+        <TextField
+          label="Recurso"
+          id="outlined-size-small "
+          size="small"
+          name="recurso"
+          onChange={handleInputChange}
+        />
+        <TextField
+          label="Estado"
+          id="outlined-size-small "
+          size="small"
+          name="estado_solicitud"
+          onChange={handleInputChange}
+        />
+      </div>
 
-    <Box marginTop={5} marginBottom={5} display="flex" justifyContent="flex-end">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div>Fecha Registro</div>
+        <input
+          type="date"
+          id="end"
+          name="fecha_registro"
+          onChange={handleInputChange}
+        />
+        <div>Fecha Inicio</div>
+        <input
+          type="date"
+          id="start"
+          name="fecha_procesamiento"
+          onChange={handleInputChange}
+        />
+
+        <div>Fecha Fin</div>
+        <input
+          type="date"
+          id="end"
+          name="fecha_finalizada"
+          onChange={handleInputChange}
+        />
+      </div>
+
+      <Box
+        marginTop={5}
+        marginBottom={5}
+        display="flex"
+        justifyContent="flex-end"
+      >
         <Button
-            variant="contained"
-            startIcon={<SearchIcon />}
-            onClick={handleSearch}
+          variant="contained"
+          startIcon={<SearchIcon />}
+          onClick={handleSearch}
         >
-            Buscar
+          Buscar
         </Button>
-    </Box>
-    <Box sx={{ height: 400, width: "100%" }} className="mt-4">
-      <DataGrid
+      </Box>
+      <Box sx={{ height: 400, width: "100%" }} className="mt-4">
+        <DataGrid
           id="dgHistorial"
           rows={rows}
           columns={columns}
@@ -180,19 +217,19 @@ function Historial() {
               paginationModel: { pageSize: 10 },
             },
           }}
-          pageSizeOptions={[10]}
-      />
-    </Box>
-      
-    <Box marginTop={5} display="flex" justifyContent="flex-end">
-      <Button
-        variant="contained"
-        startIcon={<SimCardDownloadIcon />}
-        onClick={exportarSolicitudes}
-      >
-        Exportar Solicitudes
-      </Button>
-    </Box>
+          pageSizeOptions={[10, 20, 30, 40, 50]}
+        />
+      </Box>
+
+      <Box marginTop={5} display="flex" justifyContent="flex-end">
+        <Button
+          variant="contained"
+          startIcon={<SimCardDownloadIcon />}
+          onClick={exportarSolicitudes}
+        >
+          Exportar Solicitudes
+        </Button>
+      </Box>
     </div>
   );
 }
