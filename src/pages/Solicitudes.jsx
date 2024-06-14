@@ -48,6 +48,7 @@ function Solicitudes() {
   const [lfrecuencia, setTextFrecuenciaProcesador] = useState();
   const [ltamano, setTextTamanoRAM] = useState();
   const [selectedIdSolicitud, setSelectedIdSolicitud] = useState();
+  const [loading, setLoading] = useState(false);
 
   //Detalle
   const [open, setOpen] = React.useState(false);
@@ -114,6 +115,7 @@ function Solicitudes() {
 
   //Cargar datos *
   const loadPage = () => {
+    setLoading(true);
     getAllSolicitudes(localStorage.getItem("id_user"))
       .then((response) => {
         const formattedData = response.data.map((item) => ({
@@ -136,6 +138,9 @@ function Solicitudes() {
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -228,7 +233,7 @@ function Solicitudes() {
 
   // Cuerpo de la pagina
   return (
-    <div className="row m-4">
+    <div className="mx-8 my-6">
       <h2
         style={{ color: "rgb(4, 35, 84)" }}
         className=" font-bold text-3xl mb-4"
@@ -249,7 +254,9 @@ function Solicitudes() {
           Nueva Solicitud
         </Button>
       </Box>
+
       <DataGrid
+        autoHeight
         id_solicitud="dgSolicitudes"
         rows={rows}
         columns={columns}
@@ -259,6 +266,7 @@ function Solicitudes() {
           },
         }}
         pageSizeOptions={[10, 20]}
+        loading={loading}
       />
 
       {/*

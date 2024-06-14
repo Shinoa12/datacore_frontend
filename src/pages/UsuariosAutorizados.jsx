@@ -7,11 +7,11 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import EditIcon from "@mui/icons-material/Edit";
-import UpdateUserModal from "../components/UpdateUserModal";
+import EditUserModal from "../components/EditUserModal";
 import SuccessModal from "../components/SuccessModal";
 import NoRowsOverlay from "../components/NoRowsOverlay";
 import {
-  getAllUsers,
+  getUsuariosValidos,
   getAllEstadoPersona,
   getAllFacultad,
   getAllEspecialidades,
@@ -48,55 +48,45 @@ function UsuariosAutorizados() {
   ];
 
   const [userList, setUserList] = useState([]);
-  const [estadoPersonaList, setEstadoPersonaList] = useState([]);
+  const [filteredUserList, setFilteredUserList] = useState([]);
   const [facultadList, setFacultadList] = useState([]);
   const [especialidadList, setEspecialidadList] = useState([]);
-  const [rows, setRows] = useState([]);
+  const [estadoList, setEstadoList] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(0);
+  const [selectedEstado, setSelectedEstado] = useState(0);
+  const [listsFetched, setListsFetched] = useState(false);
+  const [usersFetched, setUsersFetched] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(0);
-  const [selectedStatus, setSelectedStatus] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [dataReady, setDataReady] = useState(false);
 
-  const fetchUserList = async () => {
-    setLoading(true);
+  // Obtiene listas de estados, facultades, especialidades
+  const fetchLists = async () => {
+    setListsFetched(false);
+    setUsersFetched(false);
     try {
-      const response = await getAllUsers();
-      setUserList(response.data);
-      const filteredData = transformUserList(response.data);
-      setRows(filteredData);
+      const [estadoResponse, facultadResponse, especialidadResponse] =
+        await Promise.all([
+          getAllEstadoPersona(),
+          getAllFacultad(),
+          getAllEspecialidades(),
+        ]);
+
+      setEstadoList(estadoResponse.data);
+      setFacultadList(facultadResponse.data);
+      setEspecialidadList(especialidadResponse.data);
+
+      setListsFetched(true);
     } catch (error) {
-      console.error("Error al cargar usuarios:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error al recuperar datos:", error);
     }
   };
 
-  const fetchEstadoPersonaList = async () => {
-    const response = await getAllEstadoPersona();
-    setEstadoPersonaList(response.data);
-  };
+  // Obtiene usuarios
+  const fetchUserList = async () => {
+    try {
+      const response = await getUsuariosValidos();
 
-  const fetchFacultadList = async () => {
-    const response = await getAllFacultad();
-    setFacultadList(response.data);
-  };
-
-  const fetchEspecialidadList = async () => {
-    const response = await getAllEspecialidades();
-    setEspecialidadList(response.data);
-  };
-
-  // Mantiene solo los usuarios pendientes y autorizados
-  const transformUserList = (list) => {
-    if (!dataReady) return [];
-
-    const filteredList = list
-      .filter(
-        (user) => user.id_estado_persona === 2 || user.id_estado_persona === 3
-      )
-      .map((user) => {
+      const users = response.data.map((user) => {
         const facultadObj = facultadList.find(
           (item) => item.id_facultad == user.id_facultad
         );
@@ -106,36 +96,57 @@ function UsuariosAutorizados() {
 
         return {
           id: user.id,
-          correo: user.email,
           nombres: `${user.first_name?.toUpperCase()} ${user.last_name?.toUpperCase()}`,
+          correo: user.email,
           facultad: facultadObj ? facultadObj.nombre : "",
           especialidad: especialidadObj ? especialidadObj.nombre : "",
           recursos_maximos: user.recursos_max,
+          estado: user.id_estado_persona,
         };
       });
 
-    return filteredList;
-  };
-
-  const changeFilter = (status) => {
-    setSelectedStatus(status);
-    setLoading(true);
-
-    if (status !== 0) {
-      const filteredList = userList.filter(
-        (user) => user.id_estado_persona === status
-      );
-      setRows(transformUserList(filteredList));
-    } else {
-      setRows(transformUserList(userList));
+      setUserList(users);
+      setUsersFetched(true);
+    } catch (error) {
+      console.error("Error al cargar usuarios:", error);
     }
-
-    setLoading(false);
   };
 
-  const handleStatusChange = (event) => {
-    const status = event.target.value;
-    changeFilter(status);
+  // Filtra usuarios dependiendo del estado
+  const filterUsers = () => {
+    if (selectedEstado === 0) {
+      setFilteredUserList(userList);
+    } else {
+      const filteredUsers = userList.filter(
+        (user) => user.estado === Number(selectedEstado)
+      );
+      setFilteredUserList(filteredUsers);
+    }
+  };
+
+  // Obtiene listas al renderizar el componente
+  useEffect(() => {
+    fetchLists();
+  }, []);
+
+  // Obtiene usuarios al tener listas con datos
+  useEffect(() => {
+    if (listsFetched) {
+      fetchUserList();
+    }
+  }, [listsFetched, facultadList, especialidadList]);
+
+  // Llama a la función de filtración cuando cambia el estado o la lista base
+  useEffect(() => {
+    if (usersFetched) {
+      filterUsers();
+    }
+  }, [usersFetched, selectedEstado, userList]);
+
+  // Handlers y funciones para modals
+
+  const handleEstadoChange = (event) => {
+    setSelectedEstado(event.target.value);
   };
 
   const openEditModal = (id) => {
@@ -150,38 +161,12 @@ function UsuariosAutorizados() {
 
   const handleEditSuccess = async () => {
     setShowSuccessModal(true);
-    await fetchUserList();
-    setSelectedStatus(0);
+    await fetchLists();
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
   };
-
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        setLoading(true);
-        await fetchEstadoPersonaList();
-        await fetchFacultadList();
-        await fetchEspecialidadList();
-        await fetchUserList();
-        setDataReady(true);
-      } catch (error) {
-        console.error("Error al recuperar datos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllData();
-  }, []);
-
-  useEffect(() => {
-    if (dataReady) {
-      setRows(transformUserList(userList));
-    }
-  }, [dataReady, userList, facultadList, especialidadList]);
 
   return (
     <div className="mx-8 my-6">
@@ -191,21 +176,19 @@ function UsuariosAutorizados() {
 
       {/* Filtro de estado */}
       <Box sx={{ mb: 4 }}>
-        <FormControl margin="dense">
+        <FormControl sx={{ minWidth: "10rem" }}>
           <InputLabel id="estado-label">Estado</InputLabel>
           <Select
             labelId="estado-label"
-            id="estado"
-            name="estado"
-            label="Estado"
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            disabled={loading || rows.length === 0}
+            id="estado-filter"
+            value={selectedEstado}
+            onChange={handleEstadoChange}
+            disabled={!(listsFetched && usersFetched) || userList.length === 0}
           >
             <MenuItem key={0} value={0}>
               TODOS
             </MenuItem>
-            {estadoPersonaList
+            {estadoList
               .filter(({ nombre }) => nombre !== "DESAUTORIZADO")
               .map(({ id_estado_persona, nombre }) => (
                 <MenuItem key={id_estado_persona} value={id_estado_persona}>
@@ -220,25 +203,28 @@ function UsuariosAutorizados() {
       <DataGrid
         autoHeight
         columns={columns}
-        rows={rows}
+        rows={filteredUserList}
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 10,
             },
           },
         }}
-        pageSizeOptions={[5]}
+        pageSizeOptions={[10]}
         disableRowSelectionOnClick
         slots={{ noRowsOverlay: NoRowsOverlay }}
-        loading={loading}
+        loading={!(listsFetched && usersFetched)}
       />
 
-      <UpdateUserModal
+      <EditUserModal
         open={showEditModal}
         onClose={closeEditModal}
         onSuccess={handleEditSuccess}
         id={selectedUser}
+        facultadList={facultadList}
+        especialidadList={especialidadList}
+        estadoList={estadoList}
       />
 
       <SuccessModal

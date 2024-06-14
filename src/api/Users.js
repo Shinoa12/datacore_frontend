@@ -17,4 +17,6 @@ export const getAllEspecialidades = () => apiGet("especialidades/");
 export const getAllEstadoPersona = () => apiGet("estadosPersonas/");
 export const getUserById = (id) => apiGet(`users/${id}/`);
 export const getAllUsers = () => apiGet("users/");
+export const getUsuariosValidos = () => apiGet("users/validos/");
+export const getUsuariosDesautorizados = () => apiGet("users/desautorizados/");
 export const updateUser = (id, user) => apiPatch(`users/${id}/`, user);
