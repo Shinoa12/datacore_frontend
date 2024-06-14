@@ -292,75 +292,62 @@ function Solicitudes() {
           >
             Detalle de Solicitud
           </h2>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="ID"
-                id="outlined-size-small "
-                value={lid}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="Fecha de registro"
-                id="outlined-size-small "
-                value={lfecharegistro}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="Estado"
-                id="outlined-size-small "
-                value={lestado}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="CPU"
-                id="outlined-size-small "
-                value={lcpu}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="Cantidad de núcleos"
-                id="outlined-size-small"
-                value={lnucleo}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="Frecuencia del procesador"
-                id="outlined-size-small"
-                value={lfrecuencia}
-                size="small"
-              />
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              <TextField
-                label="Tamaño de memoria RAM"
-                id="outlined-size-small "
-                value={ltamano}
-                size="small"
-              />
-            </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
+            }}
+          >
+            <TextField
+              label="ID"
+              id="outlined-size-small "
+              value={lid}
+              fullWidth
+            />
+
+            <TextField
+              label="Fecha de registro"
+              id="outlined-size-small "
+              value={lfecharegistro}
+              fullWidth
+            />
+
+            <TextField
+              label="Estado"
+              id="outlined-size-small "
+              value={lestado}
+              fullWidth
+            />
+
+            <TextField
+              label="CPU"
+              id="outlined-size-small "
+              value={lcpu}
+              fullWidth
+            />
+
+            <TextField
+              label="Cantidad de núcleos"
+              id="outlined-size-small"
+              value={lnucleo}
+              fullWidth
+            />
+
+            <TextField
+              label="Frecuencia del procesador"
+              id="outlined-size-small"
+              value={lfrecuencia}
+              fullWidth
+            />
+
+            <TextField
+              label="Tamaño de memoria RAM"
+              id="outlined-size-small "
+              value={ltamano}
+              fullWidth
+            />
           </div>
         </Box>
       </Modal>
