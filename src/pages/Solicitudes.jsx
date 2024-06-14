@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { parseISO, format } from "date-fns";
+import { addHours } from "date-fns";
 
 //MUI
 import Button from "@mui/material/Button";
@@ -19,7 +20,6 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
 import DialogContentText from "@mui/material/DialogContentText";
-import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
 //APIs
 import { getAllSolicitudes } from "../api/Solicitudes";
@@ -118,21 +118,41 @@ function Solicitudes() {
     setLoading(true);
     getAllSolicitudes(localStorage.getItem("id_user"))
       .then((response) => {
-        const formattedData = response.data.map((item) => ({
-          ...item,
-          fecha_registro: format(
-            parseISO(item.fecha_registro),
-            "dd/MM/yyyy hh:mm:ss a"
-          ),
-          fecha_procesamiento: format(
-            parseISO(item.fecha_procesamiento),
-            "dd/MM/yyyy hh:mm:ss a"
-          ),
-          fecha_finalizada: format(
-            parseISO(item.fecha_finalizada),
-            "dd/MM/yyyy hh:mm:ss a"
-          ),
-        }));
+        const formattedData = response.data.map((item) => {
+          const registroYear = parseISO(item.fecha_registro).getUTCFullYear();
+          const procesamientoYear = parseISO(
+            item.fecha_procesamiento
+          ).getUTCFullYear();
+          const finalizadaYear = parseISO(
+            item.fecha_finalizada
+          ).getUTCFullYear();
+
+          return {
+            ...item,
+
+            fecha_registro:
+              registroYear < 2000
+                ? "-"
+                : format(
+                    addHours(parseISO(item.fecha_registro), 5),
+                    "dd/MM/yyyy HH:mm:ss a"
+                  ),
+            fecha_procesamiento:
+              procesamientoYear < 2000
+                ? "-"
+                : format(
+                    addHours(parseISO(item.fecha_procesamiento), 5),
+                    "dd/MM/yyyy HH:mm:ss a"
+                  ),
+            fecha_finalizada:
+              finalizadaYear < 2000
+                ? "-"
+                : format(
+                    addHours(parseISO(item.fecha_finalizada), 5),
+                    "dd/MM/yyyy HH:mm:ss a"
+                  ),
+          };
+        });
 
         setRows(formattedData);
       })
@@ -181,9 +201,9 @@ function Solicitudes() {
   const columns = [
     { field: "id_solicitud", headerName: "ID", width: 70 },
     { field: "duracion", headerName: "Duracion", width: 150 },
-    { field: "fecha_registro", headerName: "Fecha de Registro", width: 200 },
-    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 200 },
-    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 200 },
+    { field: "fecha_registro", headerName: "Fecha de Registro", width: 250 },
+    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 250 },
+    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 250 },
     { field: "estado_solicitud", headerName: "Estado", width: 200 },
     {
       field: "cancelar",
@@ -219,14 +239,14 @@ function Solicitudes() {
       width: 150,
       sortable: false,
       renderCell: (params) => {
-        return (
+        return params.row.estado_solicitud === "Finalizada" ? (
           <Button
             startIcon={<DownloadIcon />}
             onClick={() => descargarDoc(params.row.id_solicitud)}
           >
             Descargar
           </Button>
-        );
+        ) : null;
       },
     },
   ];
