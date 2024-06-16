@@ -285,10 +285,10 @@ function Solicitudes() {
         columns={columns}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 10 },
+            paginationModel: {pageSize: 10 },
           },
         }}
-        pageSizeOptions={[10, 20]}
+        pageSizeOptions={[10]}
         slots={{ noRowsOverlay: NoRowsOverlay }}
         loading={loading}
       />

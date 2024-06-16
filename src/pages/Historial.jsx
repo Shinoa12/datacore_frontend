@@ -261,7 +261,7 @@ function Historial() {
               paginationModel: { pageSize: 10 },
             },
           }}
-          pageSizeOptions={[10, 20, 30, 40, 50]}
+          pageSizeOptions={[10]}
           slots={{ noRowsOverlay: NoRowsOverlay }}
           loading={loading}
         />

@@ -16,7 +16,7 @@ import { navbarHeight } from "./NavBar";
 const sidebarButtonStyles = {
   width: "100%",
   borderRadius: "0px",
-  justifyContent: "flex-start",
+  justifyContent: "flex-center",
   paddingTop: "0.75rem",
   paddingBottom: "0.75rem",
 };
@@ -71,7 +71,7 @@ function Sidebar({ sidebarToggle }) {
     <div
       className={`${
         sidebarToggle ? "hidden" : "block"
-      } w-64 fixed h-full flex flex-col`}
+      } w-64 fixed h-full text-center flex flex-col`}
     >
       {/* Información del usuario */}
       <div

@@ -16,9 +16,10 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
 
   return (
     <div
-      className={`z-10 transition-all duration-300 w-full ${
-        sidebarToggle ? "" : "ml-64"
-      }`}
+      className={`fixed top-0 right-0 z-10 w-full transition-all duration-300`}
+      style={{
+        width: sidebarToggle ? "100%" : "calc(100% - 16rem)"
+      }}
     >
       <nav
         className="p-6 flex justify-between"
