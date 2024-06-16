@@ -2,9 +2,14 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Collapse from "@mui/material/Collapse";
-import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
+import InputAdornment from "@mui/material/InputAdornment";
+import TextField from "@mui/material/TextField";
 import { useState } from "react";
+
+const textFieldStyles = {
+  minWidth: "16rem",
+};
 
 function Ajustes() {
   const [showAlert, setShowAlert] = useState(false);
@@ -68,6 +73,7 @@ function Ajustes() {
             type="number"
             inputProps={{ min: 0 }}
             defaultValue={1}
+            sx={textFieldStyles}
             // value={}
             // error={}
             // onChange={handleChange}
@@ -94,7 +100,39 @@ function Ajustes() {
             name="tiempoMax"
             type="number"
             inputProps={{ min: 0 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">horas</InputAdornment>
+              ),
+            }}
             defaultValue={1}
+            sx={textFieldStyles}
+            // value={}
+            // error={}
+            // onChange={handleChange}
+          />
+        </Box>
+        <Divider />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <p className="font-semibold">Correo de contacto</p>
+            <p className="text-sm font-light">
+              Correo al que los usuarios se pueden dirigir para solicitar ayuda
+            </p>
+          </Box>
+          <TextField
+            margin="dense"
+            id="recursosMax"
+            name="recursosMax"
+            type="text"
+            defaultValue="email@pucp.edu.pe"
+            sx={textFieldStyles}
             // value={}
             // error={}
             // onChange={handleChange}
