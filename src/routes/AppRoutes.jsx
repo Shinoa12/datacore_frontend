@@ -32,7 +32,7 @@ export const AppRoutes = () => {
           />
         </div>
 
-        <div className={`${sidebarToggle ?  "pt-24": "pt-24 ml-64"}`}>
+        <div className={`${sidebarToggle ? "" : "ml-64"}`}>
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
