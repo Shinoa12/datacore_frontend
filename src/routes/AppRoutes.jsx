@@ -1,12 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState } from "react";
-
-import "../App.css";
+import { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
+import Navbar, { navbarHeight } from "../components/navigation/NavBar";
+import Sidebar from "../components/navigation/SideBar";
+import "../App.css";
 import theme from "../theme";
 
-import Sidebar from "../components/navigation/SideBar";
-import Navbar from "../components/navigation/NavBar";
 import Recursos from "../pages/Recursos";
 import Historial from "../pages/Historial";
 import Solicitudes from "../pages/Solicitudes";
@@ -32,7 +31,10 @@ export const AppRoutes = () => {
           />
         </div>
 
-        <div className={`${sidebarToggle ? "pt-24": "pt-24 ml-64"}`}>
+        <div
+          className={`${sidebarToggle ? "" : "ml-64"}`}
+          style={{ paddingTop: navbarHeight }}
+        >
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
