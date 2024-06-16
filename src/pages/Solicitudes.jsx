@@ -5,7 +5,7 @@ import { useState } from "react";
 import { parseISO, format } from "date-fns";
 import { addHours } from "date-fns";
 
-//MUI
+// MUI
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
@@ -21,11 +21,14 @@ import DownloadIcon from "@mui/icons-material/Download";
 import Modal from "@mui/material/Modal";
 import DialogContentText from "@mui/material/DialogContentText";
 
-//APIs
+// APIs
 import { getAllSolicitudes } from "../api/Solicitudes";
 import { getSolicitudDetalle } from "../api/Solicitudes";
 import { getSolicitudResultado } from "../api/Solicitudes";
 import { deleteSolicitud } from "../api/Solicitudes";
+
+// Components
+import NoRowsOverlay from "../components/NoRowsOverlay";
 
 const style = {
   position: "absolute",
@@ -286,6 +289,7 @@ function Solicitudes() {
           },
         }}
         pageSizeOptions={[10, 20]}
+        slots={{ noRowsOverlay: NoRowsOverlay }}
         loading={loading}
       />
 

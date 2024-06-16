@@ -6,7 +6,7 @@ import { parseISO, format } from "date-fns";
 import { addHours } from "date-fns";
 import moment from "moment";
 
-//MUI
+// MUI
 import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
 import { TextField } from "@mui/material";
@@ -17,8 +17,12 @@ import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-//APIs
+
+// APIs
 import { getHistorial } from "../api/Historial";
+
+// Components
+import NoRowsOverlay from "../components/NoRowsOverlay";
 
 function Historial() {
   const [rows, setRows] = useState([]);
@@ -199,7 +203,6 @@ function Historial() {
             <MenuItem value={"finalizada"}>finalizada</MenuItem>
           </Select>
         </FormControl>
-
       </div>
 
       <div
@@ -259,6 +262,7 @@ function Historial() {
             },
           }}
           pageSizeOptions={[10, 20, 30, 40, 50]}
+          slots={{ noRowsOverlay: NoRowsOverlay }}
           loading={loading}
         />
       </Box>
