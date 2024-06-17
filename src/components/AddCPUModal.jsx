@@ -90,7 +90,7 @@ function AddCPUModal({ open, onClose, onSuccess }) {
 
   const handleCancelClose = (event, reason) => {
     // Omite clics fuera del modal de confirmación de descarte
-    if (reason && reason === "backdropClick") {
+    if (reason && (reason === "backdropClick" || saving)) {
       return;
     }
     toggleDiscardModal();
@@ -161,6 +161,7 @@ function AddCPUModal({ open, onClose, onSuccess }) {
             top: 12,
             color: (theme) => theme.palette.grey[500],
           }}
+          disabled={saving}
         >
           <CloseIcon />
         </IconButton>

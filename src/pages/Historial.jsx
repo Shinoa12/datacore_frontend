@@ -3,17 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { parseISO, format } from "date-fns";
+import { addHours } from "date-fns";
 import moment from "moment";
 
-//MUI
+// MUI
 import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
 import { TextField } from "@mui/material";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 import Box from "@mui/material/Box";
 import SearchIcon from "@mui/icons-material/Search";
-//APIs
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+
+// APIs
 import { getHistorial } from "../api/Historial";
+
+// Components
+import NoRowsOverlay from "../components/NoRowsOverlay";
 
 function Historial() {
   const [rows, setRows] = useState([]);
@@ -45,21 +54,42 @@ function Historial() {
     setLoading(true);
     getHistorial()
       .then((response) => {
-        const formattedData = response.data.map((item) => ({
-          ...item,
-          fecha_registro: format(
-            parseISO(item.fecha_registro),
-            "dd/MM/yyyy hh:mm:ss a"
-          ),
-          fecha_procesamiento: format(
-            parseISO(item.fecha_procesamiento),
-            "dd/MM/yyyy hh:mm:ss a"
-          ),
-          fecha_finalizada: format(
-            parseISO(item.fecha_finalizada),
-            "dd/MM/yyyy hh:mm:ss a"
-          ),
-        }));
+        const formattedData = response.data.map((item) => {
+          const registroYear = parseISO(item.fecha_registro).getUTCFullYear();
+          const procesamientoYear = parseISO(
+            item.fecha_procesamiento
+          ).getUTCFullYear();
+          const finalizadaYear = parseISO(
+            item.fecha_finalizada
+          ).getUTCFullYear();
+
+          return {
+            ...item,
+
+            fecha_registro:
+              registroYear < 2000
+                ? "-"
+                : format(
+                    addHours(parseISO(item.fecha_registro), 5),
+                    "dd/MM/yyyy HH:mm:ss a"
+                  ),
+            fecha_procesamiento:
+              procesamientoYear < 2000
+                ? "-"
+                : format(
+                    addHours(parseISO(item.fecha_procesamiento), 5),
+                    "dd/MM/yyyy HH:mm:ss a"
+                  ),
+            fecha_finalizada:
+              finalizadaYear < 2000
+                ? "-"
+                : format(
+                    addHours(parseISO(item.fecha_finalizada), 5),
+                    "dd/MM/yyyy HH:mm:ss a"
+                  ),
+          };
+        });
+
         setRows(formattedData);
         setRowsR(formattedData);
       })
@@ -158,13 +188,21 @@ function Historial() {
           name="recurso"
           onChange={handleInputChange}
         />
-        <TextField
-          label="Estado"
-          id="outlined-size-small "
-          size="small"
-          name="estado_solicitud"
-          onChange={handleInputChange}
-        />
+        <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
+          <InputLabel id="demo-simple-select-label">Estado</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            name="estado_solicitud"
+            label="Estado"
+            onChange={handleInputChange}
+          >
+            <MenuItem value={""}>Todos</MenuItem>
+            <MenuItem value={"creada"}>creada</MenuItem>
+            <MenuItem value={"cancelada"}>cancelada</MenuItem>
+            <MenuItem value={"finalizada"}>finalizada</MenuItem>
+          </Select>
+        </FormControl>
       </div>
 
       <div
@@ -223,7 +261,8 @@ function Historial() {
               paginationModel: { pageSize: 10 },
             },
           }}
-          pageSizeOptions={[10, 20, 30, 40, 50]}
+          pageSizeOptions={[10]}
+          slots={{ noRowsOverlay: NoRowsOverlay }}
           loading={loading}
         />
       </Box>

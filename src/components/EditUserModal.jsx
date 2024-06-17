@@ -55,7 +55,7 @@ function EditUserModal({
   // Maneja el cierre correcto del modal
   const handleClose = (event, reason) => {
     // Rechaza la salida del modal con un clic afuera o al guardar
-    if (reason && (reason === "backdropClick" || saving)) {
+    if (reason && (reason === "backdropClick" || saving || loading)) {
       return;
     }
     onClose();

@@ -1,113 +1,138 @@
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import React from "react";
-import { getAllUsers, getUserById } from "../api/Users";
-import { MdModeEdit } from "react-icons/md";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
 import EditUserModal from "../components/EditUserModal";
+import SuccessModal from "../components/SuccessModal";
 import NoRowsOverlay from "../components/NoRowsOverlay";
+import {
+  getUsuariosDesautorizados,
+  getAllEstadoPersona,
+  getAllFacultad,
+  getAllEspecialidades,
+} from "../api/Users";
 
 function UsuariosDesautorizados() {
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
-    { field: "correo", headerName: "Correo", width: 200 },
-    {
-      field: "nombres",
-      headerName: "Nombres",
-      width: 150,
-      editable: false,
-    },
-    {
-      field: "facultad",
-      headerName: "Facultad",
-      width: 150,
-      editable: false,
-    },
-    {
-      field: "especialidad",
-      headerName: "Especialidad",
-      width: 110,
-      editable: false,
-    },
+    { field: "id", headerName: "ID", width: 50 },
+    { field: "nombres", headerName: "Nombres", width: 220 },
+    { field: "correo", headerName: "Correo", width: 220 },
+    { field: "facultad", headerName: "Facultad", width: 180 },
+    { field: "especialidad", headerName: "Especialidad", width: 180 },
     {
       field: "fecha_deshabilitacion",
-      headerName: "Fecha Deshabilitación",
-      width: 110,
-      editable: false,
+      headerName: "Fecha deshabilitación",
+      width: 130,
     },
-    {
-      field: "motivo",
-      headerName: "Motivo",
-      width: 110,
-      editable: false,
-    },
+    { field: "motivo", headerName: "Motivo", width: 100, sortable: false },
     {
       field: "options",
       headerName: "Opciones",
-      description: "",
+      width: 100,
       sortable: false,
-      width: 160,
-      renderCell: (params) => {
-        const onClick = async (e) => {
-          e.stopPropagation(); // don't select this row after clicking
-          await CargarUsuario(params.row.id);
-          setOpen(true);
-        };
-        return (
-          <MdModeEdit
-            className="inline-block w-6 h-5 mr-2 -mt-2"
-            onClick={onClick}
-            style={{ cursor: "pointer" }}
-          ></MdModeEdit>
-        );
-      },
+      renderCell: (params) => (
+        <IconButton onClick={() => openEditModal(params.row.id)}>
+          <EditIcon sx={{ color: "primary.main" }} />
+        </IconButton>
+      ),
     },
   ];
 
-  const [rows, setRows] = React.useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [user, setUser] = React.useState({});
-  const [loading, setLoading] = React.useState(false);
+  const [userList, setUserList] = useState([]);
+  const [facultadList, setFacultadList] = useState([]);
+  const [especialidadList, setEspecialidadList] = useState([]);
+  const [estadoList, setEstadoList] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(0);
+  const [listsFetched, setListsFetched] = useState(false);
+  const [usersFetched, setUsersFetched] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllUsers();
-        transformData(res.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+  // Obtiene listas de facultades y especialidades
+  const fetchLists = async () => {
+    setListsFetched(false);
+    setUsersFetched(false);
+    try {
+      const [estadoResponse, facultadResponse, especialidadResponse] =
+        await Promise.all([
+          getAllEstadoPersona(),
+          getAllFacultad(),
+          getAllEspecialidades(),
+        ]);
+
+      setEstadoList(estadoResponse.data);
+      setFacultadList(facultadResponse.data);
+      setEspecialidadList(especialidadResponse.data);
+
+      setListsFetched(true);
+    } catch (error) {
+      console.error("Error al cargar listas:", error);
+    }
+  };
+
+  // Obtiene usuarios desautorizados
+  const fetchUserList = async () => {
+    try {
+      const response = await getUsuariosDesautorizados();
+
+      const users = response.data.map((user) => {
+        const facultadObj = facultadList.find(
+          (item) => item.id_facultad == user.id_facultad
+        );
+        const especialidadObj = especialidadList.find(
+          (item) => item.id_especialidad == user.id_especialidad
+        );
+
+        return {
+          id: user.id,
+          nombres: `${user.first_name?.toUpperCase()} ${user.last_name?.toUpperCase()}`,
+          correo: user.email,
+          facultad: facultadObj ? facultadObj.nombre : "",
+          especialidad: especialidadObj ? especialidadObj.nombre : "",
+          fecha_deshabilitacion: user.fecha_deshabilitacion || "",
+          motivo: user.motivo_desautorizado || "",
+        };
+      });
+
+      setUserList(users);
+      setUsersFetched(true);
+    } catch (error) {
+      console.error("Error al cargar usuarios desautorizados:", error);
+    }
+  };
+
+  // Obtiene listas al renderizar el componente
+  useEffect(() => {
+    fetchLists();
   }, []);
 
-  async function CargarUsuario(idUser) {
-    const res = await getUserById(idUser);
-    console.log(res);
-    setUser(res.data);
-  }
-
-  const transformData = (originalData) => {
-    const newData = [];
-    for (const index in originalData) {
-      const user = originalData[index];
-      if (user.id_estado_persona == 1) {
-        newData.push({
-          id: parseInt(index) + 1, // Start IDs from 1 (adjust as needed)
-          correo: user.email || "", // Get email or use empty string if missing
-          nombres: `${user.first_name?.toUpperCase() || ""} ${
-            user.last_name?.toUpperCase() || ""
-          }`, // Combine and uppercase names (use empty strings if missing)
-          facultad: "Ciencias e Ingeniería", // Replace with your logic for faculty
-          especialidad: "ingeniería Informática", // Add specialty if needed
-          fecha_deshabilitacion: user.fecha_deshabilitacion || "", // Replace with your logic for date
-          motivo: user.motivo || "", // Replace with your logic for reason
-        });
-      }
+  // Obtiene usuarios al tener listas con datos
+  useEffect(() => {
+    if (listsFetched) {
+      fetchUserList();
     }
-    return setRows(newData);
+  }, [listsFetched, facultadList, especialidadList]);
+
+  // Handlers y funciones para modals
+
+  const openEditModal = (id) => {
+    setSelectedUser(id);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setSelectedUser(0);
+  };
+
+  const handleEditSuccess = async () => {
+    setShowSuccessModal(true);
+    await fetchLists();
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
   };
 
   return (
@@ -116,23 +141,38 @@ function UsuariosDesautorizados() {
         <p className="font-bold text-3xl">Lista de usuarios desautorizados</p>
       </Box>
 
-      <Box sx={{ height: 400, width: "100%" }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
+      <DataGrid
+        autoHeight
+        columns={columns}
+        rows={userList}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
             },
-          }}
-          pageSizeOptions={[10]}
-          disableRowSelectionOnClick
-          slots={{ noRowsOverlay: NoRowsOverlay }}
-          loading={loading}
-        />
-      </Box>
+          },
+        }}
+        pageSizeOptions={[10]}
+        disableRowSelectionOnClick
+        slots={{ noRowsOverlay: NoRowsOverlay }}
+        loading={!(listsFetched && usersFetched)}
+      />
+
+      <EditUserModal
+        open={showEditModal}
+        onClose={closeEditModal}
+        onSuccess={handleEditSuccess}
+        id={selectedUser}
+        facultadList={facultadList}
+        especialidadList={especialidadList}
+        estadoList={estadoList}
+      />
+
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={closeSuccessModal}
+        content="El usuario ha sido editado satisfactoriamente."
+      />
     </div>
   );
 }
