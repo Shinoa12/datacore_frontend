@@ -82,24 +82,53 @@ function CPUSolicitud() {
     setShowLibrariesModal(false);
   };
 
+  const forbiddenExtensions = ["pdf", "doc", "docx", "png", "jpg", "jpeg", "mp3", "mp4","exe", "zip", "rar", "tar", "gz", "7z", "iso"];
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const filterFiles = (files) => {
+    return files.filter(file => {
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      return !forbiddenExtensions.includes(fileExtension);
+    });
+  };
+
   const handleFileChange = (event) => {
+    const newFiles = filterFiles(Array.from(event.target.files));
+    const invalidFiles = Array.from(event.target.files).filter(file => !filterFiles([file]).length);
+  
+    if (invalidFiles.length > 0) {
+      setErrorMessage("Archivo no válido");
+    } else {
+      setErrorMessage("");
+    }
+  
     setSelectedFiles((prevFiles) => [
       ...prevFiles,
-      ...Array.from(event.target.files),
+      ...newFiles,
     ]);
     setShowDropMessage(false);
   };
-
+  
   const handleDrop = (event) => {
     event.preventDefault();
     event.stopPropagation();
-
+  
+    const newFiles = filterFiles(Array.from(event.dataTransfer.files));
+    const invalidFiles = Array.from(event.dataTransfer.files).filter(file => !filterFiles([file]).length);
+  
+    if (invalidFiles.length > 0) {
+      setErrorMessage("Archivo no válido");
+    } else {
+      setErrorMessage("");
+    }
+  
     setSelectedFiles((prevFiles) => [
       ...prevFiles,
-      ...Array.from(event.dataTransfer.files),
+      ...newFiles,
     ]);
     setShowDropMessage(false);
   };
+  
 
   const handleDragOver = (event) => {
     event.preventDefault();
@@ -164,7 +193,6 @@ function CPUSolicitud() {
     const herramienta = event.target.value;
     console.log("Selected herramienta:", herramienta);
     setSelectedHerramienta(herramienta);
-    setLibrerias([]);
   };
 
   const openHelpModal = () => {
@@ -224,6 +252,7 @@ function CPUSolicitud() {
   const filteredLibrerias = librerias.filter((libreria) =>
     libreria.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
   return (
     <div className="mx-8 my-6">
@@ -341,9 +370,10 @@ function CPUSolicitud() {
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.5rem",
-                justifyContent: showDropMessage ? "center" : "flex-start",
-                alignItems: showDropMessage ? "center" : "flex-start",
+                justifyContent: "center",
+                alignItems: "center",
                 overflow: "auto",
+                position: "relative"
               }}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -395,7 +425,13 @@ function CPUSolicitud() {
                   ))}
                 </List>
               )}
+              {errorMessage && (
+                <Box sx={{ mt: 1, color: "red", position: "relative", bottom: 10 }}>
+                  {errorMessage}
+                </Box>
+              )}
             </Box>
+
           </Box>
 
           {/* Parámetros */}
