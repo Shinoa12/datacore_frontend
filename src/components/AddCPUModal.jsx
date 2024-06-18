@@ -13,7 +13,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import DiscardChangesModal from "./DiscardChangesModal";
+import WarningModal from "./WarningModal";
 import LoadingOverlay from "./LoadingOverlay";
 
 /**
@@ -269,11 +269,17 @@ function AddCPUModal({ open, onClose, onSuccess }) {
         </DialogActions>
       </Dialog>
 
-      <DiscardChangesModal
+      <WarningModal
         open={showDiscardModal}
         onClose={handleCancelClose}
         onConfirm={handleConfirmClose}
-      ></DiscardChangesModal>
+        content={{
+          title: "¿Estás seguro de que quieres salir?",
+          body: "Se perderán todos los datos.",
+          cancelText: "No, continuar editando",
+          confirmText: "Sí, descartar y salir",
+        }}
+      ></WarningModal>
     </div>
   );
 }
