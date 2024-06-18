@@ -1,11 +1,7 @@
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import WarningIcon from "@mui/icons-material/Warning";
 
 /**
  * Modal para confirmar descarte de cambios.
@@ -22,58 +18,54 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
       <Dialog
         open={open}
         onClose={onClose}
-        aria-labelledby="dialog-title"
         fullWidth={true}
         disableRestoreFocus
-        sx={{
-          ".MuiDialog-paper": {
-            p: 2,
-          },
-        }}
       >
-        <DialogTitle
+        <Box
           sx={{
-            mb: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "primary.main",
+            p: 4,
           }}
-          id="dialog-title"
         >
-          <FontAwesomeIcon
-            size="3x"
-            icon={faTriangleExclamation}
-            style={{ marginBottom: "20px", color: "#B9333A" }}
-          />
-          <p style={{ fontSize: "24px", textAlign: "center" }}>
-            ¿Estás seguro de que quieres salir?
-          </p>
-        </DialogTitle>
-        <DialogContent sx={{ mb: 1 }}>
-          <DialogContentText
-            sx={{ textAlign: "center", color: "primary.main" }}
+          {/* Título */}
+          <Box
+            sx={{
+              mb: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "primary.main",
+            }}
           >
-            <p>Se perderán todos los datos.</p>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            mb: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "20px",
-          }}
-        >
-          <Button onClick={onClose} variant="contained">
-            No, continuar editando
-          </Button>
-          <Button onClick={onConfirm} variant="outlined">
-            Sí, salir y descartar
-          </Button>
-        </DialogActions>
+            <WarningIcon sx={{ mb: 2, fontSize: "5rem", color: "#B9333A" }} />
+            <p className="text-center text-2xl font-semibold">
+              ¿Estás seguro de que quieres salir?
+            </p>
+          </Box>
+
+          {/* Contenido */}
+          <Box sx={{ mt: 2, mb: 4, color: "primary.main" }}>
+            <p className="text-center">Se perderán todos los datos.</p>
+          </Box>
+
+          {/* Botones */}
+          <Box
+            sx={{
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "1.5rem",
+            }}
+          >
+            <Button onClick={onClose} variant="contained">
+              No, continuar editando
+            </Button>
+            <Button onClick={onConfirm} variant="outlined">
+              Sí, descartar y salir
+            </Button>
+          </Box>
+        </Box>
       </Dialog>
     </div>
   );

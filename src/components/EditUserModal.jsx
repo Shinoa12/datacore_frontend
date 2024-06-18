@@ -35,7 +35,7 @@ function EditUserModal({
   facultadList,
   especialidadList,
   estadoList,
-  isFirstLogin
+  isFirstLogin,
 }) {
   const initialFormData = {
     correo: "",
@@ -162,23 +162,25 @@ function EditUserModal({
           sx={{ m: 0, p: 2, color: "primary.main" }}
           id="dialog-title"
         >
-        {isFirstLogin==true ? "Completar Facultad y Especialidad" :  "Editar usuario"}
+          {isFirstLogin
+            ? "Completar Facultad y Especialidad"
+            : "Editar usuario"}
         </DialogTitle>
-        {isFirstLogin ||
-        
-        <IconButton
-        aria-label="close"
-        onClick={handleClose}
-        sx={{
-          position: "absolute",
-          right: 8,
-          top: 12,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
-        }
+        {isFirstLogin || (
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 12,
+              color: (theme) => theme.palette.grey[500],
+            }}
+            disabled={loading || saving}
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
 
         <DialogContent dividers sx={{ p: 2, position: "relative" }}>
           {loading && (
@@ -250,7 +252,7 @@ function EditUserModal({
               label="Estado"
               value={formData.estado}
               onChange={handleChange}
-              disabled={ isFirstLogin ==true ? true : saving}
+              disabled={isFirstLogin ? true : saving}
             >
               {estadoList.map(({ id_estado_persona, nombre }) => (
                 <MenuItem key={id_estado_persona} value={id_estado_persona}>
