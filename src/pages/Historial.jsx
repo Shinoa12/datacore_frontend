@@ -80,8 +80,8 @@ function Historial() {
     { field: "recurso", headerName: "Recurso", width: 220 },
     { field: "email", headerName: "Correo", width: 220 },
     { field: "estado_solicitud", headerName: "Estado", width: 150 },
-    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 200 },
-    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 200 },
+    { field: "fecha_procesamiento", headerName: "Fecha de inicio", width: 200 },
+    { field: "fecha_finalizada", headerName: "Fecha de fin", width: 200 },
     { field: "duracion", headerName: "Duracion", width: 120 },
   ];
 
