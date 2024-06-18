@@ -4,15 +4,21 @@ import Dialog from "@mui/material/Dialog";
 import WarningIcon from "@mui/icons-material/Warning";
 
 /**
- * Modal para confirmar descarte de cambios.
+ * Modal para confirmar acciones importantes.
  *
  * @param {object} props
  * @param {boolean} props.open Indica la visibilidad del modal
  * @param {() => void} props.onClose Se ejecuta al salir o al elegir "continuar"
  * @param {() => void} props.onConfirm Se ejecuta al elegir "descartar"
+ * @param {{
+ *   title: string,
+ *   body: string,
+ *   cancelText: string,
+ *   confirmText: string
+ * }} props.content Contenido del modal
  * @returns {JSX.Element}
  */
-function DiscardChangesModal({ open, onClose, onConfirm }) {
+function WarningModal({ open, onClose, onConfirm, content }) {
   return (
     <div>
       <Dialog
@@ -39,13 +45,13 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
           >
             <WarningIcon sx={{ mb: 2, fontSize: "5rem", color: "#B9333A" }} />
             <p className="text-center text-2xl font-semibold">
-              ¿Estás seguro de que quieres salir?
+              {content.title}
             </p>
           </Box>
 
           {/* Contenido */}
           <Box sx={{ mt: 2, mb: 4, color: "primary.main" }}>
-            <p className="text-center">Se perderán todos los datos.</p>
+            <p className="text-center">{content.body}</p>
           </Box>
 
           {/* Botones */}
@@ -59,10 +65,10 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
             }}
           >
             <Button onClick={onClose} variant="contained">
-              No, continuar aquí
+              {content.cancelText}
             </Button>
             <Button onClick={onConfirm} variant="outlined">
-              Sí, descartar y salir
+              {content.confirmText}
             </Button>
           </Box>
         </Box>
@@ -71,4 +77,4 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
   );
 }
 
-export default DiscardChangesModal;
+export default WarningModal;
