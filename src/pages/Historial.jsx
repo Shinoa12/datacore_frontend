@@ -33,12 +33,12 @@ function Historial() {
     fecha_registro: "",
   });
   const columns = [
-    { field: "fecha_registro", headerName: "Fecha", width: 200 },
+    { field: "fecha_registro", headerName: "Fecha Registro", width: 200 },
     { field: "recurso", headerName: "Recurso", width: 300 },
     { field: "email", headerName: "Correo", width: 300 },
     { field: "estado_solicitud", headerName: "Estado", width: 150 },
-    { field: "fecha_procesamiento", headerName: "Fecha de Inicio", width: 200 },
-    { field: "fecha_finalizada", headerName: "Fecha de Fin", width: 200 },
+    { field: "fecha_procesamiento", headerName: "Fecha Inicio", width: 200 },
+    { field: "fecha_finalizada", headerName: "Fecha Fin", width: 200 },
     { field: "duracion", headerName: "Duracion", width: 100 },
   ];
 
@@ -169,6 +169,7 @@ function Historial() {
           alignItems: "center",
         }}
       >
+        <div>Correo</div>
         <TextField
           label="Correo"
           id="outlined-size-small "
@@ -177,6 +178,7 @@ function Historial() {
           name="email"
           onChange={handleInputChange}
         />
+        <div>Recurso</div>
         <TextField
           label="Recurso"
           id="outlined-size-small "
@@ -184,6 +186,7 @@ function Historial() {
           name="recurso"
           onChange={handleInputChange}
         />
+        <div>Estado</div>
         <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
           <InputLabel id="demo-simple-select-label">Estado</InputLabel>
           <Select
@@ -193,13 +196,13 @@ function Historial() {
             label="Estado"
             onChange={handleInputChange}
           >
-            <MenuItem value={""}>Todos</MenuItem>
-            <MenuItem value={"creada"}>creada</MenuItem>
-            <MenuItem value={"cancelada"}>cancelada</MenuItem>
-            <MenuItem value={"finalizada"}>finalizada</MenuItem>
+            <MenuItem value={""}>Sin Filtro</MenuItem>
+            <MenuItem value={"creada"}>Creada</MenuItem>
+            <MenuItem value={"cancelada"}>Cancelada</MenuItem>
+            <MenuItem value={"en proceso"}>En Proceso</MenuItem>
+            <MenuItem value={"finalizada"}>Finalizada</MenuItem>
           </Select>
         </FormControl>
-
       </div>
 
       <div
@@ -216,6 +219,11 @@ function Historial() {
           id="end"
           name="fecha_registro"
           onChange={handleInputChange}
+          style={{
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            padding: "5px 10px 5px 10px",
+          }}
         />
         <div>Fecha Inicio</div>
         <input
@@ -223,6 +231,11 @@ function Historial() {
           id="start"
           name="fecha_procesamiento"
           onChange={handleInputChange}
+          style={{
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            padding: "5px 10px 5px 10px",
+          }}
         />
 
         <div>Fecha Fin</div>
@@ -231,6 +244,11 @@ function Historial() {
           id="end"
           name="fecha_finalizada"
           onChange={handleInputChange}
+          style={{
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            padding: "5px 10px 5px 10px",
+          }}
         />
       </div>
 
@@ -258,8 +276,8 @@ function Historial() {
               paginationModel: { pageSize: 10 },
             },
           }}
-          pageSizeOptions={[10, 20, 30, 40, 50]}
           loading={loading}
+          disableRowSelectionOnClick
         />
       </Box>
 

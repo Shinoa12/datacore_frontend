@@ -285,8 +285,8 @@ function Solicitudes() {
             paginationModel: { page: 0, pageSize: 10 },
           },
         }}
-        pageSizeOptions={[10, 20]}
         loading={loading}
+        disableRowSelectionOnClick
       />
 
       {/*
