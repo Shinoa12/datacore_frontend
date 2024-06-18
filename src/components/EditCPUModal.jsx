@@ -66,10 +66,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
   };
 
   const handleClose = (event, reason) => {
-    if (
-      reason &&
-      (reason === "backdropClick" || (saving && reason === "escapeKeyDown"))
-    ) {
+    if (reason && (reason === "backdropClick" || saving || loading)) {
       return;
     }
     onClose();
@@ -159,6 +156,7 @@ function EditCPUModal({ open, onClose, onSuccess, id }) {
             top: 12,
             color: (theme) => theme.palette.grey[500],
           }}
+          disabled={loading || saving}
         >
           <CloseIcon />
         </IconButton>

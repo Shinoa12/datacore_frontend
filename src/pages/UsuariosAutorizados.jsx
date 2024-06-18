@@ -183,6 +183,7 @@ function UsuariosAutorizados() {
             id="estado-filter"
             value={selectedEstado}
             onChange={handleEstadoChange}
+            label="Estado"
             disabled={!(listsFetched && usersFetched) || userList.length === 0}
           >
             <MenuItem key={0} value={0}>
