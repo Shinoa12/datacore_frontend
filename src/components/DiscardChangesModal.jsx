@@ -59,7 +59,7 @@ function DiscardChangesModal({ open, onClose, onConfirm }) {
             }}
           >
             <Button onClick={onClose} variant="contained">
-              No, continuar editando
+              No, continuar aquí
             </Button>
             <Button onClick={onConfirm} variant="outlined">
               Sí, descartar y salir

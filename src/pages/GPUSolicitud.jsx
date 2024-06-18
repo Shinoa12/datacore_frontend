@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -17,6 +17,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import GPUDropdown from "../components/GPUDropdown";
+import DiscardChangesModal from "../components/DiscardChangesModal";
 import LibrariesModal from "../components/LibrariesModal";
 import SuccessModal from "../components/SuccessModal";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
@@ -64,6 +65,7 @@ function GPUSolicitud() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showLibrariesModal, setShowLibrariesModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [herramientasFetched, setHerramientasFetched] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -159,6 +161,26 @@ function GPUSolicitud() {
 
   const closeHelpModal = () => {
     setShowHelpModal(false);
+  };
+
+  const openDiscardModal = () => {
+    setShowDiscardModal(true);
+  };
+
+  const closeDiscardModal = () => {
+    setShowDiscardModal(false);
+  };
+
+  const handleCancelClose = (event, reason) => {
+    if (reason && reason === "backdropClick") {
+      return;
+    }
+
+    closeDiscardModal();
+  };
+
+  const handleConfirmClose = () => {
+    navigate("/recursos-ofrecidos");
   };
 
   // Handlers para cambios en variables
@@ -426,10 +448,18 @@ function GPUSolicitud() {
           Necesito ayuda
         </Button>
         <Box sx={{ display: "flex", gap: "1.5rem" }}>
-          <Button component={Link} to="/recursos-ofrecidos" variant="outlined">
+          <Button
+            variant="outlined"
+            onClick={openDiscardModal}
+            disabled={submitting}
+          >
             Regresar
           </Button>
-          <Button variant="contained" onClick={handleCreate}>
+          <Button
+            variant="contained"
+            onClick={handleCreate}
+            disabled={submitting}
+          >
             Crear
           </Button>
         </Box>
@@ -440,6 +470,12 @@ function GPUSolicitud() {
         onClose={closeLibrariesModal}
         herramientas={herramientas}
       />
+
+      <DiscardChangesModal
+        open={showDiscardModal}
+        onClose={handleCancelClose}
+        onConfirm={handleConfirmClose}
+      ></DiscardChangesModal>
 
       <SuccessModal
         open={showSuccessModal}
