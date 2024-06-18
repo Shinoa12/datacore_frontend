@@ -1,49 +1,27 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from "@mui/material";
-
 import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-
 import CPUDropdown from "../components/CPUDropdown";
+import LibrariesModal from "../components/LibrariesModal";
 import SuccessModal from "../components/SuccessModal";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
-
 import { createSolicitud } from "../api/Solicitudes";
-import {
-  getHerramientasPorCPU,
-  getLibreriasPorHerramienta,
-} from "../api/Herramientas";
+import { getHerramientasPorCPU } from "../api/Herramientas";
 
 function CPUSolicitud() {
   const initialCpuState = {
@@ -59,36 +37,20 @@ function CPUSolicitud() {
     numero_nucleos_cpu: "",
   };
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [showDropMessage, setShowDropMessage] = useState(true);
-  const [executionParameters, setExecutionParameters] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedCPU, setSelectedCPU] = useState(initialCpuState);
+  const [herramientas, setHerramientas] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [executionParameters, setExecutionParameters] = useState("");
+  const [showDropMessage, setShowDropMessage] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showLibrariesModal, setShowLibrariesModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [herramientas, setHerramientas] = useState([]);
-  const [selectedHerramienta, setSelectedHerramienta] = useState(null);
-  const [librerias, setLibrerias] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [herramientasFetched, setHerramientasFetched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
-  const openModal = () => {
-    setShowLibrariesModal(true);
-  };
-
-  const closeModal = () => {
-    setShowLibrariesModal(false);
-  };
-
-  const handleFileChange = (event) => {
-    setSelectedFiles((prevFiles) => [
-      ...prevFiles,
-      ...Array.from(event.target.files),
-    ]);
-    setShowDropMessage(false);
-  };
+  // Handlers para arrastre, subida normal y elim. de archivos
 
   const handleDrop = (event) => {
     event.preventDefault();
@@ -106,6 +68,14 @@ function CPUSolicitud() {
     event.stopPropagation();
   };
 
+  const handleFileChange = (event) => {
+    setSelectedFiles((prevFiles) => [
+      ...prevFiles,
+      ...Array.from(event.target.files),
+    ]);
+    setShowDropMessage(false);
+  };
+
   const handleRemoveFile = (fileToRemove) => {
     setSelectedFiles((prevFiles) =>
       prevFiles.filter((file) => file !== fileToRemove)
@@ -115,8 +85,14 @@ function CPUSolicitud() {
     }
   };
 
-  const handleExecutionParametersChange = (event) => {
-    setExecutionParameters(event.target.value);
+  // Handlers para modals
+
+  const openLibrariesModal = () => {
+    setShowLibrariesModal(true);
+  };
+
+  const closeLibrariesModal = () => {
+    setShowLibrariesModal(false);
   };
 
   const openSuccessModal = () => {
@@ -128,45 +104,6 @@ function CPUSolicitud() {
     navigate("/solicitudes");
   };
 
-  const handleCrearClick = async () => {
-    setLoading(true);
-
-    await createSolicitud(
-      localStorage.getItem("id_user"),
-      selectedCPU.id_recurso.id_recurso,
-      executionParameters,
-      selectedFiles
-    )
-      .then((response) => {
-        console.log("Solicitud creada con éxito:", response.data);
-        openSuccessModal();
-      })
-      .catch((error) => {
-        console.error("Error al crear la solicitud:", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const handleModalOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleCPUChange = (event) => {
-    setSelectedCPU(event.target.value);
-    setSelectedHerramienta(null);
-    setHerramientas([]);
-    setLibrerias([]);
-  };
-
-  const handleHerramientaChange = (event) => {
-    const herramienta = event.target.value;
-    console.log("Selected herramienta:", herramienta);
-    setSelectedHerramienta(herramienta);
-    setLibrerias([]);
-  };
-
   const openHelpModal = () => {
     setShowHelpModal(true);
   };
@@ -175,18 +112,27 @@ function CPUSolicitud() {
     setShowHelpModal(false);
   };
 
+  // Handlers para cambios en variables
+
+  const handleExecutionParametersChange = (event) => {
+    setExecutionParameters(event.target.value);
+  };
+
+  const handleCPUChange = (event) => {
+    setSelectedCPU(event.target.value);
+    setHerramientas([]);
+  };
+
+  // Obtiene la lista de herramientas al cambiar de CPU
   useEffect(() => {
     const fetchHerramientas = async () => {
+      setHerramientasFetched(false);
       try {
-        console.log(
-          "Fetching herramientas for CPU ID:",
+        const response = await getHerramientasPorCPU(
           selectedCPU.id_recurso.id_recurso
         );
-        const herramientasRes = await getHerramientasPorCPU(
-          selectedCPU.id_recurso.id_recurso
-        );
-        console.log("Herramientas fetched:", herramientasRes.data);
-        setHerramientas(herramientasRes.data);
+        setHerramientas(response.data);
+        setHerramientasFetched(true);
       } catch (error) {
         console.error("Error al cargar herramientas:", error);
       }
@@ -197,39 +143,32 @@ function CPUSolicitud() {
     }
   }, [selectedCPU]);
 
-  useEffect(() => {
-    const fetchLibrerias = async () => {
-      try {
-        if (selectedHerramienta && selectedHerramienta.id_herramienta) {
-          console.log(
-            "Fetching librerias for Herramienta ID:",
-            selectedHerramienta.id_herramienta
-          );
-          const libreriasRes = await getLibreriasPorHerramienta(
-            selectedHerramienta.id_herramienta
-          );
-          console.log("Librerías obtenidas:", libreriasRes.data);
-          setLibrerias(libreriasRes.data);
-        } else {
-          console.log("No herramienta selected or herramienta ID is missing.");
-        }
-      } catch (error) {
-        console.error("Error al cargar librerías:", error);
-      }
-    };
+  // Crea la solicitud
+  const handleCreate = async () => {
+    setSubmitting(true);
 
-    fetchLibrerias();
-  }, [selectedHerramienta]);
-
-  const filteredLibrerias = librerias.filter((libreria) =>
-    libreria.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    await createSolicitud(
+      localStorage.getItem("id_user"),
+      selectedCPU.id_recurso.id_recurso,
+      executionParameters,
+      selectedFiles
+    )
+      .then((response) => {
+        openSuccessModal();
+      })
+      .catch((error) => {
+        console.error("Error al crear la solicitud:", error);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
+  };
 
   return (
     <div className="mx-8 my-6">
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
+        open={submitting}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -311,8 +250,9 @@ function CPUSolicitud() {
             <Button
               variant="contained"
               startIcon={<LibraryBooksIcon />}
-              onClick={openModal}
+              onClick={openLibrariesModal}
               fullWidth
+              disabled={!herramientasFetched}
             >
               Ver librerías
             </Button>
@@ -421,6 +361,8 @@ function CPUSolicitud() {
           </Box>
         </Box>
       </Box>
+
+      {/* Botones */}
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Button
           variant="outlined"
@@ -433,138 +375,17 @@ function CPUSolicitud() {
           <Button component={Link} to="/recursos-ofrecidos" variant="outlined">
             Regresar
           </Button>
-          <Button variant="contained" onClick={handleCrearClick}>
+          <Button variant="contained" onClick={handleCreate}>
             Crear
           </Button>
         </Box>
       </Box>
-      {showLibrariesModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: "0",
-            left: "0",
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: "1000",
-          }}
-        >
-          <div
-            style={{
-              position: "relative",
-              zIndex: "1001",
-              backgroundColor: "#fff",
-              padding: "20px",
-              borderRadius: "10px",
-              width: "90%",
-              maxWidth: "600px",
-              height: "80%",
-              maxHeight: "600px",
-              textAlign: "left",
-            }}
-          >
-            <h2
-              style={{ color: "rgb(4, 35, 84)" }}
-              className="font-bold text-3xl mb-4"
-            >
-              Librerías
-            </h2>
-            <span
-              style={{
-                position: "absolute",
-                top: "20px",
-                right: "20px",
-                cursor: "pointer",
-              }}
-              onClick={closeModal}
-            >
-              <FontAwesomeIcon icon={faTimes} style={{ fontSize: "24px" }} />
-            </span>
-            {selectedCPU.id_recurso.id_recurso && herramientas.length > 0 && (
-              <FormControl required sx={{ minWidth: 240, width: "100%" }}>
-                <InputLabel id="modal-herramientas-label">
-                  Herramientas
-                </InputLabel>
-                <Select
-                  labelId="modal-herramientas-label"
-                  id="modal-herramientas"
-                  value={selectedHerramienta || ""}
-                  onChange={handleHerramientaChange}
-                  label="Herramientas"
-                  style={{ width: "100%", marginTop: "20px" }}
-                >
-                  <MenuItem value="">
-                    <em>Seleccionar opción</em>
-                  </MenuItem>
-                  {herramientas.map((herramienta) => (
-                    <MenuItem
-                      key={herramienta.id_herramienta}
-                      value={herramienta}
-                    >
-                      {herramienta.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            {selectedHerramienta && (
-              <div>
-                <br></br>
-                <p>
-                  <strong>
-                    Herramienta seleccionada: {selectedHerramienta.nombre}
-                  </strong>
-                </p>
-                <TextField
-                  label="Buscar"
-                  variant="outlined"
-                  fullWidth
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ marginTop: "20px", marginBottom: "20px" }}
-                />
-                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-                  <TableContainer component={Paper}>
-                    <Table stickyHeader>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Librería</TableCell>
-                          <TableCell>Versión</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {filteredLibrerias.map((libreria) => (
-                          <TableRow key={libreria.id}>
-                            <TableCell>{libreria.nombre}</TableCell>
-                            <TableCell>{libreria.version}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </div>
-              </div>
-            )}
 
-            <div style={{ position: "absolute", bottom: "20px", left: "20px" }}>
-              <strong
-                style={{
-                  fontSize: "15px",
-                  marginBottom: "10px",
-                  color: "rgb(4, 35, 84)",
-                }}
-              >
-                Si NO encontraste tu librería aquí dirígete al icono de ayuda en
-                la sección anterior y comunícate con nuestro equipo.
-              </strong>
-            </div>
-          </div>
-        </div>
-      )}
+      <LibrariesModal
+        open={showLibrariesModal}
+        onClose={closeLibrariesModal}
+        herramientas={herramientas}
+      />
 
       <SuccessModal
         open={showSuccessModal}
