@@ -256,9 +256,10 @@ function Historial() {
               defaultValue="all"
               onChange={handleInputChange}
             >
-              <MenuItem value="all">Todos</MenuItem>
+              <MenuItem value="all">Sin filtro</MenuItem>
               <MenuItem value="creada">Creada</MenuItem>
               <MenuItem value="cancelada">Cancelada</MenuItem>
+              <MenuItem value="en proceso">En proceso</MenuItem>
               <MenuItem value="finalizada">Finalizada</MenuItem>
             </Select>
           </FormControl>
