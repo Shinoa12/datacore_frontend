@@ -1,11 +1,7 @@
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 /**
  * Modal para operaciones finalizadas con éxito
@@ -22,45 +18,48 @@ function SuccessModal({ open, onClose, content }) {
       <Dialog
         open={open}
         onClose={onClose}
-        aria-labelledby="dialog-title"
         fullWidth={true}
         disableRestoreFocus
-        sx={{
-          ".MuiDialog-paper": {
-            p: 2,
-          },
-        }}
       >
-        <DialogTitle
+        <Box
           sx={{
-            mb: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "primary.main",
+            p: 4,
           }}
-          id="dialog-title"
         >
-          <FontAwesomeIcon
-            size="3x"
-            icon={faCircleCheck}
-            style={{ marginBottom: "20px" }}
-          />
-          <p style={{ fontSize: "24px", textAlign: "center" }}>¡Todo listo!</p>
-        </DialogTitle>
-        <DialogContent sx={{ mb: 1 }}>
-          <DialogContentText
-            sx={{ textAlign: "center", color: "primary.main" }}
+          {/* Título */}
+          <Box
+            sx={{
+              mb: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "primary.main",
+            }}
           >
-            {content}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ mb: 2 }}>
-          <Button onClick={onClose} variant="contained" sx={{ mx: "auto" }}>
-            Aceptar
-          </Button>
-        </DialogActions>
+            <CheckCircleIcon sx={{ mb: 2, fontSize: "5rem" }} />
+            <p className="text-center text-2xl font-semibold">¡Todo listo!</p>
+          </Box>
+
+          {/* Contenido */}
+          <Box sx={{ mt: 2, mb: 4, color: "primary.main" }}>
+            <p className="text-center">{content}</p>
+          </Box>
+
+          {/* Botones */}
+          <Box
+            sx={{
+              mb: 2,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button onClick={onClose} variant="contained">
+              Aceptar
+            </Button>
+          </Box>
+        </Box>
       </Dialog>
     </div>
   );
