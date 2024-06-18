@@ -23,6 +23,24 @@ import SolicitudHelpModal from "../components/SolicitudHelpModal";
 import { createSolicitud } from "../api/Solicitudes";
 import { getHerramientasPorGPU } from "../api/Herramientas";
 
+const forbiddenExtensions = [
+  "pdf",
+  "doc",
+  "docx",
+  "png",
+  "jpg",
+  "jpeg",
+  "mp3",
+  "mp4",
+  "exe",
+  "zip",
+  "rar",
+  "tar",
+  "gz",
+  "7z",
+  "iso",
+];
+
 function GPUSolicitud() {
   const initialGpuState = {
     frecuencia_gpu: "",
@@ -47,20 +65,36 @@ function GPUSolicitud() {
   const [showLibrariesModal, setShowLibrariesModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [herramientasFetched, setHerramientasFetched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
-  // Handlers para arrastre, subida normal y elim. de archivos
+  // Funciones y handlers para arrastre, subida normal y elim. de archivos
+
+  const filterFiles = (files) => {
+    return files.filter((file) => {
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      return !forbiddenExtensions.includes(fileExtension);
+    });
+  };
 
   const handleDrop = (event) => {
     event.preventDefault();
     event.stopPropagation();
 
-    setSelectedFiles((prevFiles) => [
-      ...prevFiles,
-      ...Array.from(event.dataTransfer.files),
-    ]);
+    const newFiles = filterFiles(Array.from(event.dataTransfer.files));
+    const invalidFiles = Array.from(event.dataTransfer.files).filter(
+      (file) => !filterFiles([file]).length
+    );
+
+    if (invalidFiles.length > 0) {
+      setErrorMessage("Archivo no válido");
+    } else {
+      setErrorMessage("");
+    }
+
+    setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
     setShowDropMessage(false);
   };
 
@@ -70,10 +104,18 @@ function GPUSolicitud() {
   };
 
   const handleFileChange = (event) => {
-    setSelectedFiles((prevFiles) => [
-      ...prevFiles,
-      ...Array.from(event.target.files),
-    ]);
+    const newFiles = filterFiles(Array.from(event.target.files));
+    const invalidFiles = Array.from(event.target.files).filter(
+      (file) => !filterFiles([file]).length
+    );
+
+    if (invalidFiles.length > 0) {
+      setErrorMessage("Archivo no válido");
+    } else {
+      setErrorMessage("");
+    }
+
+    setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
     setShowDropMessage(false);
   };
 
@@ -280,9 +322,10 @@ function GPUSolicitud() {
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.5rem",
-                justifyContent: showDropMessage ? "center" : "flex-start",
-                alignItems: showDropMessage ? "center" : "flex-start",
+                justifyContent: "center",
+                alignItems: "center",
                 overflow: "auto",
+                position: "relative",
               }}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -333,6 +376,13 @@ function GPUSolicitud() {
                     </ListItem>
                   ))}
                 </List>
+              )}
+              {errorMessage && (
+                <Box
+                  sx={{ mt: 1, color: "red", position: "relative", bottom: 10 }}
+                >
+                  {errorMessage}
+                </Box>
               )}
             </Box>
           </Box>
