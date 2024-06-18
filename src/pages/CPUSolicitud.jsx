@@ -17,7 +17,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CPUDropdown from "../components/CPUDropdown";
-import DiscardChangesModal from "../components/DiscardChangesModal";
+import WarningModal from "../components/WarningModal";
 import LibrariesModal from "../components/LibrariesModal";
 import SuccessModal from "../components/SuccessModal";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
@@ -472,11 +472,17 @@ function CPUSolicitud() {
         herramientas={herramientas}
       />
 
-      <DiscardChangesModal
+      <WarningModal
         open={showDiscardModal}
         onClose={handleCancelClose}
         onConfirm={handleConfirmClose}
-      ></DiscardChangesModal>
+        content={{
+          title: "¿Estás seguro de que quieres salir?",
+          body: "Se perderán todos los datos.",
+          cancelText: "No, continuar aquí",
+          confirmText: "Sí, descartar y salir",
+        }}
+      ></WarningModal>
 
       <SuccessModal
         open={showSuccessModal}
