@@ -93,8 +93,11 @@ function CPUSolicitud() {
       setErrorMessage("");
     }
 
+    if (newFiles.length > 0) {
+      setShowDropMessage(false);
+    }
+
     setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    setShowDropMessage(false);
   };
 
   const handleDragOver = (event) => {
@@ -114,8 +117,11 @@ function CPUSolicitud() {
       setErrorMessage("");
     }
 
+    if (newFiles.length > 0) {
+      setShowDropMessage(false);
+    }
+
     setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    setShowDropMessage(false);
   };
 
   const handleRemoveFile = (fileToRemove) => {
@@ -309,9 +315,16 @@ function CPUSolicitud() {
               sx={{
                 color: "primary.main",
                 mb: 2,
+                display: "flex",
+                gap: "1rem",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <p className="font-bold text-xl">Archivos</p>
+              <p className="font-semibold" style={{ color: "red" }}>
+                {errorMessage}
+              </p>
             </Box>
             <Box
               sx={{
@@ -323,10 +336,9 @@ function CPUSolicitud() {
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.5rem",
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: showDropMessage ? "center" : "flex-start",
+                alignItems: showDropMessage ? "center" : "flex-start",
                 overflow: "auto",
-                position: "relative",
               }}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -377,13 +389,6 @@ function CPUSolicitud() {
                     </ListItem>
                   ))}
                 </List>
-              )}
-              {errorMessage && (
-                <Box
-                  sx={{ mt: 1, color: "red", position: "relative", bottom: 10 }}
-                >
-                  {errorMessage}
-                </Box>
               )}
             </Box>
           </Box>
