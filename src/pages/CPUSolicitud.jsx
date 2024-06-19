@@ -20,6 +20,7 @@ import CPUDropdown from "../components/CPUDropdown";
 import WarningModal from "../components/WarningModal";
 import LibrariesModal from "../components/LibrariesModal";
 import SuccessModal from "../components/SuccessModal";
+import ErrorModal from "../components/ErrorModal";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
 import { createSolicitud } from "../api/Solicitudes";
 import { getHerramientasPorCPU } from "../api/Herramientas";
@@ -68,6 +69,8 @@ function CPUSolicitud() {
   const [herramientasFetched, setHerramientasFetched] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalContent, setErrorModalContent] = useState("");
 
   const navigate = useNavigate();
 
@@ -216,7 +219,7 @@ function CPUSolicitud() {
   // Crea la solicitud
   const handleCreate = async () => {
     setSubmitting(true);
-
+  
     await createSolicitud(
       localStorage.getItem("id_user"),
       selectedCPU.id_recurso.id_recurso,
@@ -227,12 +230,15 @@ function CPUSolicitud() {
         openSuccessModal();
       })
       .catch((error) => {
+        setErrorModalContent("Hubo un problema al crear la solicitud. Por favor, inténtalo de nuevo.");
+        setShowErrorModal(true);
         console.error("Error al crear la solicitud:", error);
       })
       .finally(() => {
         setSubmitting(false);
       });
   };
+  
 
   return (
     <div className="mx-8 my-6">
@@ -489,6 +495,13 @@ function CPUSolicitud() {
         onClose={closeSuccessModal}
         content="Recibirás un correo cuando el recurso te sea asignado."
       />
+
+      <ErrorModal
+        open={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        content={errorModalContent}
+      />
+
 
       <SolicitudHelpModal open={showHelpModal} onClose={closeHelpModal} />
     </div>
