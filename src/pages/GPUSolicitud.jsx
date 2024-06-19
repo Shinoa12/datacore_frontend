@@ -223,7 +223,7 @@ function GPUSolicitud() {
   
     await createSolicitud(
       localStorage.getItem("id_user"),
-      selectedCPU.id_recurso.id_recurso,
+      selectedGPU.id_recurso.id_recurso,
       executionParameters,
       selectedFiles
     )
