@@ -21,9 +21,11 @@ import WarningModal from "../components/WarningModal";
 import LibrariesModal from "../components/LibrariesModal";
 import SuccessModal from "../components/SuccessModal";
 import ErrorModal from "../components/ErrorModal";
+import LoadingOverlay from "../components/LoadingOverlay";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
 import { createSolicitud } from "../api/Solicitudes";
 import { getHerramientasPorGPU } from "../api/Herramientas";
+import { listGPUsHabilitados, readGPU } from "../api/Recursos";
 
 const forbiddenExtensions = [
   "pdf",
@@ -47,7 +49,7 @@ function GPUSolicitud() {
   const initialGpuState = {
     frecuencia_gpu: "",
     id_recurso: {
-      estado: true,
+      estado: "",
       id_recurso: "",
       solicitudes_encoladas: "",
       tamano_ram: "",
@@ -58,6 +60,8 @@ function GPUSolicitud() {
     tamano_vram: "",
   };
 
+  const [gpuList, setGpuList] = useState([]);
+  const [selectedGPUId, setSelectedGPUId] = useState("");
   const [selectedGPU, setSelectedGPU] = useState(initialGpuState);
   const [herramientas, setHerramientas] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -69,6 +73,8 @@ function GPUSolicitud() {
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [herramientasFetched, setHerramientasFetched] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loadingDropdown, setLoadingDropdown] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalContent, setErrorModalContent] = useState("");
@@ -193,18 +199,52 @@ function GPUSolicitud() {
   };
 
   const handleGPUChange = (event) => {
-    setSelectedGPU(event.target.value);
+    setSelectedGPUId(event.target.value);
     setHerramientas([]);
   };
+
+  // Obtiene los GPUs al renderizar el componente
+  useEffect(() => {
+    const fetchGPU = async () => {
+      setLoadingDropdown(true);
+      try {
+        const response = await listGPUsHabilitados();
+        setGpuList(response.data);
+      } catch (error) {
+        console.error("Error al cargar GPUs:", error);
+      } finally {
+        setLoadingDropdown(false);
+      }
+    };
+
+    fetchGPU();
+  }, []);
+
+  // Obtiene el detalle del GPU seleccionado
+  useEffect(() => {
+    const fetchSelectedGPU = async (id) => {
+      setLoadingDetails(true);
+      try {
+        const response = await readGPU(id);
+        setSelectedGPU(response.data);
+      } catch (error) {
+        console.error("Error al cargar detalle de GPU:", error);
+      } finally {
+        setLoadingDetails(false);
+      }
+    };
+
+    if (selectedGPUId !== "") {
+      fetchSelectedGPU(selectedGPUId);
+    }
+  }, [selectedGPUId]);
 
   // Obtiene la lista de herramientas al cambiar de GPU
   useEffect(() => {
     const fetchHerramientas = async () => {
       setHerramientasFetched(false);
       try {
-        const response = await getHerramientasPorGPU(
-          selectedGPU.id_recurso.id_recurso
-        );
+        const response = await getHerramientasPorGPU(selectedGPUId);
         setHerramientas(response.data);
         setHerramientasFetched(true);
       } catch (error) {
@@ -212,18 +252,18 @@ function GPUSolicitud() {
       }
     };
 
-    if (selectedGPU.id_recurso.id_recurso) {
+    if (selectedGPUId !== "") {
       fetchHerramientas();
     }
-  }, [selectedGPU]);
+  }, [selectedGPUId]);
 
   // Crea la solicitud
   const handleCreate = async () => {
     setSubmitting(true);
-  
+
     await createSolicitud(
       localStorage.getItem("id_user"),
-      selectedGPU.id_recurso.id_recurso,
+      selectedGPUId,
       executionParameters,
       selectedFiles
     )
@@ -231,7 +271,9 @@ function GPUSolicitud() {
         openSuccessModal();
       })
       .catch((error) => {
-        setErrorModalContent("Hubo un problema al crear la solicitud. Por favor, inténtalo de nuevo.");
+        setErrorModalContent(
+          "Hubo un problema al crear la solicitud. Por favor, inténtalo de nuevo."
+        );
         setShowErrorModal(true);
         console.error("Error al crear la solicitud:", error);
       })
@@ -239,7 +281,6 @@ function GPUSolicitud() {
         setSubmitting(false);
       });
   };
-  
 
   return (
     <div className="mx-8 my-6">
@@ -262,7 +303,12 @@ function GPUSolicitud() {
             <Box sx={{ color: "primary.main", mb: 2 }}>
               <p className="font-bold text-xl">Recurso computacional</p>
             </Box>
-            <GPUDropdown value={selectedGPU} onChange={handleGPUChange} />
+            <GPUDropdown
+              gpuList={gpuList}
+              value={selectedGPUId}
+              onChange={handleGPUChange}
+              disabled={loadingDropdown}
+            />
           </Box>
 
           {/* Detalle */}
@@ -272,53 +318,92 @@ function GPUSolicitud() {
             </Box>
             <Box
               sx={{
-                p: 3,
+                px: 3,
+                py: 1,
                 width: "100%",
+                height: "12rem",
                 backgroundColor: "#F0F0F0",
                 borderRadius: "0.25rem",
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                overflow: "auto",
               }}
             >
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", pb: 1 }}
-              >
-                <p className="font-bold">Cantidad de núcleos NVIDIA CUDA</p>
-                {selectedGPU.numero_nucleos_gpu !== "" && (
-                  <p className="font-semibold">
-                    {selectedGPU.numero_nucleos_gpu}
-                  </p>
-                )}
-              </Box>
-              <Divider />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
-              >
-                <p className="font-bold">Frecuencia básica</p>
-                {selectedGPU.frecuencia_gpu !== "" && (
-                  <p className="font-semibold">
-                    {parseFloat(selectedGPU.frecuencia_gpu).toFixed(2)} GHz
-                  </p>
-                )}
-              </Box>
-              <Divider />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
-              >
-                <p className="font-bold">Tamaño de memoria VRAM</p>
-                {selectedGPU.tamano_vram !== "" && (
-                  <p className="font-semibold">{selectedGPU.tamano_vram} GB</p>
-                )}
-              </Box>
-              <Divider />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", pt: 1 }}
-              >
-                <p className="font-bold">Solicitudes en cola</p>
-                {selectedGPU.id_recurso.solicitudes_encoladas !== "" && (
-                  <p className="font-semibold">
-                    {selectedGPU.id_recurso.solicitudes_encoladas}
-                  </p>
-                )}
-              </Box>
+              {loadingDetails && (
+                <LoadingOverlay
+                  backgroundColor="#F0F0F0"
+                  content="Cargando detalle..."
+                />
+              )}
+              {selectedGPUId !== "" ? (
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      pb: 1,
+                    }}
+                  >
+                    <p className="font-bold">Cantidad de núcleos NVIDIA CUDA</p>
+                    {selectedGPU.numero_nucleos_gpu !== "" && (
+                      <p className="font-semibold">
+                        {selectedGPU.numero_nucleos_gpu}
+                      </p>
+                    )}
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      py: 1,
+                    }}
+                  >
+                    <p className="font-bold">Frecuencia básica</p>
+                    {selectedGPU.frecuencia_gpu !== "" && (
+                      <p className="font-semibold">
+                        {parseFloat(selectedGPU.frecuencia_gpu).toFixed(2)} GHz
+                      </p>
+                    )}
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      py: 1,
+                    }}
+                  >
+                    <p className="font-bold">Tamaño de memoria VRAM</p>
+                    {selectedGPU.tamano_vram !== "" && (
+                      <p className="font-semibold">
+                        {selectedGPU.tamano_vram} GB
+                      </p>
+                    )}
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      pt: 1,
+                    }}
+                  >
+                    <p className="font-bold">Solicitudes en cola</p>
+                    {selectedGPU.id_recurso.solicitudes_encoladas !== "" && (
+                      <p className="font-semibold">
+                        {selectedGPU.id_recurso.solicitudes_encoladas}
+                      </p>
+                    )}
+                  </Box>
+                </>
+              ) : (
+                <p className="text-center font-light">
+                  Elige un recurso para ver su datos
+                </p>
+              )}
             </Box>
           </Box>
           <Box sx={{ textAlign: "center" }}>
@@ -500,7 +585,6 @@ function GPUSolicitud() {
         onClose={() => setShowErrorModal(false)}
         content={errorModalContent}
       />
-
 
       <SolicitudHelpModal open={showHelpModal} onClose={closeHelpModal} />
     </div>

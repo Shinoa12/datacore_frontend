@@ -1,39 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { listGPUs } from "../api/Recursos";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 
-const GPUDropdown = ({ value, onChange }) => {
-  const [gpuList, setGpuList] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await listGPUs();
-        // Filtrar la lista de GPUs para mostrar solo las que tienen estado=1
-        const filteredGPUs = res.data.filter(
-          (gpu) => gpu.id_recurso.estado === true
-        );
-        setGpuList(filteredGPUs);
-      } catch (error) {
-        console.error("Error al cargar GPUs:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+const GPUDropdown = ({ gpuList, value, onChange, disabled }) => {
   return (
-    <FormControl required sx={{ minWidth: 120 }}>
-      <InputLabel id="gpu-dropdown-label">GPU</InputLabel>
+    <FormControl margin="dense" fullWidth>
+      <InputLabel id="gpu-dropdown-label">
+        {disabled ? "Cargando recursos..." : "Nombre"}
+      </InputLabel>
       <Select
         labelId="gpu-dropdown-label"
         id="gpu-dropdown"
         value={value}
         onChange={onChange}
-        label="GPUs Disponibles"
+        label="Nombre"
+        disabled={disabled}
       >
         {gpuList.map((gpuItem) => (
-          <MenuItem key={gpuItem.id_recurso.id_recurso} value={gpuItem}>
+          <MenuItem
+            key={gpuItem.id_recurso.id_recurso}
+            value={gpuItem.id_recurso.id_recurso}
+          >
             {gpuItem.nombre}
           </MenuItem>
         ))}
