@@ -29,10 +29,14 @@ function UsuariosAutorizados() {
       width: 180,
     },
     {
-      field: "recursos_maximos",
+      field: "recursos_max",
       headerName: "Recursos máx.",
       width: 130,
-      sortable: false,
+    },
+    {
+      field: "horas_max",
+      headerName: "Horas máx.",
+      width: 100,
     },
     {
       field: "opciones",
@@ -100,7 +104,8 @@ function UsuariosAutorizados() {
           correo: user.email,
           facultad: facultadObj ? facultadObj.nombre : "",
           especialidad: especialidadObj ? especialidadObj.nombre : "",
-          recursos_maximos: user.recursos_max,
+          recursos_max: user.recursos_max,
+          horas_max: user.horas_max,
           estado: user.id_estado_persona,
         };
       });
