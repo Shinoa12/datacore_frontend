@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -6,14 +6,41 @@ import AddIcon from "@mui/icons-material/Add";
 import solicitudImg from "../assets/solicitud_home.png";
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import 'chart.js/auto';
+import { getRequestsByMonth, getRequestsByResource, getRequestsBySpecialty, getAverageProcessingDuration, getSolicitudesCreadas, getSolicitudesEnProceso, getSolicitudesFinalizadas } from "../api/Home";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 function Home() {
+  const [requestsByMonth, setRequestsByMonth] = useState([]);
+  const [requestsByResource, setRequestsByResource] = useState({});
+  const [requestsBySpecialty, setRequestsBySpecialty] = useState([]);
+  const [averageProcessingDuration, setAverageProcessingDuration] = useState(null);
+  const [solicitudesCreadas, setSolicitudesCreadas] = useState(0);
+  const [solicitudesEnProceso, setSolicitudesEnProceso] = useState(0);
+  const [solicitudesFinalizadas, setSolicitudesFinalizadas] = useState(0);
+
+  useEffect(() => {
+    getRequestsByMonth().then(response => setRequestsByMonth(response.data));
+    getRequestsByResource().then(response => setRequestsByResource(response.data));
+    getRequestsBySpecialty().then(response => setRequestsBySpecialty(response.data));
+    getAverageProcessingDuration().then(response => setAverageProcessingDuration(response.data.avg_duration));
+    getSolicitudesCreadas().then(response => setSolicitudesCreadas(response.data.count));
+    getSolicitudesEnProceso().then(response => setSolicitudesEnProceso(response.data.count));
+    getSolicitudesFinalizadas().then(response => setSolicitudesFinalizadas(response.data.count));
+  }, []);
+
+  const getMonthName = (monthNumber) => {
+    const date = new Date();
+    date.setMonth(monthNumber - 1);
+    return date.toLocaleString('es-ES', { month: 'long' });
+  };
+
   const solicitudesPorMesData = {
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    labels: requestsByMonth.map(item => getMonthName(item.month)),
     datasets: [
       {
         label: 'Solicitudes',
-        data: [12, 19, 3, 5, 2, 3, 9, 8, 6, 4, 7, 10], // simulación
+        data: requestsByMonth.map(item => item.count),
         backgroundColor: 'rgba(0, 0, 128,0.4)',
         borderColor: 'rgba(0, 0, 128)',
         borderWidth: 2,
@@ -37,13 +64,13 @@ function Home() {
       }
     }
   };
-  
+
   const solicitudesPorRecursoData = {
-    labels: ['CPU', 'GPU'],
+    labels: Object.keys(requestsByResource),
     datasets: [
       {
         label: '',
-        data: [20, 30], // simulación
+        data: Object.values(requestsByResource),
         backgroundColor: ['#B9333A', '#424C73'], 
       },
     ],
@@ -62,26 +89,40 @@ function Home() {
     'rgba(128, 128, 0, 0.9)',  
     'rgba(0, 128, 128, 0.9)',  
   ];
-  
+
   const solicitudesPorEspecialidadData = {
-    labels: ['Especialidad 1', 'Especialidad 2', 'Especialidad 3', 'Especialidad 4', 'Especialidad 5', 'Especialidad 6', 'Especialidad 7', 'Especialidad 8', 'Especialidad 9', 'Especialidad 10'],
+    labels: requestsBySpecialty.map(item => item.nombre),
     datasets: [
       {
-        data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], // simulación
+        data: requestsBySpecialty.map(item => item.count),
         backgroundColor: colores,
       },
     ],
   };
-  
+
   const duracionProcesamientoData = {
     labels: ['0-1 horas', '1-2 horas', '2-3 horas', '3-4 horas', '4+ horas'],
     datasets: [
       {
         label: '',
-        data: [5, 15, 20, 10, 2], // simulación
+        data: averageProcessingDuration ? [averageProcessingDuration['0-1 horas'], averageProcessingDuration['1-2 horas'], averageProcessingDuration['2-3 horas'], averageProcessingDuration['3-4 horas'], averageProcessingDuration['4+ horas']] : [],
         backgroundColor: "#424C73", 
       },
     ],
+  };
+
+  const downloadPDF = () => {
+    const input = document.getElementById('charts');
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('dashboard-report.pdf');
+      });
   };
 
   const styles = {
@@ -144,11 +185,15 @@ function Home() {
       alignItems: 'center',
       width: '100%'
     },
-
     pieChart: {
       width: '380px',
       height: '380px',
       margin: '0 auto'
+    },
+    buttonContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      marginTop: '20px'
     }
   };
 
@@ -241,18 +286,18 @@ function Home() {
         <div style={styles.metrics}>
           <div style={{ ...styles.metric, ...styles.created }}>
             <div style={styles.metricTitle}>Solicitudes Creadas</div>
-            <div style={styles.metricValue}>50</div> {/*simulación */}
+            <div style={styles.metricValue}>{solicitudesCreadas}</div>
           </div>
           <div style={{ ...styles.metric, ...styles.inProgress }}>
             <div style={styles.metricTitle}>Solicitudes en Proceso</div>
-            <div style={styles.metricValue}>20</div> {/*simulación */}
+            <div style={styles.metricValue}>{solicitudesEnProceso}</div>
           </div>
           <div style={{ ...styles.metric, ...styles.finished }}>
             <div style={styles.metricTitle}>Solicitudes Finalizadas</div>
-            <div style={styles.metricValue}>30</div> {/*simulación */}
+            <div style={styles.metricValue}>{solicitudesFinalizadas}</div>
           </div>
         </div>
-        <div style={styles.charts}>
+        <div style={styles.charts} id="charts">
           <div style={styles.chart}>
             <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Cantidad de Solicitudes por Mes</h1>
             <Line data={solicitudesPorMesData} options={opcionesGraficoDeLineas} />
@@ -273,6 +318,11 @@ function Home() {
             <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Duración Promedio de Procesamiento de Solicitud</h1>
             <Bar data={duracionProcesamientoData} options={{ plugins: { legend: { display: false } } }}/>
           </div>
+        </div>
+        <div style={styles.buttonContainer}>
+          <Button variant="contained" color="primary" onClick={downloadPDF}>
+            Descargar Reporte PDF
+          </Button>
         </div>
       </div>
     </>
