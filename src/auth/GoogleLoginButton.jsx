@@ -14,7 +14,7 @@ import { editingStateInitializer } from "@mui/x-data-grid/internals";
 import axios from "axios";
 
 const GoogleLoginButton = () => {
-  const link =`https://datacorepucp.online/usuarios-autorizados`
+  const link =`https://datacorepucp.store/usuarios-autorizados`
   const [facultadList, setFacultadList] = useState([]);
   const [especialidadList, setEspecialidadList] = useState([]);
   const [estadoList, setEstadoList] = useState([]);
