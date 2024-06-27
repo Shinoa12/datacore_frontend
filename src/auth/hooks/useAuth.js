@@ -29,7 +29,7 @@ export const useAuth = () => {
           user: user,
         })
       );
-      //navigate("/home");
+      navigate("/home");
     } else {
       // Si es un usuario normal, manejamos el inicio de sesión tradicional
       const isLogin = loginUser({ username, password });
