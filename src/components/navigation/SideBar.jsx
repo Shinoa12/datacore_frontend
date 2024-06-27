@@ -70,7 +70,7 @@ function Sidebar({ sidebarToggle }) {
     <div
       className={`${
         sidebarToggle ? "hidden" : "block"
-      } w-64 fixed h-full flex flex-col`}
+      } w-64 fixed h-full flex flex-col bg-white z-10`}
     >
       {/* Información del usuario */}
       <div

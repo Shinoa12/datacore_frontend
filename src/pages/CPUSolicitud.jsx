@@ -21,9 +21,11 @@ import WarningModal from "../components/WarningModal";
 import LibrariesModal from "../components/LibrariesModal";
 import SuccessModal from "../components/SuccessModal";
 import ErrorModal from "../components/ErrorModal";
+import LoadingOverlay from "../components/LoadingOverlay";
 import SolicitudHelpModal from "../components/SolicitudHelpModal";
 import { createSolicitud } from "../api/Solicitudes";
 import { getHerramientasPorCPU } from "../api/Herramientas";
+import { listCPUsHabilitados, readCPU } from "../api/Recursos";
 
 const forbiddenExtensions = [
   "pdf",
@@ -47,8 +49,8 @@ function CPUSolicitud() {
   const initialCpuState = {
     frecuencia_cpu: "",
     id_recurso: {
-      estado: true,
-      id_recurso: 1,
+      estado: "",
+      id_recurso: "",
       solicitudes_encoladas: "",
       tamano_ram: "",
       ubicacion: "",
@@ -57,6 +59,8 @@ function CPUSolicitud() {
     numero_nucleos_cpu: "",
   };
 
+  const [cpuList, setCpuList] = useState([]);
+  const [selectedCPUId, setSelectedCPUId] = useState("");
   const [selectedCPU, setSelectedCPU] = useState(initialCpuState);
   const [herramientas, setHerramientas] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -68,6 +72,8 @@ function CPUSolicitud() {
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [herramientasFetched, setHerramientasFetched] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loadingDropdown, setLoadingDropdown] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalContent, setErrorModalContent] = useState("");
@@ -192,18 +198,52 @@ function CPUSolicitud() {
   };
 
   const handleCPUChange = (event) => {
-    setSelectedCPU(event.target.value);
+    setSelectedCPUId(event.target.value);
     setHerramientas([]);
   };
+
+  // Obtiene los CPUs al renderizar el componente
+  useEffect(() => {
+    const fetchCPU = async () => {
+      setLoadingDropdown(true);
+      try {
+        const response = await listCPUsHabilitados();
+        setCpuList(response.data);
+      } catch (error) {
+        console.error("Error al cargar CPUs:", error);
+      } finally {
+        setLoadingDropdown(false);
+      }
+    };
+
+    fetchCPU();
+  }, []);
+
+  // Obtiene el detalle del CPU seleccionado
+  useEffect(() => {
+    const fetchSelectedCPU = async (id) => {
+      setLoadingDetails(true);
+      try {
+        const response = await readCPU(id);
+        setSelectedCPU(response.data);
+      } catch (error) {
+        console.error("Error al cargar detalle de CPU:", error);
+      } finally {
+        setLoadingDetails(false);
+      }
+    };
+
+    if (selectedCPUId !== "") {
+      fetchSelectedCPU(selectedCPUId);
+    }
+  }, [selectedCPUId]);
 
   // Obtiene la lista de herramientas al cambiar de CPU
   useEffect(() => {
     const fetchHerramientas = async () => {
       setHerramientasFetched(false);
       try {
-        const response = await getHerramientasPorCPU(
-          selectedCPU.id_recurso.id_recurso
-        );
+        const response = await getHerramientasPorCPU(selectedCPUId);
         setHerramientas(response.data);
         setHerramientasFetched(true);
       } catch (error) {
@@ -211,18 +251,18 @@ function CPUSolicitud() {
       }
     };
 
-    if (selectedCPU.id_recurso.id_recurso) {
+    if (selectedCPUId !== "") {
       fetchHerramientas();
     }
-  }, [selectedCPU]);
+  }, [selectedCPUId]);
 
   // Crea la solicitud
   const handleCreate = async () => {
     setSubmitting(true);
-  
+
     await createSolicitud(
       localStorage.getItem("id_user"),
-      selectedCPU.id_recurso.id_recurso,
+      selectedCPUId,
       executionParameters,
       selectedFiles
     )
@@ -230,7 +270,9 @@ function CPUSolicitud() {
         openSuccessModal();
       })
       .catch((error) => {
-        setErrorModalContent("Hubo un problema al crear la solicitud. Por favor, inténtalo de nuevo.");
+        setErrorModalContent(
+          "Hubo un problema al crear la solicitud. Por favor, inténtalo de nuevo."
+        );
         setShowErrorModal(true);
         console.error("Error al crear la solicitud:", error);
       })
@@ -238,7 +280,6 @@ function CPUSolicitud() {
         setSubmitting(false);
       });
   };
-  
 
   return (
     <div className="mx-8 my-6">
@@ -261,7 +302,12 @@ function CPUSolicitud() {
             <Box sx={{ color: "primary.main", mb: 2 }}>
               <p className="font-bold text-xl">Recurso computacional</p>
             </Box>
-            <CPUDropdown value={selectedCPU} onChange={handleCPUChange} />
+            <CPUDropdown
+              cpuList={cpuList}
+              value={selectedCPUId}
+              onChange={handleCPUChange}
+              disabled={loadingDropdown}
+            />
           </Box>
 
           {/* Detalle */}
@@ -271,55 +317,92 @@ function CPUSolicitud() {
             </Box>
             <Box
               sx={{
-                p: 3,
+                px: 3,
+                py: 1,
                 width: "100%",
+                height: "12rem",
                 backgroundColor: "#F0F0F0",
                 borderRadius: "0.25rem",
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                overflow: "auto",
               }}
             >
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", pb: 1 }}
-              >
-                <p className="font-bold">Cantidad de núcleos</p>
-                {selectedCPU.numero_nucleos_cpu !== "" && (
-                  <p className="font-semibold">
-                    {selectedCPU.numero_nucleos_cpu}
-                  </p>
-                )}
-              </Box>
-              <Divider />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
-              >
-                <p className="font-bold">Frecuencia del procesador</p>
-                {selectedCPU.frecuencia_cpu !== "" && (
-                  <p className="font-semibold">
-                    {parseFloat(selectedCPU.frecuencia_cpu).toFixed(2)} GHz
-                  </p>
-                )}
-              </Box>
-              <Divider />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", py: 1 }}
-              >
-                <p className="font-bold">Tamaño de memoria RAM</p>
-                {selectedCPU.id_recurso.tamano_ram !== "" && (
-                  <p className="font-semibold">
-                    {selectedCPU.id_recurso.tamano_ram} GB
-                  </p>
-                )}
-              </Box>
-              <Divider />
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", pt: 1 }}
-              >
-                <p className="font-bold">Solicitudes en cola</p>
-                {selectedCPU.id_recurso.solicitudes_encoladas !== "" && (
-                  <p className="font-semibold">
-                    {selectedCPU.id_recurso.solicitudes_encoladas}
-                  </p>
-                )}
-              </Box>
+              {loadingDetails && (
+                <LoadingOverlay
+                  backgroundColor="#F0F0F0"
+                  content="Cargando detalle..."
+                />
+              )}
+              {selectedCPUId !== "" ? (
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      pb: 1,
+                    }}
+                  >
+                    <p className="font-bold">Cantidad de núcleos</p>
+                    {selectedCPU.numero_nucleos_cpu !== "" && (
+                      <p className="font-semibold">
+                        {selectedCPU.numero_nucleos_cpu}
+                      </p>
+                    )}
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      py: 1,
+                    }}
+                  >
+                    <p className="font-bold">Frecuencia del procesador</p>
+                    {selectedCPU.frecuencia_cpu !== "" && (
+                      <p className="font-semibold">
+                        {parseFloat(selectedCPU.frecuencia_cpu).toFixed(2)} GHz
+                      </p>
+                    )}
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      py: 1,
+                    }}
+                  >
+                    <p className="font-bold">Tamaño de memoria RAM</p>
+                    {selectedCPU.id_recurso.tamano_ram !== "" && (
+                      <p className="font-semibold">
+                        {selectedCPU.id_recurso.tamano_ram} GB
+                      </p>
+                    )}
+                  </Box>
+                  <Divider />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      pt: 1,
+                    }}
+                  >
+                    <p className="font-bold">Solicitudes en cola</p>
+                    {selectedCPU.id_recurso.solicitudes_encoladas !== "" && (
+                      <p className="font-semibold">
+                        {selectedCPU.id_recurso.solicitudes_encoladas}
+                      </p>
+                    )}
+                  </Box>
+                </>
+              ) : (
+                <p className="text-center font-light">
+                  Elige un recurso para ver su datos
+                </p>
+              )}
             </Box>
           </Box>
           <Box sx={{ textAlign: "center" }}>
@@ -501,7 +584,6 @@ function CPUSolicitud() {
         onClose={() => setShowErrorModal(false)}
         content={errorModalContent}
       />
-
 
       <SolicitudHelpModal open={showHelpModal} onClose={closeHelpModal} />
     </div>

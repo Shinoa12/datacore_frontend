@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { parseISO, format } from "date-fns";
-import { addHours } from "date-fns";
 
 // MUI
 import Box from "@mui/material/Box";
@@ -114,22 +113,19 @@ function Solicitudes() {
           fecha_registro:
             registroYear < 2000
               ? "-"
-              : format(
-                  addHours(parseISO(item.fecha_registro), 5),
-                  "dd/MM/yyyy HH:mm:ss a"
-                ),
+              : format(parseISO(item.fecha_registro), "dd/MM/yyyy HH:mm:ss a"),
           fecha_procesamiento:
             procesamientoYear < 2000
               ? "-"
               : format(
-                  addHours(parseISO(item.fecha_procesamiento), 5),
+                  parseISO(item.fecha_procesamiento),
                   "dd/MM/yyyy HH:mm:ss a"
                 ),
           fecha_finalizada:
             finalizadaYear < 2000
               ? "-"
               : format(
-                  addHours(parseISO(item.fecha_finalizada), 5),
+                  parseISO(item.fecha_finalizada),
                   "dd/MM/yyyy HH:mm:ss a"
                 ),
         };

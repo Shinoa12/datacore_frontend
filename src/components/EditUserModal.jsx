@@ -41,7 +41,8 @@ function EditUserModal({
     correo: "",
     nombres: "",
     apellidos: "",
-    recursos_max: 0,
+    recursos_max: "",
+    horas_max: "",
     facultad: "",
     especialidad: "",
     estado: "",
@@ -92,6 +93,7 @@ function EditUserModal({
         nombres: data.first_name,
         apellidos: data.last_name,
         recursos_max: data.recursos_max,
+        horas_max: data.horas_max,
         facultad: data.id_facultad,
         especialidad: data.id_especialidad,
         estado: data.id_estado_persona,
@@ -238,6 +240,19 @@ function EditUserModal({
             type="number"
             fullWidth
             value={formData.recursos_max}
+            onChange={handleChange}
+            disabled
+          />
+
+          {/* Horas máximas */}
+          <TextField
+            margin="dense"
+            id="horas_max"
+            name="horas_max"
+            label="Horas máximas de uso"
+            type="number"
+            fullWidth
+            value={formData.horas_max}
             onChange={handleChange}
             disabled
           />

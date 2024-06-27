@@ -15,7 +15,9 @@ const apiPatch = (endpoint, data) => {
 };
 
 export const listCPUs = () => apiGet("cpus/");
+export const listCPUsHabilitados = () => apiGet("cpus/habilitados/");
 export const listGPUs = () => apiGet("gpus/");
+export const listGPUsHabilitados = () => apiGet("gpus/habilitados/");
 export const createCPU = (cpu) => apiPost("cpus/", cpu);
 export const createGPU = (gpu) => apiPost("gpus/", gpu);
 export const readCPU = (id) => apiGet(`cpus/${id}/`);
