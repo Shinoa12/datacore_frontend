@@ -199,27 +199,32 @@ function Solicitudes() {
     try {
       const response = await getSolicitudResultado(id);
 
-      // Tomando en cuenta que response es un Blob
-      const url = window.URL.createObjectURL(new Blob([response]));
+      console.log(response)
+  
+      // Obtener la URL del archivo desde la respuesta
+      const fileUrl = response.data.ruta;
+  
+      // Crear un enlace para descargar el archivo
       const link = document.createElement("a");
-      link.href = url;
-
-      // Extrayendo el filename de la URL
-      const urlObject = new URL(url);
+      link.href = fileUrl;
+  
+      // Extraer el nombre del archivo de la URL
+      const urlObject = new URL(fileUrl);
       const pathname = urlObject.pathname;
       const filename = pathname.substring(pathname.lastIndexOf("/") + 1);
-
+  
+      // Configurar el nombre del archivo para la descarga
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
-
+  
       // Cleanup
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error al descargar resultado:", error);
     }
   };
+  
 
   return (
     <div className="mx-8 my-6">
