@@ -279,52 +279,53 @@ function Home() {
                 }}
               />
             </Box>
+                <div style={styles.dashboard}>
+            <div style={styles.metrics}>
+              <div style={{ ...styles.metric, ...styles.created }}>
+                <div style={styles.metricTitle}>Solicitudes Creadas</div>
+                <div style={styles.metricValue}>{solicitudesCreadas}</div>
+              </div>
+              <div style={{ ...styles.metric, ...styles.inProgress }}>
+                <div style={styles.metricTitle}>Solicitudes en Proceso</div>
+                <div style={styles.metricValue}>{solicitudesEnProceso}</div>
+              </div>
+              <div style={{ ...styles.metric, ...styles.finished }}>
+                <div style={styles.metricTitle}>Solicitudes Finalizadas</div>
+                <div style={styles.metricValue}>{solicitudesFinalizadas}</div>
+              </div>
+            </div>
+            <div style={styles.charts} id="charts">
+              <div style={styles.chart}>
+                <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Cantidad de Solicitudes por Mes</h1>
+                <Line data={solicitudesPorMesData} options={opcionesGraficoDeLineas} />
+              </div>
+              <div style={styles.chart}>
+                <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px'}} >Número de Solicitudes por Recurso</h1>
+                <Bar data={solicitudesPorRecursoData} options={{ plugins: { legend: { display: false } } }} />
+              </div>
+              <div style={styles.chart}>
+                <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Número de Solicitudes por Especialidad</h1>
+                <div style={styles.pieChartContainer}>
+                  <div style={styles.pieChart}>
+                    <Pie data={solicitudesPorEspecialidadData} options={{ plugins: { legend: { position: 'left' } } }} />
+                  </div>
+                </div>
+              </div>
+              <div style={styles.chart}>
+                <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Duración Promedio de Procesamiento de Solicitud</h1>
+                <Bar data={duracionProcesamientoData} options={{ plugins: { legend: { display: false } } }}/>
+              </div>
+            </div>
+            <div style={styles.buttonContainer}>
+              <Button variant="contained" color="primary" onClick={downloadPDF}>
+                Descargar Reporte PDF
+              </Button>
+            </div>
+          </div>
           </>
         )}
       </div>
-      <div style={styles.dashboard}>
-        <div style={styles.metrics}>
-          <div style={{ ...styles.metric, ...styles.created }}>
-            <div style={styles.metricTitle}>Solicitudes Creadas</div>
-            <div style={styles.metricValue}>{solicitudesCreadas}</div>
-          </div>
-          <div style={{ ...styles.metric, ...styles.inProgress }}>
-            <div style={styles.metricTitle}>Solicitudes en Proceso</div>
-            <div style={styles.metricValue}>{solicitudesEnProceso}</div>
-          </div>
-          <div style={{ ...styles.metric, ...styles.finished }}>
-            <div style={styles.metricTitle}>Solicitudes Finalizadas</div>
-            <div style={styles.metricValue}>{solicitudesFinalizadas}</div>
-          </div>
-        </div>
-        <div style={styles.charts} id="charts">
-          <div style={styles.chart}>
-            <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Cantidad de Solicitudes por Mes</h1>
-            <Line data={solicitudesPorMesData} options={opcionesGraficoDeLineas} />
-          </div>
-          <div style={styles.chart}>
-            <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px'}} >Número de Solicitudes por Recurso</h1>
-            <Bar data={solicitudesPorRecursoData} options={{ plugins: { legend: { display: false } } }} />
-          </div>
-          <div style={styles.chart}>
-            <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Número de Solicitudes por Especialidad</h1>
-            <div style={styles.pieChartContainer}>
-              <div style={styles.pieChart}>
-                <Pie data={solicitudesPorEspecialidadData} options={{ plugins: { legend: { position: 'left' } } }} />
-              </div>
-            </div>
-          </div>
-          <div style={styles.chart}>
-            <h1 className="font-bold text-xl" style={{ textAlign: 'center', marginBottom: '5px' }}>Duración Promedio de Procesamiento de Solicitud</h1>
-            <Bar data={duracionProcesamientoData} options={{ plugins: { legend: { display: false } } }}/>
-          </div>
-        </div>
-        <div style={styles.buttonContainer}>
-          <Button variant="contained" color="primary" onClick={downloadPDF}>
-            Descargar Reporte PDF
-          </Button>
-        </div>
-      </div>
+
     </>
   );
 }

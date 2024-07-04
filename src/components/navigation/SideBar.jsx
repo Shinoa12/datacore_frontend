@@ -78,13 +78,13 @@ function Sidebar({ sidebarToggle }) {
         style={{ height: navbarHeight }}
       >
         <FaRegUserCircle
-          size={40}
+          size={45}
           className="text-gray-800"
           style={{ color: theme.palette.primary.main }}
         ></FaRegUserCircle>
 
         <p
-          className="text-gray-800 font-semibold"
+          className="text-gray-800 font-semibold text-center"
           style={{ color: theme.palette.primary.main }}
         >
           {localStorage.getItem("first_name") +
