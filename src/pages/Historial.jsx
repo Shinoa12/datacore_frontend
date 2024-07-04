@@ -1,96 +1,51 @@
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import { parseISO, format } from "date-fns";
 import moment from "moment";
 
-// MUI
-import Box from "@mui/material/Box";
+//MUI
 import Button from "@mui/material/Button";
 import { DataGrid } from "@mui/x-data-grid";
 import { TextField } from "@mui/material";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
+import Box from "@mui/material/Box";
 import SearchIcon from "@mui/icons-material/Search";
 import Select from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-
-// APIs
+//APIs
 import { getHistorial } from "../api/Historial";
 
-// Components
-import NoRowsOverlay from "../components/NoRowsOverlay";
-
-// Styles
-const filterSectionStyles = {
-  mb: 4,
-  display: "flex",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  gap: "6rem",
-};
-
-const filterTextStyles = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "flex-start",
-  gap: "1rem",
-  width: "20rem",
-  minWidth: "10rem",
-};
-
-const filterLabelStyles = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "flex-start",
-  gap: "1rem",
-  width: "6rem",
-  "& p": {
-    lineHeight: "2.5rem",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-};
-
-const filterDateStyles = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "flex-start",
-  gap: "1rem",
-  width: "15rem",
-};
-
 function Historial() {
-  const initialFiltersState = {
+  const [rows, setRows] = useState([]);
+  const [origialRows, setRowsR] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
     email: "",
     recurso: "",
     estado_solicitud: "",
     fecha_procesamiento: "",
     fecha_finalizada: "",
     fecha_registro: "",
-  };
-
+  });
   const columns = [
-    { field: "fecha_registro", headerName: "Fecha de registro", width: 200 },
-    { field: "recurso", headerName: "Recurso", width: 220 },
-    { field: "email", headerName: "Correo", width: 220 },
+    { field: "fecha_registro", headerName: "Fecha Registro", width: 200 },
+    { field: "recurso", headerName: "Recurso", width: 300 },
+    { field: "email", headerName: "Correo", width: 300 },
     { field: "estado_solicitud", headerName: "Estado", width: 150 },
-    { field: "fecha_procesamiento", headerName: "Fecha de inicio", width: 200 },
-    { field: "fecha_finalizada", headerName: "Fecha de fin", width: 200 },
-    { field: "duracion", headerName: "Duracion", width: 120 },
+    { field: "fecha_procesamiento", headerName: "Fecha Inicio", width: 200 },
+    { field: "fecha_finalizada", headerName: "Fecha Fin", width: 200 },
+    { field: "duracion", headerName: "Duracion", width: 100 },
   ];
 
-  const [rows, setRows] = useState([]);
-  const [originalRows, setOriginalRows] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState(initialFiltersState);
+  useEffect(() => {
+    loadPage();
+  }, []);
 
-  // Cargar la tabla
-  const loadTable = () => {
+  const loadPage = () => {
     setLoading(true);
     getHistorial()
       .then((response) => {
@@ -131,7 +86,7 @@ function Historial() {
         });
 
         setRows(formattedData);
-        setOriginalRows(formattedData);
+        setRowsR(formattedData);
       })
       .catch((error) => {
         console.error("Error fetching solicitudes:", error);
@@ -141,12 +96,6 @@ function Historial() {
       });
   };
 
-  // Cargar la tabla al renderizar el componente
-  useEffect(() => {
-    loadTable();
-  }, []);
-
-  // Exportar solicitudes a un CSV
   const exportarSolicitudes = () => {
     const csvData = rows.map((row) => Object.values(row).join(",")).join("\n");
     const csvBlob = new Blob([csvData], { type: "text/csv" });
@@ -159,21 +108,15 @@ function Historial() {
     document.body.removeChild(link);
   };
 
-  // Handlers para cambios en variables
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
   const handleSearch = () => {
-    const filteredRows = originalRows.filter((row) => {
+    const filteredRows = origialRows.filter((row) => {
       return Object.keys(filters).every((key) => {
         if (filters[key] === "") {
-          return true;
-        }
-
-        if (key === "estado_solicitud" && filters[key] === "all") {
           return true;
         }
 
@@ -203,15 +146,8 @@ function Historial() {
       });
     });
 
-    const filtersEmpty = Object.keys(filters).every((key) => {
-      if (key === "estado_solicitud") {
-        return filters[key] === "" || filters[key] === "all";
-      }
-      return filters[key] === "";
-    });
-
-    if (filtersEmpty) {
-      setRows(originalRows);
+    if (Object.values(filters).every((value) => value === "")) {
+      setRows(origialRows);
     } else {
       setRows(filteredRows);
     }
@@ -219,128 +155,139 @@ function Historial() {
 
   return (
     <div className="mx-8 my-6">
-      <Box sx={{ color: "primary.main", mb: 4 }}>
-        <p className="font-bold text-3xl">Historial</p>
-      </Box>
-
-      {/* Filtros */}
-      <Box sx={filterSectionStyles}>
-        {/* Columna de TextFields */}
-        <Box sx={filterTextStyles}>
-          <TextField
-            fullWidth
-            id="email"
-            name="email"
-            label="Correo"
-            type="text"
-            size="small"
-            onChange={handleInputChange}
-          />
-          <TextField
-            fullWidth
-            id="recurso"
-            name="recurso"
-            label="Recurso"
-            type="text"
-            size="small"
-            onChange={handleInputChange}
-          />
-          <FormControl fullWidth size="small">
-            <InputLabel id="estado-label">Estado</InputLabel>
-            <Select
-              labelId="estado-label"
-              id="estado_solicitud"
-              name="estado_solicitud"
-              label="Estado"
-              defaultValue="all"
-              onChange={handleInputChange}
-            >
-              <MenuItem value="all">Sin filtro</MenuItem>
-              <MenuItem value="creada">Creada</MenuItem>
-              <MenuItem value="cancelada">Cancelada</MenuItem>
-              <MenuItem value="en proceso">En proceso</MenuItem>
-              <MenuItem value="finalizada">Finalizada</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        {/* Labels de fechas */}
-        <Box sx={filterLabelStyles}>
-          <p className="font-semibold">Fecha de registro</p>
-          <p className="font-semibold">Fecha de inicio</p>
-          <p className="font-semibold">Fecha de fin</p>
-        </Box>
-
-        {/* Columna de fechas */}
-        <Box sx={filterDateStyles}>
-          <TextField
-            fullWidth
-            id="fecha_registro"
-            name="fecha_registro"
-            type="date"
-            size="small"
-            onChange={handleInputChange}
-          />
-          <TextField
-            fullWidth
-            id="fecha_procesamiento"
-            name="fecha_procesamiento"
-            type="date"
-            size="small"
-            onChange={handleInputChange}
-          />
-          <TextField
-            fullWidth
-            id="fecha_finalizada"
-            name="fecha_finalizada"
-            type="date"
-            size="small"
-            onChange={handleInputChange}
-          />
-        </Box>
-      </Box>
-
-      {/* Botones */}
-      <Box
-        sx={{
-          mb: 4,
+      <h2
+        style={{ color: "rgb(4, 35, 84)" }}
+        className=" font-bold text-3xl mb-4"
+      >
+        Historial
+      </h2>
+      <div
+        style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
+        <div>Correo</div>
+        <TextField
+          label="Correo"
+          id="outlined-size-small "
+          defaultValue=""
+          size="small"
+          name="email"
+          onChange={handleInputChange}
+        />
+        <div>Recurso</div>
+        <TextField
+          label="Recurso"
+          id="outlined-size-small "
+          size="small"
+          name="recurso"
+          onChange={handleInputChange}
+        />
+        <div>Estado</div>
+        <FormControl sx={{ m: 1, minWidth: 200 }} size="small">
+          <InputLabel id="demo-simple-select-label">Estado</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            name="estado_solicitud"
+            label="Estado"
+            onChange={handleInputChange}
+          >
+            <MenuItem value={""}>Sin Filtro</MenuItem>
+            <MenuItem value={"creada"}>Creada</MenuItem>
+            <MenuItem value={"cancelada"}>Cancelada</MenuItem>
+            <MenuItem value={"en proceso"}>En Proceso</MenuItem>
+            <MenuItem value={"finalizada"}>Finalizada</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "1rem",
+        }}
+      >
+        <div>Fecha Registro</div>
+        <input
+          type="date"
+          id="end"
+          name="fecha_registro"
+          onChange={handleInputChange}
+          style={{
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            padding: "5px 10px 5px 10px",
+          }}
+        />
+        <div>Fecha Inicio</div>
+        <input
+          type="date"
+          id="start"
+          name="fecha_procesamiento"
+          onChange={handleInputChange}
+          style={{
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            padding: "5px 10px 5px 10px",
+          }}
+        />
+
+        <div>Fecha Fin</div>
+        <input
+          type="date"
+          id="end"
+          name="fecha_finalizada"
+          onChange={handleInputChange}
+          style={{
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            padding: "5px 10px 5px 10px",
+          }}
+        />
+      </div>
+
+      <Box
+        marginTop={5}
+        marginBottom={5}
+        display="flex"
+        justifyContent="flex-end"
+      >
         <Button
           variant="contained"
-          onClick={handleSearch}
           startIcon={<SearchIcon />}
+          onClick={handleSearch}
         >
           Buscar
         </Button>
-        <Button
-          variant="contained"
-          onClick={exportarSolicitudes}
-          startIcon={<SimCardDownloadIcon />}
-        >
-          Exportar solicitudes
-        </Button>
       </Box>
-
-      {/* Tabla */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ height: 400, width: "100%" }} className="mt-4">
         <DataGrid
-          autoHeight
-          columns={columns}
+          id="dgHistorial"
           rows={rows}
+          columns={columns}
           initialState={{
             pagination: {
               paginationModel: { pageSize: 10 },
             },
           }}
-          pageSizeOptions={[10]}
-          disableRowSelectionOnClick
-          slots={{ noRowsOverlay: NoRowsOverlay }}
           loading={loading}
+          disableRowSelectionOnClick
         />
+      </Box>
+
+      <Box marginTop={5} display="flex" justifyContent="flex-end">
+        <Button
+          variant="contained"
+          startIcon={<SimCardDownloadIcon />}
+          onClick={exportarSolicitudes}
+        >
+          Exportar Solicitudes
+        </Button>
       </Box>
     </div>
   );

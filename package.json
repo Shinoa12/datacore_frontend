@@ -36,6 +36,8 @@
     "react-router-dom": "^6.23.0",
     "simplebar-react": "^3.2.4",
     "styled-components": "^6.1.9",
+    "stylis": "^4.3.2",
+    "stylis-plugin-rtl": "^2.1.1",
     "sweetalert2": "^11.10.8"
   },
   "devDependencies": {
