@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../../auth/context/AuthContext.jsx";
+import { AuthContext } from "../auth/context/AuthContext.jsx";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HelpIcon from "@mui/icons-material/Help";
-import DataCoreLogo from "../../assets/datacore_logo.svg";
+import DataCoreLogo from "../assets/datacore_logo.svg";
 
 const iconStyles = { color: "white", fontSize: "1.75rem" };
 export const navbarHeight = "110px";

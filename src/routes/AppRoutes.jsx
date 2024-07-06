@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
-import Navbar, { navbarHeight } from "../components/navigation/NavBar";
-import Sidebar from "../components/navigation/SideBar";
+import Navbar, { navbarHeight } from "../components/NavBar";
+import Sidebar from "../components/SideBar";
 import "../App.css";
 import theme from "../theme";
 
