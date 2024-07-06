@@ -6,6 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HelpIcon from "@mui/icons-material/Help";
+import DataCoreLogo from "../../assets/datacore_logo.svg";
 
 const iconStyles = { color: "white", fontSize: "1.75rem" };
 export const navbarHeight = "110px";
@@ -35,11 +36,7 @@ function Navbar({ sidebarToggle, setSidebarToggle }) {
           </IconButton>
 
           <Link to="/">
-            <img
-              src="/src/assets/datacore_logo.svg"
-              alt="DataCore"
-              style={{ height: "60px" }}
-            />
+            <img src={DataCoreLogo} alt="DataCore" style={{ height: "60px" }} />
           </Link>
         </div>
 

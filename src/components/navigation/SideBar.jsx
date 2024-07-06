@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { navbarHeight } from "./NavBar";
+import PucpLogo from "../../assets/pucp_logo.png";
 
 const sidebarButtonStyles = {
   width: "100%",
@@ -118,7 +119,7 @@ function Sidebar({ sidebarToggle }) {
       {/* Logo */}
       <div className="py-4 flex justify-center items-center">
         <img
-          src="/src/assets/pucp_logo.png"
+          src={PucpLogo}
           alt="PUCP"
           style={{ maxWidth: "180px", height: "auto" }}
         />
