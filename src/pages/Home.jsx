@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import solicitudImg from "/public/assets/solicitud_home.png";
+import solicitudImg from "../assets/solicitud_home.png?url";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import {

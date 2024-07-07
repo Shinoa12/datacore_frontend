@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import HelpIcon from "@mui/icons-material/Help";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import manualPdf from "/public/assets/manual_investigador.pdf";
+import manualPdf from "../assets/manual_investigador.pdf?url";
 
 function SolicitudHelpModal({ open, onClose }) {
   const handleOpenPdf = () => {
