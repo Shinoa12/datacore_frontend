@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HelpIcon from "@mui/icons-material/Help";
-import DataCoreLogo from "/public/assets/datacore_logo.svg";
+import DataCoreLogo from "../assets/dc_logo.svg?url";
 
 const iconStyles = { color: "white", fontSize: "1.75rem" };
 export const navbarHeight = "110px";
