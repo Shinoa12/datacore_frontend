@@ -1,5 +1,5 @@
-import pucpLogo from "../assets/pucp_logo.png";
-import serverIcon from "../assets/server_icon.svg";
+import pucpLogo from "/public/assets/pucp_logo.png";
+import serverIcon from "/public/assets/server_icon.svg";
 import Header from "./Header";
 
 export const LoginPage = () => {
