@@ -22,7 +22,7 @@ body {
 }
 
 .background-image {
-  background-image: url("/src/assets/pabellon_a.jpg");
+  background-image: url("/public/assets/pabellon_a.jpg");
   height: 100vh; /* Establece la altura al 100% de la ventana del navegador */
   background-position: center;
   background-repeat: no-repeat;
@@ -84,4 +84,3 @@ body {
   height: auto;
   object-fit: contain;
 }
-

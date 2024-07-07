@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { navbarHeight } from "./NavBar";
-import PucpLogo from "../assets/pucp_logo.png";
+import PucpLogo from "/public/assets/pucp_logo.png";
 
 const sidebarButtonStyles = {
   width: "100%",
