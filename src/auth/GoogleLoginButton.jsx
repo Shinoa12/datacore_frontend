@@ -152,7 +152,7 @@ const GoogleLoginButton = () => {
         <SuccessModal
           open={showSuccessModal}
           onClose={closeSuccessModal}
-          content="El usuario ha sido editado satisfactoriamente."
+          content="Un administrador aprobará tu acceso a la plataforma."
         />
       )}
     </div>
